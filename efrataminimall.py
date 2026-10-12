@@ -164,13 +164,18 @@ def sesion():
         print("\nEFRATA MINI-MALL")
         print("Inicia sesión o crea tu cuenta\n")
 
-        usuario_provisional = input("E-MAIL: ").strip().lower()
+        usuario_provisional = input("Correo electrónico: ").strip().lower()
+     
 
         if not (
             usuario_provisional.endswith("@gmail.com")
             or usuario_provisional.endswith("@hotmail.com")
         ):
-            print("El formato de e-mail no es válido.")
+            print("El formato de correo electrónico no es válido.")
+            continue
+
+        if usuario_provisional.startswith("@") or " " in usuario_provisional:
+            print("El formato de correo electrónico no es válido.")
             continue
 
         # LEER LAS CUENTAS REGISTRADAS
@@ -193,7 +198,7 @@ def sesion():
 
         # INICIAR SESIÓN
         if contraseña_guardada is not None:
-            print(f"\nINICIAR SESIÓN\nE-MAIL: {usuario_provisional}")
+            print(f"\nINICIAR SESIÓN\nCorreo electrónico: {usuario_provisional}")
             contraseña_provisional = input("CONTRASEÑA: ")
 
             if contraseña_provisional == contraseña_guardada:
@@ -213,7 +218,7 @@ def sesion():
                 continue
 
         # CREAR CUENTA
-        print(f"\nCREAR CUENTA\nE-MAIL: {usuario_provisional}")
+        print(f"\nCREAR CUENTA\nCorreo electrónico: {usuario_provisional}")
 
         while True:
             contraseña_provisional = input(
@@ -296,24 +301,48 @@ def cuenta():
 
             elif opcion == 2:
                 print("\nMIS DATOS PERSONALES")
-                print(f"Usuario: {usuario}")
+                print(f"Correo electrónico: {usuario}")
 
                 nombre = input("Nombre: ").strip()
+                if not nombre.isalpha():
+                    print("El nombre debe contener solo letras.")
+                    continue
+
                 apellidos = input("Apellidos: ").strip()
+                if not apellidos.isalpha():
+                    print("Los apellidos deben contener solo letras.")
+                    continue
+
                 telefono = input("Teléfono (+57): ").strip()
+                if not telefono.isdigit() or len(telefono) != 10:
+                    print("El teléfono debe contener solo números y tener 10 dígitos.")
+                    continue
 
                 print("\nDIRECCIÓN DE FACTURACIÓN")
 
                 tipo_documento = input(
                     "Tipo de documento (CC, CE, NIT): "
                 ).strip().upper()
+                if tipo_documento not in ["CC", "CE", "NIT"]:
+                    print("Tipo de documento inválido.")
+                    continue
 
                 numero_documento = input(
                     "Número de documento: "
                 ).strip()
+                if not numero_documento.isdigit():
+                    print("El número de documento debe contener solo números.")
+                    continue
 
                 direccion = input("Dirección: ").strip()
+                while direccion == "":
+                    print("La dirección no puede estar vacía.")
+                    direccion = input("Dirección: ").strip()
+
                 codigo_postal = input("Código postal: ").strip()
+                while not codigo_postal.isdigit() or len(codigo_postal) != 6:
+                    print("El código postal debe contener solo números y tener 6 dígitos.")
+                    codigo_postal = input("Código postal: ").strip()
 
                 opcion_datos = input(
                     "\n¿Desea guardar los datos? (S/N): "
@@ -575,13 +604,46 @@ def alquiler_trajes():
                     )
                     continue
 
-                fecha_alquiler = input(
-                    "Fecha del alquiler (DD/MM/AAAA): "
-                ).strip()
+                while True:
+                    fecha_alquiler = input(
+                        "Fecha del alquiler (DD/MM/AAAA): "
+                    ).strip()
+                    try:
+                        fecha_1 = datetime.datetime.strptime(
+                            fecha_alquiler, "%d/%m/%Y"
+                        )
+                    except ValueError:
+                        print(
+                            "Fecha inválida. "
+                            "Debe ser DD/MM/AAAA."
+                        )
+                        continue
+                    if fecha_1.date() < datetime.datetime.now().date():
+                        print(
+                            "La fecha de alquiler no puede ser anterior a hoy."
+                        )
+                        continue
+                    break
+            
+                while True:
+                    fecha_devolucion = input(
+                        "Fecha de devolución (DD/MM/AAAA): "
+                    ).strip()
+                    try:
+                        fecha_2 = datetime.datetime.strptime(
+                            fecha_devolucion, "%d/%m/%Y"
+                        )
+                    except ValueError:
+                        print("Fecha inválida. "
+                             "Debe ser DD/MM/AAAA.")
+                        continue
 
-                fecha_devolucion = input(
-                    "Fecha de devolución (DD/MM/AAAA): "
-                ).strip()
+                    if fecha_2<= fecha_1:
+                        print(
+                            "La fecha de devolución debe ser después de la fecha de alquiler.")
+                        continue
+                    
+                    break
 
                 with open(
                     "registraralquiler.txt",
@@ -737,6 +799,8 @@ def favoritos():
 
 
 # MENÚ PRINCIPAL
+home()
+sesion()
 
 while True:
     print(
@@ -768,7 +832,10 @@ while True:
             favoritos()
 
         elif opcion == 6:
-            sesion()
+            cuenta()
+
+            if not sesion_activa:
+                sesion()
 
         elif opcion == 7:
             print("Gracias por visitar EFRATA MINI-MALL.")
