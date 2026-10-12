@@ -800,8 +800,7 @@ def favoritos():
 
 # MENÚ PRINCIPAL
 home()
-sesion()
-
+ 
 while True:
     print(
         "\n1. Home"
