@@ -1,6 +1,7 @@
 import datetime
 import pandas as pd
 import os
+import getpass
 
 trajes_iniciales = [
     ["1", "Esmoquin clásico", "S, M, L", 120000, "Disponible"],
@@ -130,7 +131,7 @@ def sesion():
         # INICIAR SESIÓN
         if contraseña_guardada is not None:
             print(f"\nINICIAR SESIÓN\nCorreo electrónico: {usuario_provisional}")
-            contraseña_provisional = input("CONTRASEÑA: ")
+            contraseña_provisional = getpass.getpass("CONTRASEÑA: ")
 
             if contraseña_provisional == contraseña_guardada:
                 usuario = usuario_provisional
@@ -156,7 +157,7 @@ def sesion():
         print(f"\nCREAR CUENTA\nCorreo electrónico: {usuario_provisional}")
 
         while True:
-            contraseña_provisional = input(
+            contraseña_provisional = getpass.getpass(
                 "CONTRASEÑA (mínimo 8 caracteres, "
                 "con mayúscula, minúscula y número): "
             )
@@ -514,7 +515,7 @@ def consultar_alquileres():
         for linea in archivo:
             datos = linea.strip().split("|")
 
-            if len(datos) == 8 and datos[0] == usuario:
+            if len(datos) == 8 and datos[0] == usuario and datos[6] == "Activo":
                 print(
                     f"Traje: {datos[2]} | Talla: {datos[3]} | "
                     f"Alquiler: {datos[4]} | "
