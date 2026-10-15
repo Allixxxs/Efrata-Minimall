@@ -29,9 +29,7 @@ if not os.path.exists("inventario.xlsx"):
     )
     datos.to_excel("inventario.xlsx", index=False)
 
-
 # CARGAR LOS TRAJES DEL EXCEL
-
 def cargar_trajes():
     datos = pd.read_excel("inventario.xlsx")
     trajes = []
@@ -47,9 +45,7 @@ def cargar_trajes():
 
     return trajes
 
-
 # GUARDAR LOS CAMBIOS DE LOS TRAJES
-
 def guardar_trajes(trajes):
     datos = pd.DataFrame(
         trajes,
@@ -58,9 +54,7 @@ def guardar_trajes(trajes):
 
     datos.to_excel("inventario.xlsx", index=False)
 
-
 # ACTUALIZAR EL ARCHIVO DE DISPONIBILIDAD
-
 def actualizar_disponibilidad():
     trajes = cargar_trajes()
 
@@ -72,9 +66,7 @@ def actualizar_disponibilidad():
                 f"{traje[0]}|{traje[1]}|{traje[4]}\n"
             )
 
-
 # MOSTRAR EL CATÁLOGO DE TRAJES
-
 def mostrar_catalogo():
     trajes = cargar_trajes()
 
@@ -93,34 +85,29 @@ def mostrar_catalogo():
         print(f"Estado: {traje[4]}")
         print("-" * 45)
 
-
 # SESIÓN DE USUARIO
-
 usuario = ""
 contraseña = ""
 sesion_activa = False
 
-
 def sesion():
     global sesion_activa, usuario, contraseña
-
     while True:
         print("\nEFRATA MINI-MALL")
         print("Inicia sesión o crea tu cuenta\n")
 
         usuario_provisional = input("Correo electrónico: ").strip().lower()
-     
 
         if not (
             usuario_provisional.endswith("@gmail.com")
             or usuario_provisional.endswith("@hotmail.com")
         ):
             print("El formato de correo electrónico no es válido.")
-            continue
+            return
 
         if usuario_provisional.startswith("@") or " " in usuario_provisional:
             print("El formato de correo electrónico no es válido.")
-            continue
+            return
 
         # LEER LAS CUENTAS REGISTRADAS
         usuarios = []
@@ -150,6 +137,10 @@ def sesion():
                 contraseña = contraseña_provisional
                 sesion_activa = True
 
+                fecha_hora = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                with open("iniciossesion.txt", "a", encoding="utf-8") as archivo:
+                    archivo.write(f"{usuario}|{fecha_hora}\n")
+
                 print("\nInicio de sesión exitoso.")
                 cuenta()
                 return
@@ -159,7 +150,7 @@ def sesion():
                     "\nLa combinación de usuario y contraseña "
                     "no es correcta."
                 )
-                continue
+                return
 
         # CREAR CUENTA
         print(f"\nCREAR CUENTA\nCorreo electrónico: {usuario_provisional}")
@@ -224,13 +215,11 @@ def sesion():
 
 
 # MENÚ DE LA CUENTA
-
 def cuenta():
     global sesion_activa, usuario, contraseña
 
     while True:
         print(f"\nBIENVENIDO, {usuario}")
-
         print("\nMI CUENTA")
         print("1. Mis compras")
         print("2. Mis datos")
@@ -334,7 +323,6 @@ def cuenta():
 
 
 # HOME
-
 def home():
     print("\n¡Bienvenidos a EFRATA MINI-MALL!")
     print("\nModa, alquiler de trajes y arreglos en un solo lugar")
@@ -342,13 +330,12 @@ def home():
     print("\nCali, Colombia\n3239655863")
     print("\n¡Será un placer atenderte!\n")
 
-
+#BUSCAR ROPA POR CATEGORÍA Y GÉNERO
 def buscar():
     print("\nBUSCAR")
     print("La funcionalidad de búsqueda todavía está pendiente.")
 
 # ALQUILER DE TRAJES
-
 def alquiler_trajes():
     global usuario
 
@@ -515,7 +502,6 @@ def alquiler_trajes():
 
 
 # CONSULTAR ALQUILERES
-
 def consultar_alquileres():
     global usuario
 
@@ -542,9 +528,7 @@ def consultar_alquileres():
     if not encontrados:
         print("No tienes alquileres registrados.")
 
-
 # DEVOLVER TRAJE
-
 def devolver_traje():
     global usuario
 
@@ -617,24 +601,18 @@ def devolver_traje():
     )
     print("Estado: disponible")
 
-
 # CARRITO
-
 def carrito():
     print("\nCARRITO")
     print("La funcionalidad del carrito todavía está pendiente.")
 
-
 # FAVORITOS
-
 def favoritos():
     print("\nFAVORITOS")
     print("La funcionalidad de favoritos todavía está pendiente.")
 
-
 # MENÚ PRINCIPAL
 home()
- 
 while True:
     print(
         "\n1. Home"
@@ -665,10 +643,10 @@ while True:
             favoritos()
 
         elif opcion == 6:
-            cuenta()
-
             if not sesion_activa:
-                sesion()
+                sesion() 
+            else:
+                cuenta()
 
         elif opcion == 7:
             print("Gracias por visitar EFRATA MINI-MALL.")
