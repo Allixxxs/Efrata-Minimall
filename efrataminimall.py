@@ -239,12 +239,23 @@ def cuenta():
                     print(f"Correo electrónico: {usuario}")
 
                     nombre = input("Nombre: ").strip()
-                    if not nombre.isalpha():
+                    valido = True
+                    for letra in nombre:
+                        if not (letra.isalpha() or letra == " "):
+                            valido = False
+
+                    if not valido or nombre == "":
                         print("El nombre debe contener solo letras.")
                         continue
 
+        
                     apellidos = input("Apellidos: ").strip()
-                    if not apellidos.isalpha():
+                    valido = True
+                    for letra in apellidos:
+                        if not (letra.isalpha() or letra == " "):
+                            valido = False
+
+                    if not valido or apellidos == "":
                         print("Los apellidos deben contener solo letras.")
                         continue
 
