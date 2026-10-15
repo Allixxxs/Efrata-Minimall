@@ -30,62 +30,6 @@ if not os.path.exists("inventario.xlsx"):
     datos.to_excel("inventario.xlsx", index=False)
 
 
-# INVENTARIO DE ROPA NORMAL
-
-ropa_inicial = [
-    ["R001", "Blusa básica", "Mujer", "Blusa", "S, M, L", 45000, 10, "Disponible"],
-    ["R002", "Jean clásico", "Mujer", "Pantalón", "6, 8, 10", 85000, 5, "Disponible"],
-    ["R003", "Falda casual", "Mujer", "Falda", "S, M, L", 55000, 4, "Disponible"],
-    ["R004", "Vestido casual", "Mujer", "Vestido", "S, M, L", 75000, 3, "Disponible"],
-    ["R005", "Chaqueta femenina", "Mujer", "Chaqueta", "S, M, L", 95000, 2, "Disponible"],
-    ["R006", "Camisa casual", "Hombre", "Camisa", "S, M, L, XL", 60000, 8, "Disponible"],
-    ["R007", "Camiseta básica", "Hombre", "Camiseta", "S, M, L, XL", 35000, 12, "Disponible"],
-    ["R008", "Jean azul", "Hombre", "Pantalón", "30, 32, 34, 36", 90000, 6, "Disponible"],
-    ["R009", "Short casual", "Hombre", "Short", "M, L, XL", 50000, 4, "Disponible"],
-    ["R010", "Chaqueta masculina", "Hombre", "Chaqueta", "M, L, XL", 110000, 3, "Disponible"],
-    ["R011", "Buzo básico", "Hombre", "Buzo", "S, M, L, XL", 70000, 5, "Disponible"]
-]
-
-# CREAR EL EXCEL DE ROPA SI NO EXISTE
-if not os.path.exists("ropa.xlsx"):
-    datos_ropa = pd.DataFrame(
-        ropa_inicial,
-        columns=[
-            "Codigo", "Nombre", "Sexo", "Tipo",
-            "Tallas", "Precio", "Cantidad", "Estado"
-        ]
-    )
-    datos_ropa.to_excel("ropa.xlsx", index=False)
-
-
-# CARGAR LA ROPA DEL EXCEL
-
-def cargar_ropa():
-    datos = pd.read_excel("ropa.xlsx")
-    prendas = []
-
-    for fila in datos.values:
-        cantidad = int(fila[6])
-
-        if cantidad > 0:
-            estado = "Disponible"
-        else:
-            estado = "Agotado"
-
-        prendas.append([
-            str(fila[0]),
-            str(fila[1]),
-            str(fila[2]),
-            str(fila[3]),
-            str(fila[4]),
-            int(fila[5]),
-            cantidad,
-            estado
-        ])
-
-    return prendas
-
-
 # CARGAR LOS TRAJES DEL EXCEL
 
 def cargar_trajes():
@@ -300,73 +244,76 @@ def cuenta():
                 print("\nAún no tienes compras online.")
 
             elif opcion == 2:
-                print("\nMIS DATOS PERSONALES")
-                print(f"Correo electrónico: {usuario}")
+                if sesion_activa == True:
+                    print("\nMIS DATOS PERSONALES")
+                    print(f"Correo electrónico: {usuario}")
 
-                nombre = input("Nombre: ").strip()
-                if not nombre.isalpha():
-                    print("El nombre debe contener solo letras.")
-                    continue
+                    nombre = input("Nombre: ").strip()
+                    if not nombre.isalpha():
+                        print("El nombre debe contener solo letras.")
+                        continue
 
-                apellidos = input("Apellidos: ").strip()
-                if not apellidos.isalpha():
-                    print("Los apellidos deben contener solo letras.")
-                    continue
+                    apellidos = input("Apellidos: ").strip()
+                    if not apellidos.isalpha():
+                        print("Los apellidos deben contener solo letras.")
+                        continue
 
-                telefono = input("Teléfono (+57): ").strip()
-                if not telefono.isdigit() or len(telefono) != 10:
-                    print("El teléfono debe contener solo números y tener 10 dígitos.")
-                    continue
+                    telefono = input("Teléfono (+57): ").strip()
+                    if not telefono.isdigit() or len(telefono) != 10:
+                        print("El teléfono debe contener solo números y tener 10 dígitos.")
+                        continue
 
-                print("\nDIRECCIÓN DE FACTURACIÓN")
+                    print("\nDIRECCIÓN DE FACTURACIÓN")
 
-                tipo_documento = input(
-                    "Tipo de documento (CC, CE, NIT): "
-                ).strip().upper()
-                if tipo_documento not in ["CC", "CE", "NIT"]:
-                    print("Tipo de documento inválido.")
-                    continue
+                    tipo_documento = input(
+                        "Tipo de documento (CC, CE, NIT): "
+                    ).strip().upper()
+                    if tipo_documento not in ["CC", "CE", "NIT"]:
+                        print("Tipo de documento inválido.")
+                        continue
 
-                numero_documento = input(
-                    "Número de documento: "
-                ).strip()
-                if not numero_documento.isdigit():
-                    print("El número de documento debe contener solo números.")
-                    continue
+                    numero_documento = input(
+                        "Número de documento: "
+                    ).strip()
+                    if not numero_documento.isdigit():
+                        print("El número de documento debe contener solo números.")
+                        continue
 
-                direccion = input("Dirección: ").strip()
-                while direccion == "":
-                    print("La dirección no puede estar vacía.")
                     direccion = input("Dirección: ").strip()
+                    while direccion == "":
+                        print("La dirección no puede estar vacía.")
+                        direccion = input("Dirección: ").strip()
 
-                codigo_postal = input("Código postal: ").strip()
-                while not codigo_postal.isdigit() or len(codigo_postal) != 6:
-                    print("El código postal debe contener solo números y tener 6 dígitos.")
                     codigo_postal = input("Código postal: ").strip()
+                    while not codigo_postal.isdigit() or len(codigo_postal) != 6:
+                        print("El código postal debe contener solo números y tener 6 dígitos.")
+                        codigo_postal = input("Código postal: ").strip()
 
-                opcion_datos = input(
-                    "\n¿Desea guardar los datos? (S/N): "
-                ).strip().upper()
+                    opcion_datos = input(
+                        "\n¿Desea guardar los datos? (S/N): "
+                    ).strip().upper()
 
-                if opcion_datos == "S":
-                    with open(
-                        "datos_personales.txt",
-                        "a",
-                        encoding="utf-8"
-                    ) as archivo:
-                        archivo.write(
-                            f"{usuario}|{nombre}|{apellidos}|{telefono}|"
-                            f"{tipo_documento}|{numero_documento}|"
-                            f"{direccion}|{codigo_postal}\n"
-                        )
+                    if opcion_datos == "S":
+                        with open(
+                            "datos_personales.txt",
+                            "a",
+                            encoding="utf-8"
+                        ) as archivo:
+                            archivo.write(
+                                f"{usuario}|{nombre}|{apellidos}|{telefono}|"
+                                f"{tipo_documento}|{numero_documento}|"
+                                f"{direccion}|{codigo_postal}\n"
+                            )
 
-                    print("\nDatos guardados exitosamente.")
+                        print("\nDatos guardados exitosamente.")
 
-                elif opcion_datos == "N":
-                    print("\nDatos no guardados.")
+                    elif opcion_datos == "N":
+                        print("\nDatos no guardados.")
 
+                    else:
+                        print("\nOpción inválida.")
                 else:
-                    print("\nOpción inválida.")
+                    print("\nDebes iniciar sesión para ver tus datos.")
 
             elif opcion == 3:
                 print("\nCerrando sesión...")
@@ -396,122 +343,9 @@ def home():
     print("\n¡Será un placer atenderte!\n")
 
 
-# BUSCAR ROPA
-
 def buscar():
-    while True:
-        print("\nBUSCAR ROPA")
-        print("\n1. Mujer")
-        print("2. Hombre")
-        print("3. Salir")
-
-        try:
-            opcion = int(input("\nSeleccionar: "))
-
-            if opcion == 1:
-                sexo = "Mujer"
-
-            elif opcion == 2:
-                sexo = "Hombre"
-
-            elif opcion == 3:
-                print("\nSaliendo de la búsqueda...")
-                break
-
-            else:
-                print("\nOpción inválida.")
-                continue
-
-            prendas = cargar_ropa()
-
-            # FILTRAR LA ROPA SEGÚN EL SEXO ELEGIDO
-            prendas_sexo = [
-                prenda for prenda in prendas
-                if prenda[2].strip().lower() == sexo.lower()
-            ]
-
-            if not prendas_sexo:
-                print(f"\nNo hay ropa registrada para {sexo.lower()}.")
-                continue
-
-            # OBTENER LOS TIPOS DE PRENDAS SIN REPETIRLOS
-            tipos = []
-
-            for prenda in prendas_sexo:
-                tipo = prenda[3]
-                repetido = False
-
-                for tipo_guardado in tipos:
-                    if tipo == tipo_guardado:
-                        repetido = True
-
-                if repetido == False:
-                    tipos.append(tipo)
-
-            print(f"\nROPA DE {sexo.upper()}")
-            print("\nTipos de prendas:")
-            print("1. Todas las prendas")
-
-            numero = 2
-
-            for tipo in tipos:
-                print(f"{numero}. {tipo}")
-                numero = numero + 1
-
-            print(f"{len(tipos) + 2}. Volver")
-
-            try:
-                opcion_tipo = int(input("\nSeleccionar tipo: "))
-
-            except ValueError:
-                print("\nDebes ingresar un número válido.")
-                continue
-
-            if opcion_tipo == len(tipos) + 2:
-                continue
-
-            if opcion_tipo == 1:
-                prendas_filtradas = prendas_sexo
-
-            elif (
-                opcion_tipo >= 2
-                and opcion_tipo < len(tipos) + 2
-            ):
-                numero = 2
-                tipo_elegido = ""
-
-                for tipo in tipos:
-                    if numero == opcion_tipo:
-                        tipo_elegido = tipo
-
-                    numero = numero + 1
-
-                prendas_filtradas = [
-                    prenda for prenda in prendas_sexo
-                    if prenda[3] == tipo_elegido
-                ]
-
-            else:
-                print("\nOpción inválida.")
-                continue
-
-            print(f"\nRESULTADOS DE ROPA DE {sexo.upper()}")
-            print("-" * 45)
-
-            for prenda in prendas_filtradas:
-                print(f"Código: {prenda[0]}")
-                print(f"Prenda: {prenda[1]}")
-                print(f"Sexo: {prenda[2]}")
-                print(f"Tipo: {prenda[3]}")
-                print(f"Tallas: {prenda[4]}")
-                print(f"Precio: ${prenda[5]:,}")
-                print(f"Cantidad disponible: {prenda[6]}")
-                print(f"Estado: {prenda[7]}")
-                print("-" * 45)
-
-        except ValueError:
-            print("\nOpción inválida.")
-
+    print("\nBUSCAR")
+    print("La funcionalidad de búsqueda todavía está pendiente.")
 
 # ALQUILER DE TRAJES
 
