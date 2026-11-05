@@ -1,6 +1,5 @@
 # PROYECTO FINAL DE ALGORITMIA Y PROGRAMACIÓN
-
-
+AUTORES: Allison Castrillón Núñez, Isabella Caro Giraldo
 # PROBLEMA
 
 
