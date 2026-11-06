@@ -1,7 +1,3 @@
-# Efrata Minimall — copia de desarrollo para Isabella
-
-Esta carpeta es una copia independiente para desarrollar y probar la futura interfaz. Todos los usuarios, contraseñas, productos, cantidades, alquileres, compras y datos personales de `data/` son ficticios. No se envían correos ni se procesan pagos.
-
 ## Ejecutar en Windows
 
 Desde esta carpeta, abre una terminal y ejecuta:
