@@ -1,1 +1,23 @@
+# Entorno virtual
 venv/
+.venv/
+
+# Bytecode y caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Cachés de herramientas de desarrollo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+
+# Archivos temporales y del sistema
+*.tmp
+*.temp
+*.swp
+*.swo
+~$*
+.DS_Store
+Thumbs.db

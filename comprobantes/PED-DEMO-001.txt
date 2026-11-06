@@ -1,0 +1,11 @@
+COMPROBANTE DE COMPRA - EFRATA MINI-MALL
+Pedido: PED-DEMO-001
+Fecha: 01/11/2026 10:30:00
+Correo: cliente.demo01@gmail.com
+
+ARTÍCULOS:
+Blusa Lirio Demo | Código: CL-MU-001 | Talla: S | Cantidad: 1 | Precio unitario: $45,000.00 | Subtotal: $45,000.00
+Camisa Río Demo | Código: CL-HO-001 | Talla: M | Cantidad: 1 | Precio unitario: $53,500.00 | Subtotal: $53,500.00
+
+TOTAL: $98,500.00
+Compra simulada; no se procesó ningún pago.

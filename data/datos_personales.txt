@@ -1,0 +1,3 @@
+cliente.demo01@gmail.com|Alicia Demo|Prueba Uno|3000000001|CC|10000001|Calle Ficticia 101|000001
+cliente.demo02@hotmail.com|Bruno Demo|Prueba Dos|3000000002|CC|10000002|Carrera Imaginaria 202|000002
+admin.prueba@gmail.com|Admin Demo|Prueba Cinco|3000000005|CC|10000005|Avenida Simulada 505|000005

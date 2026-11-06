@@ -1,0 +1,3 @@
+cliente.demo01@gmail.com|CL-MU-001|M|2
+cliente.demo01@gmail.com|CL-HO-001|S|1
+cliente.demo02@hotmail.com|CL-MU-002|M|1

@@ -1,0 +1,10 @@
+COMPROBANTE DE COMPRA - EFRATA MINI-MALL
+Pedido: PED-DEMO-002
+Fecha: 02/11/2026 14:15:00
+Correo: cliente.demo02@hotmail.com
+
+ARTÍCULOS:
+Vestido Nube Demo | Código: CL-MU-002 | Talla: M | Cantidad: 1 | Precio unitario: $89,000.00 | Subtotal: $89,000.00
+
+TOTAL: $89,000.00
+Compra simulada; no se procesó ningún pago.

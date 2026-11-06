@@ -1,0 +1,17 @@
+cliente.demo01@gmail.com|05/11/2026 23:53:35
+cliente.demo02@hotmail.com|05/11/2026 23:53:35
+cliente.demo03@gmail.com|05/11/2026 23:53:35
+cliente.demo04@hotmail.com|05/11/2026 23:53:35
+admin.prueba@gmail.com|05/11/2026 23:53:35
+cliente.demo01@gmail.com|05/11/2026 23:54:47
+cliente.demo02@hotmail.com|05/11/2026 23:54:47
+cliente.demo03@gmail.com|05/11/2026 23:54:47
+cliente.demo04@hotmail.com|05/11/2026 23:54:47
+admin.prueba@gmail.com|05/11/2026 23:54:47
+cliente.demo01@gmail.com|05/11/2026 23:54:47
+cliente.demo02@hotmail.com|05/11/2026 23:54:47
+admin.prueba@gmail.com|05/11/2026 23:54:47
+cliente.demo01@gmail.com|05/11/2026 23:54:47
+cliente.demo02@hotmail.com|05/11/2026 23:54:47
+cliente.demo01@gmail.com|05/11/2026 23:54:47
+cliente.demo02@hotmail.com|05/11/2026 23:54:47
