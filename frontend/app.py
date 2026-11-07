@@ -1,9 +1,12 @@
 import sys
 from pathlib import Path
+import datetime
+from tkinter import font
+from turtle import left
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import customtkinter as ctk
-from backend import authenticate_user, close_session, load_suits
+from backend import authenticate_user, close_session, load_suits, register_rental, current_session, get_user_rentals, return_rental
 
 
 morado = "#4A2560"
@@ -88,12 +91,15 @@ ctk.CTkLabel(pantalla_menu, text="¿Qué quieres hacer hoy?", text_color=texto, 
 bienvenida = ctk.CTkLabel(pantalla_menu, text="", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=13), anchor="w")
 bienvenida.pack(fill="x", padx=24, pady=(0, 12))
 
+#OPCIONES
 
 def abrir_opcion(nombre):
     if nombre == "Alquilar trajes":
         ver_trajes()
+    elif nombre == "Consultar alquileres" or nombre == "Devolver traje":
+        ver_alquileres()
     else:
-        aviso.configure(text=f"\"{nombre}\" lo hacemos pronto.")
+        aviso.configure(text=f"La opción '{nombre}' aún no está disponible.", text_color=gris)
 
 for opcion in ["Inicio", "Buscar trajes", "Alquilar trajes", "Consultar alquileres", "Devolver traje", "Ver carrito", "Ver favoritos", "Mis datos", "Mis compras"]:
     ctk.CTkButton(pantalla_menu, text=opcion, command=lambda o=opcion: abrir_opcion(o), height=40, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=24, pady= 4)
@@ -138,9 +144,147 @@ def ver_trajes():
         else:
             texto_estado = "No disponible"
             color_estado = rojo
-        ctk.CTkLabel(tarjeta, text=texto_estado, text_color=color_estado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")).pack(fill="x", padx=14, pady=(0, 12))
+        ctk.CTkLabel(tarjeta, text=texto_estado, text_color=color_estado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")).pack(fill="x", padx=14, pady=(0, 8))
+        ctk.CTkButton(tarjeta, text="Alquilar", height=36, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda c=codigo, n=nombre, t=tallas, p=precio: abrir_alquiler(c, n, t, p)).pack(fill="x", padx=14, pady=(0, 12))
 
     mostrar(pantalla_trajes)
+
+pantalla_alquiler = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
+
+ctk.CTkButton(pantalla_alquiler, text="← Volver a los trajes", command=lambda: mostrar(pantalla_trajes), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=16, pady=(12, 0))
+ctk.CTkLabel(pantalla_alquiler, text="Alquilar traje", text_color=texto, font=ctk.CTkFont(family=letra_titulo, size=24, weight="bold"), anchor="w").pack(fill="x", padx=24, pady=(0, 12))
+
+#Traje seleccionado
+traje_seleccionado = ctk.CTkLabel(pantalla_alquiler, text="", text_color=texto, anchor="w", justify= "left", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold"))
+traje_seleccionado.pack(fill="x", padx=24, pady=(0, 16))
+
+#Tallas
+ctk.CTkLabel(pantalla_alquiler, text="Talla", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=24)
+selector_talla = ctk.CTkOptionMenu(pantalla_alquiler, values=[""], height= 40, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, font=ctk.CTkFont(family=letra_texto, size=14))
+selector_talla.pack(fill="x", padx=24, pady=(6, 14))
+
+#Fechas de alquiler
+ctk.CTkLabel(pantalla_alquiler, text="Fecha de alquiler", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=24)
+caja_fecha1 = ctk.CTkEntry(pantalla_alquiler, placeholder_text="dd/mm/aaaa", height=46, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
+caja_fecha1.pack(fill="x", padx=24, pady=(6, 14))
+
+ctk.CTkLabel(pantalla_alquiler, text="Fecha de devolución", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=24)
+caja_fecha2 = ctk.CTkEntry(pantalla_alquiler, placeholder_text="dd/mm/aaaa", height=46, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
+caja_fecha2.pack(fill="x", padx=24, pady=(6, 14))
+
+#Error o mensaje de éxito
+mensaje_alquiler = ctk.CTkLabel(pantalla_alquiler, text="", text_color=rojo, wraplength=372, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=13))
+mensaje_alquiler.pack(fill="x", padx=24)
+
+#Formulario
+codigo_elegido = ""
+
+def abrir_alquiler(codigo, nombre, tallas, precio):
+    global codigo_elegido
+    codigo_elegido = codigo
+
+    precio_texto = f"${precio:,}".replace(",", ".")
+    traje_seleccionado.configure(text=f"{nombre}\n{precio_texto}")
+
+    lista_tallas = tallas.split(", ")
+    selector_talla.configure(values=lista_tallas)
+    selector_talla.set("Elija una talla")
+
+    caja_fecha1.delete(0, "end")
+    caja_fecha2.delete(0, "end")
+    mensaje_alquiler.configure(text="")
+    mostrar(pantalla_alquiler)
+
+#Confrimar alquiler
+def confirmar_alquiler():
+    talla = selector_talla.get()
+    fecha1 = caja_fecha1.get().strip()
+    fecha2 = caja_fecha2.get().strip()
+
+    if talla == "Elija una talla":
+        mensaje_alquiler.configure(text="Elija una talla.", text_color=rojo)
+        return
+
+    try:
+        datetime.datetime.strptime(fecha1, "%d/%m/%Y")
+        datetime.datetime.strptime(fecha2, "%d/%m/%Y")
+    except ValueError:
+        mensaje_alquiler.configure(text="Formato de fecha inválido. Use dd/mm/aaaa.", text_color=rojo)
+        return
+
+    try:
+        alquiler= register_rental (current_session.email, codigo_elegido, talla, fecha1, fecha2)
+    except ValueError as problema:
+        mensaje_alquiler.configure(text=str(problema), text_color=rojo)
+        return
+
+    mensaje_alquiler.configure(
+        text=f"¡Alquiler registrado exitosamente!\n{alquiler['Nombre']} · Talla {alquiler['Talla']}\nDel {alquiler['FechaAlquiler']} al {alquiler['FechaProgramada']}",
+        text_color= verde)
+
+bonton_confirmar = ctk.CTkButton(pantalla_alquiler, text="Confirmar alquiler", command=confirmar_alquiler, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold"))
+bonton_confirmar.pack(fill="x", padx=24, pady=(8, 6))
+
+#Mis alquileres
+pantalla_alquileres = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
+
+boton_volver_menu2 = ctk.CTkButton(pantalla_alquileres, text="← Volver al menú", command=lambda: mostrar(pantalla_menu), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"))
+boton_volver_menu2.pack(fill="x", padx=16, pady=(16, 0))
+
+titulo_alquileres = ctk.CTkLabel(pantalla_alquileres, text="Mis alquileres", text_color=texto, font=ctk.CTkFont(family=letra_titulo, size=26, weight="bold"), anchor="w")
+titulo_alquileres.pack(fill="x", padx=24, pady=(4, 10))
+
+mensaje_devolucion = ctk.CTkLabel(pantalla_alquileres, text="", text_color=verde, wraplength=372, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=13))
+mensaje_devolucion.pack(fill="x", padx=24)
+
+
+lista_alquileres = ctk.CTkScrollableFrame(pantalla_alquileres, fg_color=fondo)
+lista_alquileres.pack(fill="both", expand=True, padx=12, pady=(0,16))
+
+def ver_alquileres():
+    mensaje_devolucion.configure(text="")
+    for tarjeta in lista_alquileres.winfo_children():
+        tarjeta.destroy()
+
+    alquileres = get_user_rentals(current_session.email)
+
+    if len (alquileres)== 0:
+        ctk.CTkLabel(lista_alquileres, text="Todavía no tienes alquileres.", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=20)
+
+    for alquiler in alquileres:
+        tarjeta = ctk.CTkFrame(lista_alquileres, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
+        tarjeta.pack(fill="x", padx=8, pady=6)
+
+        ctk.CTkLabel(tarjeta, text=alquiler["Nombre"], text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 2))
+        ctk.CTkLabel(tarjeta, text=f"Talla: {alquiler['Talla']}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
+        ctk.CTkLabel(tarjeta, text=f"Del {alquiler['FechaAlquiler']} al {alquiler['FechaProgramada']}", text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
+
+        if alquiler["Estado"] == "Activo":
+            color_estado= verde
+            ctk.CTkButton(tarjeta, text="Devolver traje", height=36, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda i=alquiler["IndiceArchivo"]: devolver(i)).pack(fill="x", padx=14, pady=(0, 12))
+
+        else:
+            color_estado = gris
+        ctk.CTkLabel(tarjeta, text=alquiler["Estado"], text_color=color_estado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=14, pady=(2, 12))
+
+    mostrar(pantalla_alquileres)
+
+#Devolver traje
+def devolver(indice):
+    try:
+        traje= return_rental(current_session.email, indice)
+    except ValueError as problema:
+        mensaje_devolucion.configure(text=str(problema), text_color=rojo)
+        return
+    
+    ver_alquileres()
+    mensaje_devolucion.configure(text=f"¡{traje['Nombre']} devuelto exitosamente el {traje['FechaReal']}!", text_color=verde) 
+
+
+
+
+
+
 
 
 ventana.mainloop()
