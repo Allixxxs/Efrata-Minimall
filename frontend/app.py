@@ -6,7 +6,7 @@ from turtle import left
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import customtkinter as ctk
-from backend import authenticate_user, close_session, load_suits, register_rental, current_session, get_user_rentals, return_rental
+from backend import authenticate_user, close_session, load_suits, register_rental, current_session, get_user_rentals, return_rental, register_user, read_personal_data, save_personal_data
 
 
 morado = "#4A2560"
@@ -98,6 +98,8 @@ def abrir_opcion(nombre):
         ver_trajes()
     elif nombre == "Consultar alquileres" or nombre == "Devolver traje":
         ver_alquileres()
+    elif nombre == "Mis datos":
+        ver_datos()
     else:
         aviso.configure(text=f"La opción '{nombre}' aún no está disponible.", text_color=gris)
 
@@ -280,11 +282,132 @@ def devolver(indice):
     ver_alquileres()
     mensaje_devolucion.configure(text=f"¡{traje['Nombre']} devuelto exitosamente el {traje['FechaReal']}!", text_color=verde) 
 
+#CREAR CUENTA
+pantalla_registro = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
+
+ctk.CTkLabel(pantalla_registro, text="Crear cuenta", text_color=texto, font=ctk.CTkFont(family=letra_titulo, size=24, weight="bold"), anchor="w").pack(fill="x", padx=24, pady=(28, 16))
+
+ctk.CTkLabel(pantalla_registro, text="Correo electrónico", text_color=texto, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), anchor="w").pack(fill="x", padx=24)
+registro_correo = ctk.CTkEntry(pantalla_registro, placeholder_text="tunombre@gmail.com", height=46, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
+registro_correo.pack(fill="x", padx=24, pady=(6, 14))
+
+ctk.CTkLabel(pantalla_registro, text="Contraseña", text_color=texto, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), anchor="w").pack(fill="x", padx=24)
+registro_clave = ctk.CTkEntry(pantalla_registro, placeholder_text="Mínimo 8, con mayúscula, minúscula y número", height=46, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto, show="*")
+registro_clave.pack(fill="x", padx=24, pady=(6, 14))
 
 
+ctk.CTkLabel(pantalla_registro, text="Repite la contraseña", text_color=texto, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), anchor="w").pack(fill="x", padx=24)
+registro_clave2 = ctk.CTkEntry(pantalla_registro, placeholder_text="********", height=46, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto, show="*")
+registro_clave2.pack(fill="x", padx=24, pady=(6, 14))
+
+mensaje_registro = ctk.CTkLabel(pantalla_registro, text="", text_color=rojo, font=ctk.CTkFont(family=letra_texto, size=13), wraplength=372, justify="left", anchor="w")
+mensaje_registro.pack(fill="x", padx=24)
 
 
+def crear_cuenta():
+    correo = registro_correo.get().strip()
+    clave = registro_clave.get()
+    clave2 = registro_clave2.get()
 
+    if clave != clave2:
+        mensaje_registro.configure(text="Las dos contraseñas no son iguales.")
+        return
+    
+    try:
+        register_user(correo, clave)
+    except ValueError as problema:
+        mensaje_registro.configure(text=str(problema))
+        return
+
+    bienvenida.configure(text=f"Bienvenida, {correo}")
+    mostrar(pantalla_menu)
+
+ctk.CTkButton(pantalla_registro, text="Crear cuenta", command=crear_cuenta, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=24, pady=(8, 6))
+ctk.CTkButton(pantalla_registro, text="¿Ya tienes cuenta? Inicia sesión", command=lambda: mostrar(pantalla_login), fg_color="transparent", hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(pady=(4, 0))
+
+def ir_a_registro():
+    registro_correo.delete(0, "end")
+    registro_clave.delete(0, "end")
+    registro_clave2.delete(0, "end")
+    mensaje_registro.configure(text="")
+    mostrar(pantalla_registro)
+
+ctk.CTkButton(pantalla_login, text="¿Primera vez aquí? Crea una cuenta", command=ir_a_registro, fg_color="transparent", hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(pady=(4, 0))
+
+#MIS DATOS
+
+pantalla_datos = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
+
+ctk.CTkButton(pantalla_datos, text="← Volver al menú", command=lambda: mostrar(pantalla_menu), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=16, pady=(16, 0))
+ctk.CTkLabel(pantalla_datos, text="Mis datos", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_titulo, size=26, weight="bold")).pack(fill="x", padx=24, pady=(4, 10))
+
+formulario = ctk.CTkScrollableFrame(pantalla_datos, fg_color=fondo)
+formulario.pack(fill="both", expand=True, padx=8, pady=(0, 16))
+
+def campo(etiqueta, ejemplo):
+    ctk.CTkLabel(formulario, text=etiqueta, text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=16)
+    caja = ctk.CTkEntry(formulario, placeholder_text=ejemplo, height=42, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
+    caja.pack(fill="x", padx=16, pady=(6, 12))
+    return caja
+
+caja_nombre = campo("Nombre", "Ej: Isabella")
+caja_apellidos = campo("Apellidos", "Ej: Caro López")
+caja_telefono = campo("Teléfono", "10 dígitos")
+
+ctk.CTkLabel(formulario, text="Tipo de documento", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=16)
+selector_documento = ctk.CTkOptionMenu(formulario, values=["CC", "CE", "NIT"], height=42, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
+selector_documento.pack(fill="x", padx=16, pady=(6, 12))
+
+caja_documento = campo("Número de documento", "Solo números")
+caja_direccion = campo("Dirección", "Ej: Calle 5 # 10-20")
+caja_postal = campo("Código postal", "6 dígitos")
+
+mensaje_datos = ctk.CTkLabel(formulario, text="", text_color=rojo, wraplength=340, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=13))
+mensaje_datos.pack(fill="x", padx=16)
+
+
+def llenar(caja, valor):
+    caja.delete(0, "end")
+    if valor:
+        caja.insert(0, valor)
+
+def ver_datos():
+    datos = read_personal_data(current_session.email)
+    if datos is None:     
+        datos = {}
+
+    llenar(caja_nombre, datos.get("Nombre", ""))
+    llenar(caja_apellidos, datos.get("Apellidos", ""))
+    llenar(caja_telefono, datos.get("Telefono", ""))
+    selector_documento.set(datos.get("TipoDocumento", "CC"))
+    llenar(caja_documento, datos.get("NumeroDocumento", ""))
+    llenar(caja_direccion, datos.get("Direccion", ""))
+    llenar(caja_postal, datos.get("CodigoPostal", ""))
+
+    mensaje_datos.configure(text="")
+    mostrar(pantalla_datos)
+
+def guardar_datos():
+    datos = {
+        "Nombre": caja_nombre.get(),
+        "Apellidos": caja_apellidos.get(),
+        "Telefono": caja_telefono.get(),
+        "TipoDocumento": selector_documento.get(),
+        "NumeroDocumento": caja_documento.get(),
+        "Direccion": caja_direccion.get(),
+        "CodigoPostal": caja_postal.get(),
+    }
+
+    try:
+        save_personal_data(current_session.email, datos)
+    except ValueError as problema:
+        mensaje_datos.configure(text=str(problema), text_color=rojo)
+        return
+
+    mensaje_datos.configure(text="¡Datos guardados exitosamente!", text_color=verde)
+
+
+ctk.CTkButton(formulario, text="Guardar datos", command=guardar_datos, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=16, pady=(8, 12))
 
 
 ventana.mainloop()
