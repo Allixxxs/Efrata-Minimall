@@ -109,6 +109,8 @@ def abrir_opcion(nombre):
         ver_compras()
     elif nombre == "Ver favoritos":
         ver_favoritos()
+    elif nombre == "Inicio":
+        mostrar(pantalla_inicio)     
     else:
         aviso.configure(text=f"La opción '{nombre}' aún no está disponible.", text_color=gris)
 
@@ -703,11 +705,26 @@ def quitar_favorito(codigo):
     remove_favorite(current_session.email, codigo)
     ver_favoritos()
 
+#INICIO
 
+pantalla_inicio = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
 
+ctk.CTkButton(pantalla_inicio, text="← Volver al menú", command=lambda: mostrar(pantalla_menu), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=16, pady=(16, 0))
 
+ctk.CTkLabel(pantalla_inicio, text="¡Bienvenidos a\nEFRATA Mini-Mall!", text_color=morado, justify="center", font=ctk.CTkFont(family=letra_titulo, size=28, weight="bold")).pack(pady=(24, 8))
+ctk.CTkLabel(pantalla_inicio, text="Moda, alquiler de trajes y arreglos\nen un solo lugar", text_color=gris, justify="center", font=ctk.CTkFont(family=letra_texto, size=15)).pack(pady=(0, 20))
 
+servicios = ctk.CTkFrame(pantalla_inicio, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
+servicios.pack(fill="x", padx=24, pady=(0, 16))
+for servicio in ["👗  Moda nacional e importada", "🤵  Trajes para toda ocasión", "🧵  Arreglo de ropa"]:
+    ctk.CTkLabel(servicios, text=servicio, text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15)).pack(fill="x", padx=18, pady=8)
 
+contacto = ctk.CTkFrame(pantalla_inicio, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
+contacto.pack(fill="x", padx=24, pady=(0, 16))
+ctk.CTkLabel(contacto, text="📍  Cali, Colombia", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15)).pack(fill="x", padx=18, pady=(12, 4))
+ctk.CTkLabel(contacto, text="📞  323 965 5863", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15)).pack(fill="x", padx=18, pady=(4, 12))
+
+ctk.CTkLabel(pantalla_inicio, text="¡Será un placer atenderte! 💜", text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(pady=(8, 0))
 
 
 
