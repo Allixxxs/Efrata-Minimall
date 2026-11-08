@@ -2,8 +2,6 @@ import sys
 from pathlib import Path
 import datetime
 from tkinter import messagebox
-from tkinter import font
-from turtle import left
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import customtkinter as ctk
@@ -728,15 +726,12 @@ ctk.CTkLabel(pantalla_inicio, text="¡Será un placer atenderte! 💜", text_col
 
 
 
+def run():
+    ventana.mainloop()
 
 
-
-
-
-
-
-
-ventana.mainloop()
+if __name__ == "__main__":
+    run()
 
 
 
