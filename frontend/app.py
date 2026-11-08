@@ -5,7 +5,9 @@ from tkinter import messagebox
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import customtkinter as ctk
-from backend import authenticate_user, close_session, load_suits, register_rental, current_session, get_user_rentals, return_rental, register_user, read_personal_data, save_personal_data, load_clothing_catalog, filter_clothing_catalog, add_to_cart, get_cart_details, update_cart_quantity, remove_from_cart, prepare_purchase, confirm_purchase, list_purchases, list_favorites, add_favorite, remove_favorite
+from PIL import Image, ImageOps
+from tkcalendar import DateEntry
+from backend import authenticate_user, close_session, load_suits, register_rental, current_session, get_user_rentals, return_rental, register_user, read_personal_data, save_personal_data, load_clothing_catalog, filter_clothing_catalog, add_to_cart, get_cart_details, update_cart_quantity, remove_from_cart, prepare_purchase, confirm_purchase, list_purchases, list_favorites, add_favorite, remove_favorite, load_suit_descriptions
 
 
 morado = "#4A2560"
@@ -43,6 +45,28 @@ def mostrar(pantalla_nueva):
     pantalla_nueva.pack(fill="both", expand=True)
     pantalla_actual = pantalla_nueva
 
+carpeta_imagenes = Path(__file__).resolve().parent / "imagenes"
+
+iconos_ropa = {"Blusa": "👚", "Vestido": "👗", "Camisa": "👔", "Pantalón": "👖", "Chaqueta": "🧥", "Falda": "👗"}
+
+def foto_producto(contenedor, codigo, icono):
+    ruta = None
+    for extension in [".jpg", ".jpeg", ".png"]:
+        posible = carpeta_imagenes / (codigo + extension)
+        if posible.exists():
+            ruta = posible
+
+    if ruta is None:
+        recuadro = ctk.CTkFrame(contenedor, fg_color=borde, corner_radius=10, height=220)
+        recuadro.pack(fill="x", padx=14, pady=(14, 4))
+        recuadro.pack_propagate(False)
+        ctk.CTkLabel(recuadro, text=icono, font=ctk.CTkFont(size=50)).pack(expand=True)
+        return
+
+    imagen = Image.open(ruta)
+    imagen = ImageOps.pad(imagen, (620, 440), color=blanco)   # la foto completa, centrada, sin recortar
+    foto = ctk.CTkImage(light_image=imagen, size=(310, 220))
+    ctk.CTkLabel(contenedor, image=foto, text="").pack(padx=14, pady=(14, 4))
 
 #Inicio de sesión
 ctk.CTkLabel(pantalla_login, text="Iniciar sesión", text_color=texto, font=ctk.CTkFont(family=letra_titulo, size=24, weight="bold"), anchor="w").pack(fill="x", padx=24, pady=(28, 16))
@@ -141,12 +165,15 @@ def ver_trajes():
         tarjeta.destroy()
 
     trajes = load_suits()
+    descripciones = load_suit_descriptions()
     for codigo, nombre, tallas, precio, estado in trajes:
         tarjeta = ctk.CTkFrame(lista_trajes, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
         tarjeta.pack(fill="x", padx=8, pady=6)
+        foto_producto(tarjeta, codigo, "🤵")
 
         ctk.CTkLabel(tarjeta, text=nombre, text_color=texto, anchor="w",  font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 0))
         ctk.CTkLabel(tarjeta, text=f"Código {codigo} · Tallas: {tallas}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=12)).pack(fill="x", padx=14)
+        ctk.CTkLabel(tarjeta, text=descripciones.get(codigo, ""), text_color=texto, anchor="w", justify="left", wraplength=310, font=ctk.CTkFont(family=letra_texto, size=12)).pack(fill="x", padx=14, pady=(4, 2))
         ctk.CTkLabel(tarjeta, text=f"${precio:,}".replace(",", "."), text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=14)
        
         if estado == "Activo":
@@ -182,12 +209,12 @@ selector_talla.pack(fill="x", padx=24, pady=(6, 14))
 
 #Fechas de alquiler
 ctk.CTkLabel(pantalla_alquiler, text="Fecha de alquiler", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=24)
-caja_fecha1 = ctk.CTkEntry(pantalla_alquiler, placeholder_text="dd/mm/aaaa", height=46, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
-caja_fecha1.pack(fill="x", padx=24, pady=(6, 14))
+caja_fecha1 = DateEntry(pantalla_alquiler, date_pattern="dd/mm/yyyy", locale="es_ES", mindate=datetime.date.today(), font=(letra_texto, 13), background=morado, foreground=blanco, selectbackground=morado, headersbackground=borde)
+caja_fecha1.pack(fill="x", padx=24, pady=(6, 14), ipady=8)
 
 ctk.CTkLabel(pantalla_alquiler, text="Fecha de devolución", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=24)
-caja_fecha2 = ctk.CTkEntry(pantalla_alquiler, placeholder_text="dd/mm/aaaa", height=46, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
-caja_fecha2.pack(fill="x", padx=24, pady=(6, 14))
+caja_fecha2 = DateEntry(pantalla_alquiler, date_pattern="dd/mm/yyyy", locale="es_ES", mindate=datetime.date.today(), font=(letra_texto, 13), background=morado, foreground=blanco, selectbackground=morado, headersbackground=borde)
+caja_fecha2.pack(fill="x", padx=24, pady=(6, 14), ipady=8)
 
 #Error o mensaje de éxito
 mensaje_alquiler = ctk.CTkLabel(pantalla_alquiler, text="", text_color=rojo, wraplength=372, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=13))
@@ -207,8 +234,8 @@ def abrir_alquiler(codigo, nombre, tallas, precio):
     selector_talla.configure(values=lista_tallas)
     selector_talla.set("Elija una talla")
 
-    caja_fecha1.delete(0, "end")
-    caja_fecha2.delete(0, "end")
+    caja_fecha1.set_date(datetime.date.today())
+    caja_fecha2.set_date(datetime.date.today() + datetime.timedelta(days=1))
     mensaje_alquiler.configure(text="")
     mostrar(pantalla_alquiler)
 
@@ -510,6 +537,7 @@ def mostrar_ropa():
     for producto in productos:
         tarjeta = ctk.CTkFrame(lista_ropa, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
         tarjeta.pack(fill="x", padx=8, pady=6)
+        foto_producto(tarjeta, producto["Codigo"], iconos_ropa.get(producto["Tipo"], "🛍️"))
 
         texto_tallas = ""
         tallas_disponibles = []
@@ -522,6 +550,7 @@ def mostrar_ropa():
 
         ctk.CTkLabel(tarjeta, text=producto["Nombre"], text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 2))
         ctk.CTkLabel(tarjeta, text=f"{producto['Seccion']} · {producto['Tipo']} · Código {producto['Codigo']}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
+        ctk.CTkLabel(tarjeta, text=producto["Descripcion"], text_color=texto, anchor="w", justify="left", wraplength=310, font=ctk.CTkFont(family=letra_texto, size=12)).pack(fill="x", padx=14, pady=(4, 2))
         ctk.CTkLabel(tarjeta, text=f"Tallas: {texto_tallas}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
         ctk.CTkLabel(tarjeta, text=precio_texto, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=14, pady=(4, 0))
 

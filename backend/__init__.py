@@ -9,7 +9,7 @@ from .datos_personales import (
     read_personal_data, save_personal_data, delete_personal_data,
 )
 from .catalogo import (
-    load_clothing_catalog, filter_clothing_catalog, load_suits,
+    load_clothing_catalog, filter_clothing_catalog, load_suits, load_suit_descriptions
 )
 from .alquileres import (
     get_user_rentals, check_rental_conflict, register_rental, return_rental,
@@ -28,6 +28,7 @@ from .favoritos import list_favorites, add_favorite, remove_favorite
 cargar_catalogo_ropa = load_clothing_catalog
 filtrar_catalogo_ropa = filter_clothing_catalog
 cargar_trajes = load_suits
+cargar_descripciones_trajes = load_suit_descriptions
 hay_conflicto_alquiler = check_rental_conflict
 leer_carrito_usuario = read_cart
 agregar_al_carrito = add_to_cart
@@ -49,5 +50,5 @@ __all__ = [
     "cargar_catalogo_ropa", "filtrar_catalogo_ropa", "cargar_trajes",
     "hay_conflicto_alquiler", "leer_carrito_usuario", "agregar_al_carrito",
     "actualizar_cantidad_carrito", "eliminar_del_carrito",
-    "obtener_detalle_carrito", "preparar_compra", "mis_compras",
+    "obtener_detalle_carrito", "preparar_compra", "mis_compras", "load_suit_descriptions",
 ]

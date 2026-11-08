@@ -31,14 +31,15 @@ def validate_inventory(products, stock):
     missing_stock = [c for c in STOCK_COLUMNS if c not in stock.columns]
     if missing_products or missing_stock:
         raise ValueError("ropa.xlsx no tiene los encabezados requeridos en ambas hojas.")
-    products = products[PRODUCT_COLUMNS].dropna(how="all").copy()
-    stock = stock[STOCK_COLUMNS].dropna(how="all").copy()
-    for col in ("Codigo", "Nombre", "Seccion", "Tipo", "Estado"):
+    if "Descripcion" not in products.columns:
+        products["Descripcion"] = None
+    products = products[PRODUCT_COLUMNS + ["Descripcion"]].dropna(how="all").copy()    
+    for col in ("Codigo", "Nombre", "Seccion", "Tipo", "Descripcion", "Estado"):
         products[col] = products[col].fillna("").astype(str).str.strip()
     products["_key"] = products["Codigo"].str.casefold()
     if (products["_key"] == "").any() or products["_key"].duplicated().any():
         raise ValueError("Cada producto debe tener un código único.")
-    for col in ("Codigo", "Nombre", "Seccion", "Tipo"):
+    for col in ("Codigo", "Nombre", "Seccion", "Tipo", "Descripcion", "Estado"):
         if products[col].str.contains(r"[|\r\n]", regex=True).any():
             raise ValueError(f"{col} no puede contener | ni saltos de línea.")
     if (products["Nombre"] == "").any() or (products["Tipo"] == "").any():
@@ -77,8 +78,7 @@ def validate_inventory(products, stock):
     if invalid_qty.any():
         raise ValueError("Las cantidades deben ser enteros iguales o mayores que cero.")
     stock["Cantidad"] = stock["Cantidad"].astype(int)
-    return products[PRODUCT_COLUMNS].reset_index(drop=True), stock[STOCK_COLUMNS].reset_index(drop=True)
-
+    return products[PRODUCT_COLUMNS + ["Descripcion"]].reset_index(drop=True), stock[STOCK_COLUMNS].reset_index(drop=True)
 
 def validate_clothing_catalog(products, stock):
     products, stock = validate_inventory(products, stock)
@@ -95,8 +95,9 @@ def validate_clothing_catalog(products, stock):
             "Seccion": row["Seccion"], "Tipo": row["Tipo"],
             "Precio": float(row["Precio"]), "Tallas": sizes,
             "Disponibilidad": "Disponible" if any(s["Cantidad"] > 0 for s in sizes) else "Agotado",
+            "Descripcion": row["Descripcion"],
         })
-    return result
+    return result            
 
 
 def load_clothing_catalog():
@@ -127,6 +128,20 @@ def load_suits():
         raise ValueError("inventario.xlsx no tiene los encabezados de trajes requeridos.")
     return [[str(row[0]), row[1], row[2], int(row[3]), row[4]] for row in frame[required].values]
 
+def load_suit_descriptions():
+    """Devuelve un diccionario {codigo: descripcion} de los trajes."""
+    if not SUITS_FILE.exists():
+        return {}
+    frame = pd.read_excel(SUITS_FILE)
+    if "Descripcion" not in frame.columns:
+        return {}
+    descripciones = {}
+    for _, row in frame.iterrows():
+        descripcion = row["Descripcion"]
+        if pd.isna(descripcion):
+            descripcion = ""
+        descripciones[str(row["Codigo"])] = str(descripcion).strip()
+    return descripciones
 
 def save_suits(suits):
     frame = pd.DataFrame(suits, columns=["Codigo", "Nombre", "Tallas", "Precio", "Estado"])
