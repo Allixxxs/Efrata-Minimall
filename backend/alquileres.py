@@ -76,6 +76,8 @@ def register_rental(email, code, size, start, programmed_return):
     suit = next((item for item in load_suits() if item[0] == code), None)
     if suit is None:
         raise ValueError("No se encontró el traje solicitado.")
+    if str(suit[4]).strip().casefold() != "activo":
+        raise ValueError("El traje seleccionado no está activo y no se puede alquilar.")
     sizes = {value.strip().upper() for value in str(suit[2]).split(",")}
     if size not in sizes:
         raise ValueError("La talla no está disponible para este traje.")

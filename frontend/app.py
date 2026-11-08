@@ -581,7 +581,7 @@ def ver_carrito():
     mostrar(pantalla_carrito)
 
 def cambiar_cantidad(codigo,talla,nueva):
-    if nueva < 0:
+    if nueva <= 0:
         quitar(codigo, talla)
         return
     try:
