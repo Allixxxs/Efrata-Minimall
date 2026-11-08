@@ -7,7 +7,7 @@ from turtle import left
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import customtkinter as ctk
-from backend import authenticate_user, close_session, load_suits, register_rental, current_session, get_user_rentals, return_rental, register_user, read_personal_data, save_personal_data, load_clothing_catalog, filter_clothing_catalog, add_to_cart, get_cart_details, update_cart_quantity, remove_from_cart, prepare_purchase, confirm_purchase
+from backend import authenticate_user, close_session, load_suits, register_rental, current_session, get_user_rentals, return_rental, register_user, read_personal_data, save_personal_data, load_clothing_catalog, filter_clothing_catalog, add_to_cart, get_cart_details, update_cart_quantity, remove_from_cart, prepare_purchase, confirm_purchase, list_purchases, list_favorites, add_favorite, remove_favorite
 
 
 morado = "#4A2560"
@@ -105,6 +105,10 @@ def abrir_opcion(nombre):
         ver_ropa()
     elif nombre == "Ver carrito":
         ver_carrito()
+    elif nombre == "Mis compras":
+        ver_compras()
+    elif nombre == "Ver favoritos":
+        ver_favoritos()
     else:
         aviso.configure(text=f"La opción '{nombre}' aún no está disponible.", text_color=gris)
 
@@ -504,7 +508,7 @@ def mostrar_ropa():
             selector.pack(side="left", padx=(0, 8))
 
             ctk.CTkButton(fila, text="Agregar al carrito", height=36, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda c=producto["Codigo"], s=selector: agregar_carrito(c, s.get())).pack(side="left", fill="x", expand=True)
-
+        ctk.CTkButton(tarjeta, text="♡ Agregar a favoritos", height=30, fg_color="transparent", hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), command=lambda c=producto["Codigo"]: agregar_favorito(c)).pack(anchor="w", padx=8, pady=(0, 10))
 #AGREGAR AL CARRITO
 
 def agregar_carrito(codigo, talla):
@@ -608,16 +612,96 @@ def comprar():
         mensaje_carrito.configure(text=f"¡Compra confirmada! Pedido {resultado['pedido']}", text_color=verde)
     else:
         mensaje_carrito.configure(text=resultado["message"], text_color=rojo)
-        
+
 ctk.CTkButton(pantalla_carrito, text="Confirmar compra", command=comprar, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=24, pady=(0, 16))
 
 
+#MIS COMPRAS
+pantalla_compras = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
+
+ctk.CTkButton(pantalla_compras, text="← Volver al menú", command=lambda: mostrar(pantalla_menu), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=16, pady=(16, 0))
+ctk.CTkLabel(pantalla_compras, text="Mis compras", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_titulo, size=26, weight="bold")).pack(fill="x", padx=24, pady=(4, 10))
+
+lista_compras = ctk.CTkScrollableFrame(pantalla_compras, fg_color=fondo)
+lista_compras.pack(fill="both", expand=True, padx=16, pady=(0, 16))
+
+def ver_compras():
+    for tarjeta in lista_compras.winfo_children():
+        tarjeta.destroy()
+
+    pedidos = list_purchases(current_session.email)
+
+    if len(pedidos) == 0:
+        ctk.CTkLabel(lista_compras, text="Aún no tienes compras registradas.", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=20)
+
+    for pedido in pedidos:
+        tarjeta = ctk.CTkFrame(lista_compras, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
+        tarjeta.pack(fill="x", padx=8, pady=6)
+
+        ctk.CTkLabel(tarjeta, text=pedido["Fecha"], text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 0))
+        ctk.CTkLabel(tarjeta, text=f"Pedido {pedido['Pedido']}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=11)).pack(fill="x", padx=14, pady=(0, 6))
+
+        for articulo in pedido["Articulos"]:
+            ctk.CTkLabel(tarjeta, text=f"• {articulo['Nombre']} (talla {articulo['Talla']}) x{articulo['Cantidad']}  —  {pesos(articulo['Subtotal'])}", text_color=texto, anchor="w", justify="left", wraplength=320, font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
+
+        ctk.CTkLabel(tarjeta, text=f"Total: {pesos(pedido['Total'])}", text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=14, pady=(6, 12))
+
+    mostrar(pantalla_compras)
+
+#FAVORITOS
+
+def agregar_favorito(codigo):
+    try:
+        add_favorite(current_session.email, codigo)
+    except ValueError as problema:
+        mensaje_buscar.configure(text=str(problema), text_color=rojo)
+        return
+    mensaje_buscar.configure(text="¡Agregado a favoritos! ♡", text_color=verde)
+
+pantalla_favoritos = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
+
+ctk.CTkButton(pantalla_favoritos, text="← Volver al menú", command=lambda: mostrar(pantalla_menu), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=16, pady=(16, 0))
+ctk.CTkLabel(pantalla_favoritos, text="Mis favoritos", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_titulo, size=26, weight="bold")).pack(fill="x", padx=24, pady=(4, 10))
+
+lista_favoritos = ctk.CTkScrollableFrame(pantalla_favoritos, fg_color=fondo)
+lista_favoritos.pack(fill="both", expand=True, padx=16, pady=(0, 16))
 
 
+def ver_favoritos():
+    for tarjeta in lista_favoritos.winfo_children():
+        tarjeta.destroy()
+
+    favoritos = list_favorites(current_session.email)
+
+    if len(favoritos) == 0:
+        ctk.CTkLabel(lista_favoritos, text="No tienes productos favoritos.", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=20)
+
+    for favorito in favoritos:
+        tarjeta = ctk.CTkFrame(lista_favoritos, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
+        tarjeta.pack(fill="x", padx=8, pady=6)
+
+        if favorito["EstadoFavorito"] == "Activo":
+            ctk.CTkLabel(tarjeta, text=favorito["Nombre"], text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 2))
+            ctk.CTkLabel(tarjeta, text=f"{favorito['Seccion']} · {favorito['Tipo']}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
+            ctk.CTkLabel(tarjeta, text=pesos(favorito["Precio"]), text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=14, pady=(4, 0))
+            if favorito["Disponibilidad"] == "Disponible":
+                color_estado = verde
+            else:
+                color_estado = rojo
+            ctk.CTkLabel(tarjeta, text=favorito["Disponibilidad"], text_color=color_estado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=14)
+        else:
+            # El producto ya no está en el catálogo
+            ctk.CTkLabel(tarjeta, text=f"{favorito['Nombre']} ({favorito['Codigo']})", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 2))
+            ctk.CTkLabel(tarjeta, text="Ya no está disponible en la tienda.", text_color=rojo, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
+
+        ctk.CTkButton(tarjeta, text="Quitar de favoritos", height=30, fg_color="transparent", hover_color=borde, text_color=rojo, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), command=lambda c=favorito["Codigo"]: quitar_favorito(c)).pack(anchor="w", padx=8, pady=(4, 10))
+
+    mostrar(pantalla_favoritos)
 
 
-
-
+def quitar_favorito(codigo):
+    remove_favorite(current_session.email, codigo)
+    ver_favoritos()
 
 
 
