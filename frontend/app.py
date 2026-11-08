@@ -1,12 +1,13 @@
 import sys
 from pathlib import Path
 import datetime
+from tkinter import messagebox
 from tkinter import font
 from turtle import left
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import customtkinter as ctk
-from backend import authenticate_user, close_session, load_suits, register_rental, current_session, get_user_rentals, return_rental, register_user, read_personal_data, save_personal_data
+from backend import authenticate_user, close_session, load_suits, register_rental, current_session, get_user_rentals, return_rental, register_user, read_personal_data, save_personal_data, load_clothing_catalog, filter_clothing_catalog, add_to_cart, get_cart_details, update_cart_quantity, remove_from_cart, prepare_purchase, confirm_purchase
 
 
 morado = "#4A2560"
@@ -100,10 +101,14 @@ def abrir_opcion(nombre):
         ver_alquileres()
     elif nombre == "Mis datos":
         ver_datos()
+    elif nombre == "Buscar ropa":
+        ver_ropa()
+    elif nombre == "Ver carrito":
+        ver_carrito()
     else:
         aviso.configure(text=f"La opción '{nombre}' aún no está disponible.", text_color=gris)
 
-for opcion in ["Inicio", "Buscar trajes", "Alquilar trajes", "Consultar alquileres", "Devolver traje", "Ver carrito", "Ver favoritos", "Mis datos", "Mis compras"]:
+for opcion in ["Inicio", "Buscar ropa", "Alquilar trajes", "Consultar alquileres", "Devolver traje", "Ver carrito", "Ver favoritos", "Mis datos", "Mis compras"]:
     ctk.CTkButton(pantalla_menu, text=opcion, command=lambda o=opcion: abrir_opcion(o), height=40, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=24, pady= 4)
 
 aviso = ctk.CTkLabel(pantalla_menu, text="", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=13))
@@ -406,8 +411,228 @@ def guardar_datos():
 
     mensaje_datos.configure(text="¡Datos guardados exitosamente!", text_color=verde)
 
-
 ctk.CTkButton(formulario, text="Guardar datos", command=guardar_datos, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=16, pady=(8, 12))
+
+#BUSCAR ROPA
+pantalla_buscar = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
+
+ctk.CTkButton(pantalla_buscar, text="← Volver al menú", command=lambda: mostrar(pantalla_menu), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=16, pady=(16, 0))
+ctk.CTkLabel(pantalla_buscar, text="Buscar ropa", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_titulo, size=26, weight="bold")).pack(fill="x", padx=24, pady=(4, 10))
+
+filtros = ctk.CTkFrame(pantalla_buscar, fg_color=fondo)
+filtros.pack(fill="x", padx=24, pady=(0, 8))
+
+selector_seccion = ctk.CTkOptionMenu(filtros, values=["Todas", "Mujer", "Hombre", "Unisex"], command=lambda valor: mostrar_ropa(), width=170, height=38, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
+selector_seccion.pack(side="left", padx=(0, 8))
+
+selector_tipo = ctk.CTkOptionMenu(filtros, values=["Todos"], command=lambda valor: mostrar_ropa(), width=170, height=38, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
+selector_tipo.pack(side="left")
+
+mensaje_buscar = ctk.CTkLabel(pantalla_buscar, text="", text_color=rojo, wraplength=372, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=13))
+mensaje_buscar.pack(fill="x", padx=24)
+
+lista_ropa = ctk.CTkScrollableFrame(pantalla_buscar, fg_color=fondo)
+lista_ropa.pack(fill="both", expand=True, padx=16, pady=(0, 16))
+
+catalogo = []
+
+def ver_ropa():
+    global catalogo
+    mensaje_buscar.configure(text="")
+    try:
+        catalogo = load_clothing_catalog()
+    except ValueError as problema:
+        mensaje_buscar.configure(text=str(problema))
+        catalogo = []
+
+    tipos = ["Todos"]
+    for producto in catalogo:
+        if producto["Tipo"] not in tipos:
+            tipos.append(producto["Tipo"])
+    selector_tipo.configure(values=tipos)
+
+    selector_seccion.set("Todas")
+    selector_tipo.set("Todos")
+    mostrar_ropa()
+    mostrar(pantalla_buscar)
+
+def mostrar_ropa():
+    for tarjeta in lista_ropa.winfo_children():
+        tarjeta.destroy()
+
+    seccion = selector_seccion.get()
+    tipo = selector_tipo.get()
+    if seccion == "Todas":
+        seccion = None
+    if tipo == "Todos":
+        tipo = None
+
+    productos = filter_clothing_catalog(catalogo, seccion, tipo)
+
+    if len(productos) == 0:
+        ctk.CTkLabel(lista_ropa, text="No hay prendas con esos filtros.", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=20)
+
+    for producto in productos:
+        tarjeta = ctk.CTkFrame(lista_ropa, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
+        tarjeta.pack(fill="x", padx=8, pady=6)
+
+        texto_tallas = ""
+        tallas_disponibles = []
+        for talla in producto["Tallas"]:
+            if talla["Cantidad"] > 0:
+                texto_tallas = texto_tallas + talla["Talla"] + "   "
+                tallas_disponibles.append(talla["Talla"])
+
+        precio_texto = f"${producto['Precio']:,.0f}".replace(",", ".")
+
+        ctk.CTkLabel(tarjeta, text=producto["Nombre"], text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 2))
+        ctk.CTkLabel(tarjeta, text=f"{producto['Seccion']} · {producto['Tipo']} · Código {producto['Codigo']}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
+        ctk.CTkLabel(tarjeta, text=f"Tallas: {texto_tallas}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
+        ctk.CTkLabel(tarjeta, text=precio_texto, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=14, pady=(4, 0))
+
+        if producto["Disponibilidad"] == "Disponible":
+            color_estado = verde
+        else:
+            color_estado = rojo
+        ctk.CTkLabel(tarjeta, text=producto["Disponibilidad"], text_color=color_estado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=14, pady=(2, 12))
+
+        if len(tallas_disponibles) > 0:
+            fila = ctk.CTkFrame(tarjeta, fg_color=blanco)
+            fila.pack(fill="x", padx=14, pady=(0, 12))
+
+            selector = ctk.CTkOptionMenu(fila, values=tallas_disponibles, width=90, height=36, corner_radius=10, fg_color=fondo, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
+            selector.pack(side="left", padx=(0, 8))
+
+            ctk.CTkButton(fila, text="Agregar al carrito", height=36, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda c=producto["Codigo"], s=selector: agregar_carrito(c, s.get())).pack(side="left", fill="x", expand=True)
+
+#AGREGAR AL CARRITO
+
+def agregar_carrito(codigo, talla):
+    try:
+        cantidad = add_to_cart(current_session.email, codigo, talla, 1, catalogo)
+    except ValueError as problema:
+        mensaje_buscar.configure(text=str(problema), text_color=rojo)
+        return
+
+    mensaje_buscar.configure(text=f"¡Agregado al carrito! (talla {talla}, llevas {cantidad})", text_color=verde)
+
+def pesos(valor):
+    return f"${valor:,.0f}".replace(",", ".")
+
+#VER MI CARRITO 
+
+pantalla_carrito = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
+
+ctk.CTkButton(pantalla_carrito, text="← Volver al menú", command=lambda: mostrar(pantalla_menu), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=16, pady=(16, 0))
+ctk.CTkLabel(pantalla_carrito, text="Mi carrito", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_titulo, size=26, weight="bold")).pack(fill="x", padx=24, pady=(4, 10))
+
+mensaje_carrito = ctk.CTkLabel(pantalla_carrito, text="", text_color=rojo, wraplength=372, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=13))
+mensaje_carrito.pack(fill="x", padx=24)
+
+lista_carrito = ctk.CTkScrollableFrame(pantalla_carrito, fg_color=fondo)
+lista_carrito.pack(fill="both", expand=True, padx=16, pady=(0, 8))
+
+total_carrito = ctk.CTkLabel(pantalla_carrito, text="", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=18, weight="bold"))
+total_carrito.pack(fill="x", padx=24, pady=(0, 8))
+
+
+def ver_carrito():
+    mensaje_carrito.configure(text="")
+    for tarjeta in lista_carrito.winfo_children():
+        tarjeta.destroy()
+
+    detalles = get_cart_details(current_session.email)
+    total=0
+
+    if len(detalles) == 0:
+        ctk.CTkLabel(lista_carrito, text="Tu carrito está vacío.", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=20)
+
+    for detalle in detalles:
+        tarjeta = ctk.CTkFrame(lista_carrito, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
+        tarjeta.pack(fill="x", padx=8, pady=6)
+
+        ctk.CTkLabel(tarjeta, text=detalle["Nombre"], text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 2))
+        ctk.CTkLabel(tarjeta, text=f"Talla: {detalle['Talla']} · Código {detalle['Codigo']}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
+
+        if detalle ["Subtotal"] is None:
+            subtotal_texto = "Precio no disponible"
+        else:
+            subtotal_texto = f"{pesos(detalle['Precio'])} c/u · Subtotal {pesos(detalle['Subtotal'])}"
+            total = total + detalle["Subtotal"]
+        ctk.CTkLabel(tarjeta, text=subtotal_texto, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=14, pady=(4, 0))
+
+        if detalle["Aviso"]!= "":
+            ctk.CTkLabel(tarjeta, text=detalle["Aviso"], text_color=rojo, wraplength=320, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=12)).pack(fill="x", padx=14)
+
+        fila = ctk.CTkFrame(tarjeta, fg_color=blanco)
+        fila.pack(fill="x", padx=14, pady=(8, 12))
+
+        ctk.CTkButton(fila, text="−", width=36, height=32, corner_radius=8, fg_color=fondo, hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold"), command=lambda c=detalle["Codigo"], t=detalle["Talla"], n=detalle["Cantidad"] - 1: cambiar_cantidad(c, t, n)).pack(side="left")
+        ctk.CTkLabel(fila, text=str(detalle["Cantidad"]), width=36, text_color=texto, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(side="left")
+        ctk.CTkButton(fila, text="+", width=36, height=32, corner_radius=8, fg_color=fondo, hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold"), command=lambda c=detalle["Codigo"], t=detalle["Talla"], n=detalle["Cantidad"] + 1: cambiar_cantidad(c, t, n)).pack(side="left")
+
+        ctk.CTkButton(fila, text="Quitar", width=70, height=32, fg_color="transparent", hover_color=borde, text_color=rojo, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), command=lambda c=detalle["Codigo"], t=detalle["Talla"]: quitar(c, t)).pack(side="right")
+
+    total_carrito.configure(text=f"Total: {pesos(total)}")
+    mostrar(pantalla_carrito)
+
+def cambiar_cantidad(codigo,talla,nueva):
+    if nueva < 0:
+        quitar(codigo, talla)
+        return
+    try:
+        update_cart_quantity(current_session.email, codigo, talla, nueva)
+    except ValueError as problema:
+        mensaje_carrito.configure(text=str(problema), text_color=rojo)
+        return
+    ver_carrito()
+
+def quitar(codigo, talla):
+    remove_from_cart(current_session.email, codigo, talla)
+    ver_carrito()
+
+#CONFIRMAR COMPRA
+
+def comprar():
+    detalles, total, error = prepare_purchase(current_session.email)
+    if error:
+        mensaje_carrito.configure(text=error, text_color=rojo)
+        return
+
+    respuesta = messagebox.askyesno("Confirmar compra", f"¿Desea confirmar la compra por {pesos(total)}?")
+
+    resultado = confirm_purchase(current_session.email, respuesta)
+
+    if resultado["ok"]:
+        ver_carrito()
+        mensaje_carrito.configure(text=f"¡Compra confirmada! Pedido {resultado['pedido']}", text_color=verde)
+    else:
+        mensaje_carrito.configure(text=resultado["message"], text_color=rojo)
+        
+ctk.CTkButton(pantalla_carrito, text="Confirmar compra", command=comprar, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=24, pady=(0, 16))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ventana.mainloop()
