@@ -152,12 +152,18 @@ def ver_trajes():
         if estado == "Activo":
             texto_estado = "Disponible"
             color_estado = verde
+            estado_boton= "normal"
+            color_boton = morado
+            texto_boton = "Alquilar"
         else:
             texto_estado = "No disponible"
             color_estado = rojo
+            estado_boton= "disabled"
+            color_boton = borde
+            texto_boton = "No disponible"
         ctk.CTkLabel(tarjeta, text=texto_estado, text_color=color_estado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")).pack(fill="x", padx=14, pady=(0, 8))
-        ctk.CTkButton(tarjeta, text="Alquilar", height=36, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda c=codigo, n=nombre, t=tallas, p=precio: abrir_alquiler(c, n, t, p)).pack(fill="x", padx=14, pady=(0, 12))
-
+        ctk.CTkButton(tarjeta, text=texto_boton, height=36, state=estado_boton, text_color_disabled=gris, corner_radius=10, fg_color=color_boton, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda c=codigo, n=nombre, t=tallas, p=precio: abrir_alquiler(c, n, t, p)).pack(fill="x", padx=14, pady=(0, 12))
+    
     mostrar(pantalla_trajes)
 
 pantalla_alquiler = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
@@ -282,6 +288,8 @@ def ver_alquileres():
 
 #Devolver traje
 def devolver(indice):
+    if not messagebox.askyesno("Confirmar devolución", "¿Seguro que quieres devolver este traje?"):
+        return
     try:
         traje= return_rental(current_session.email, indice)
     except ValueError as problema:
@@ -432,6 +440,17 @@ selector_seccion.pack(side="left", padx=(0, 8))
 selector_tipo = ctk.CTkOptionMenu(filtros, values=["Todos"], command=lambda valor: mostrar_ropa(), width=170, height=38, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
 selector_tipo.pack(side="left")
 
+filtros2 = ctk.CTkFrame(pantalla_buscar, fg_color=fondo)
+filtros2.pack(fill="x", padx=24, pady=(0, 8))
+
+caja_busqueda = ctk.CTkEntry(filtros2, placeholder_text="🔍 Nombre o código", width=210, height=38, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
+caja_busqueda.pack(side="left", padx=(0, 8))
+caja_busqueda.bind("<KeyRelease>", lambda evento: mostrar_ropa())
+
+selector_disponibilidad= ctk.CTkOptionMenu(filtros2, values=["Todas", "Disponible", "Agotado"], command=lambda valor: mostrar_ropa(), width=130, height=38, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
+selector_disponibilidad.pack(side="left")
+
+
 mensaje_buscar = ctk.CTkLabel(pantalla_buscar, text="", text_color=rojo, wraplength=372, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=13))
 mensaje_buscar.pack(fill="x", padx=24)
 
@@ -455,8 +474,8 @@ def ver_ropa():
             tipos.append(producto["Tipo"])
     selector_tipo.configure(values=tipos)
 
-    selector_seccion.set("Todas")
-    selector_tipo.set("Todos")
+    selector_disponibilidad.set("Todas")
+    caja_busqueda.delete(0, "end")
     mostrar_ropa()
     mostrar(pantalla_buscar)
 
@@ -472,6 +491,18 @@ def mostrar_ropa():
         tipo = None
 
     productos = filter_clothing_catalog(catalogo, seccion, tipo)
+
+    busqueda= caja_busqueda.get().strip().lower()
+    disponibilidad = selector_disponibilidad.get()
+
+    productos_filtrados = []
+    for producto in productos:
+        coincide_texto = busqueda in producto["Nombre"].lower() or busqueda in producto["Codigo"].lower()
+        coincide_disponibilidad = disponibilidad == "Todas" or producto["Disponibilidad"] == disponibilidad
+
+        if coincide_texto and coincide_disponibilidad:
+            productos_filtrados.append(producto)
+    productos = productos_filtrados
 
     if len(productos) == 0:
         ctk.CTkLabel(lista_ropa, text="No hay prendas con esos filtros.", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=20)
@@ -704,26 +735,41 @@ def quitar_favorito(codigo):
     ver_favoritos()
 
 #INICIO
-
+# PANTALLA: INICIO
 pantalla_inicio = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
 
-ctk.CTkButton(pantalla_inicio, text="← Volver al menú", command=lambda: mostrar(pantalla_menu), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=16, pady=(16, 0))
+ctk.CTkButton(pantalla_inicio, text="← Volver al menú", command=lambda: mostrar(pantalla_menu), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=16, pady=(16, 8))
 
-ctk.CTkLabel(pantalla_inicio, text="¡Bienvenidos a\nEFRATA Mini-Mall!", text_color=morado, justify="center", font=ctk.CTkFont(family=letra_titulo, size=28, weight="bold")).pack(pady=(24, 8))
-ctk.CTkLabel(pantalla_inicio, text="Moda, alquiler de trajes y arreglos\nen un solo lugar", text_color=gris, justify="center", font=ctk.CTkFont(family=letra_texto, size=15)).pack(pady=(0, 20))
+bienvenida_inicio = ctk.CTkFrame(pantalla_inicio, fg_color=morado, corner_radius=16)
+bienvenida_inicio.pack(fill="x", padx=24, pady=(0, 18))
 
-servicios = ctk.CTkFrame(pantalla_inicio, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
-servicios.pack(fill="x", padx=24, pady=(0, 16))
-for servicio in ["👗  Moda nacional e importada", "🤵  Trajes para toda ocasión", "🧵  Arreglo de ropa"]:
-    ctk.CTkLabel(servicios, text=servicio, text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15)).pack(fill="x", padx=18, pady=8)
+ctk.CTkLabel(bienvenida_inicio, text="¡Bienvenidos a\nEFRATA Mini-Mall!", text_color=blanco, justify="center", font=ctk.CTkFont(family=letra_titulo, size=26, weight="bold")).pack(pady=(22, 6))
+ctk.CTkLabel(bienvenida_inicio, text="Moda, alquiler de trajes y arreglos\nen un solo lugar", text_color=borde, justify="center", font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=(0, 16))
+
+# Botones de acceso rápido
+accesos = ctk.CTkFrame(bienvenida_inicio, fg_color=morado)
+accesos.pack(pady=(0, 22))
+ctk.CTkButton(accesos, text="Ver ropa", command=ver_ropa, width=140, height=40, corner_radius=10, fg_color=blanco, hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(side="left", padx=6)
+ctk.CTkButton(accesos, text="Alquilar trajes", command=ver_trajes, width=140, height=40, corner_radius=10, fg_color="transparent", border_width=2, border_color=blanco, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(side="left", padx=6)
+
+ctk.CTkLabel(pantalla_inicio, text="Lo que ofrecemos", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_titulo, size=18, weight="bold")).pack(fill="x", padx=24, pady=(0, 8))
+
+fila_servicios = ctk.CTkFrame(pantalla_inicio, fg_color=fondo)
+fila_servicios.pack(fill="x", padx=20, pady=(0, 18))
+
+for icono, servicio in [("👗", "Moda nacional\ne importada"), ("🤵", "Trajes para\ntoda ocasión"), ("🧵", "Arreglo\nde ropa")]:
+    tarjeta_servicio = ctk.CTkFrame(fila_servicios, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
+    tarjeta_servicio.pack(side="left", fill="both", expand=True, padx=4)
+    ctk.CTkLabel(tarjeta_servicio, text=icono, font=ctk.CTkFont(size=30)).pack(pady=(14, 2))
+    ctk.CTkLabel(tarjeta_servicio, text=servicio, text_color=texto, justify="center", font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")).pack(padx=6, pady=(0, 14))
+
 
 contacto = ctk.CTkFrame(pantalla_inicio, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
 contacto.pack(fill="x", padx=24, pady=(0, 16))
 ctk.CTkLabel(contacto, text="📍  Cali, Colombia", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15)).pack(fill="x", padx=18, pady=(12, 4))
 ctk.CTkLabel(contacto, text="📞  323 965 5863", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15)).pack(fill="x", padx=18, pady=(4, 12))
 
-ctk.CTkLabel(pantalla_inicio, text="¡Será un placer atenderte! 💜", text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(pady=(8, 0))
-
+ctk.CTkLabel(pantalla_inicio, text="¡Será un placer atenderte! 💜", text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(pady=(4, 0))
 
 
 def run():
