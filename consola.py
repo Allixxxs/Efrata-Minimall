@@ -1,5 +1,3 @@
-"""Interfaz de terminal. La GUI futura debe llamar a los servicios de backend."""
-
 import datetime
 import getpass
 import zipfile
