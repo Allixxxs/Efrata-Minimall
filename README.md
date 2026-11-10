@@ -5,7 +5,7 @@
 
 Efrata Minimall es un negocio ubicado en Cali, Colombia, dedicado a la comercialización de prendas de vestir, alquiler de trajes para ocasiones especiales y arreglos de ropa.
 
-Este proyecto consiste en el desarrollo de una aplicación de escritorio que busca facilitar la consulta de productos, el control de existencias, las compras y la gestión de alquileres.
+Este proyecto consiste en el desarrollo de una aplicación que busca facilitar la consulta de productos, el control de existencias, las compras y la gestión de alquileres.
 
 ## Problemática
 
