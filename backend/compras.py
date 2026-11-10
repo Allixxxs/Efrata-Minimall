@@ -7,261 +7,261 @@ import uuid
 from pathlib import Path
 from openpyxl import load_workbook
 from .rutas import (
-    CLOTHING_FILE, PURCHASES_FILE, CART_FILE, RECEIPTS_DIR, DATA_DIR,
+    ARCHIVO_ROPA, ARCHIVO_COMPRAS, ARCHIVO_CARRITO, DIRECTORIO_COMPROBANTES, DIRECTORIO_DATOS,
 )
-from .sesion import require_user
-from .carrito import read_cart, validate_quantity
-from .catalogo import load_clothing_catalog
+from .sesion import requerir_usuario
+from .carrito import leer_carrito, validar_cantidad
+from .catalogo import cargar_catalogo_ropa
 
 
-def prepare_purchase(email):
-    email = require_user(email)
-    cart = read_cart(email)
-    if not cart:
+def preparar_compra(correo):
+    correo = requerir_usuario(correo)
+    carrito = leer_carrito(correo)
+    if not carrito:
         return [], 0.0, "Tu carrito está vacío."
-    catalog = load_clothing_catalog()
-    details, total, errors = [], 0.0, []
-    for item in cart:
-        product = next((p for p in catalog if p["Codigo"].casefold() == item["Codigo"].casefold()), None)
-        if product is None:
-            errors.append(f"{item['Codigo']}: producto inexistente o inactivo.")
+    catalogo = cargar_catalogo_ropa()
+    detalles, total, errores = [], 0.0, []
+    for elemento in carrito:
+        producto = next((producto_p for producto_p in catalogo if producto_p["Codigo"].casefold() == elemento["Codigo"].casefold()), None)
+        if producto is None:
+            errores.append(f"{elemento['Codigo']}: producto inexistente o inactivo.")
             continue
-        variant = next((v for v in product["Tallas"] if v["Talla"].casefold() == item["Talla"].casefold()), None)
-        if variant is None:
-            errors.append(f"{item['Codigo']} talla {item['Talla']}: talla inexistente.")
+        variante = next((elemento_v for elemento_v in producto["Tallas"] if elemento_v["Talla"].casefold() == elemento["Talla"].casefold()), None)
+        if variante is None:
+            errores.append(f"{elemento['Codigo']} talla {elemento['Talla']}: talla inexistente.")
             continue
-        amount = validate_quantity(item["Cantidad"])
-        if amount > variant["Cantidad"]:
-            errors.append(f"{product['Nombre']} talla {variant['Talla']}: solicitas {amount}, hay {variant['Cantidad']}.")
+        cantidad = validar_cantidad(elemento["Cantidad"])
+        if cantidad > variante["Cantidad"]:
+            errores.append(f"{producto['Nombre']} talla {variante['Talla']}: solicitas {cantidad}, hay {variante['Cantidad']}.")
             continue
-        price = float(product["Precio"])
-        subtotal = price * amount
-        details.append({"Codigo": product["Codigo"].upper(), "Nombre": str(product["Nombre"]),
-                        "Talla": variant["Talla"].upper(), "Cantidad": amount,
-                        "Precio": price, "Subtotal": subtotal})
+        precio = float(producto["Precio"])
+        subtotal = precio * cantidad
+        detalles.append({"Codigo": producto["Codigo"].upper(), "Nombre": str(producto["Nombre"]),
+                        "Talla": variante["Talla"].upper(), "Cantidad": cantidad,
+                        "Precio": precio, "Subtotal": subtotal})
         total += subtotal
-    if errors:
-        return [], 0.0, "Compra cancelada; no se modificó ningún archivo. " + " ".join(errors)
-    return details, total, ""
+    if errores:
+        return [], 0.0, "Compra cancelada; no se modificó ningún archivo. " + " ".join(errores)
+    return detalles, total, ""
 
 
-def _prepare_inventory(reductions):
-    workbook = load_workbook(CLOTHING_FILE)
+def _preparar_inventario(reducciones):
+    libro = load_workbook(ARCHIVO_ROPA)
     try:
-        if "Existencias" not in workbook.sheetnames:
+        if "Existencias" not in libro.sheetnames:
             raise ValueError("No existe la hoja Existencias.")
-        sheet = workbook["Existencias"]
-        headers = {str(sheet.cell(1, col).value).strip(): col
-                   for col in range(1, sheet.max_column + 1)
-                   if sheet.cell(1, col).value is not None}
-        if not {"Codigo", "Talla", "Cantidad"}.issubset(headers):
+        hoja = libro["Existencias"]
+        encabezados = {str(hoja.cell(1, columna).value).strip(): columna
+                   for columna in range(1, hoja.max_column + 1)
+                   if hoja.cell(1, columna).value is not None}
+        if not {"Codigo", "Talla", "Cantidad"}.issubset(encabezados):
             raise ValueError("Columnas inválidas en Existencias.")
-        for (code, size), amount in reductions.items():
-            rows = [r for r in range(2, sheet.max_row + 1)
-                    if str(sheet.cell(r, headers["Codigo"]).value).strip().upper() == code
-                    and str(sheet.cell(r, headers["Talla"]).value).strip().upper() == size]
-            if len(rows) != 1:
-                raise ValueError(f"Variante duplicada o inexistente: {code} talla {size}.")
-            row = rows[0]
-            raw = sheet.cell(row, headers["Cantidad"]).value
+        for (codigo, talla), cantidad_solicitada in reducciones.items():
+            filas = [registro_r for registro_r in range(2, hoja.max_row + 1)
+                    if str(hoja.cell(registro_r, encabezados["Codigo"]).value).strip().upper() == codigo
+                    and str(hoja.cell(registro_r, encabezados["Talla"]).value).strip().upper() == talla]
+            if len(filas) != 1:
+                raise ValueError(f"Variante duplicada o inexistente: {codigo} talla {talla}.")
+            fila = filas[0]
+            bruto = hoja.cell(fila, encabezados["Cantidad"]).value
             try:
-                quantity = int(raw)
-                if float(raw) != quantity or quantity < amount:
+                cantidad_existente = int(bruto)
+                if float(bruto) != cantidad_existente or cantidad_existente < cantidad_solicitada:
                     raise ValueError
             except (TypeError, ValueError, OverflowError) as error:
-                raise ValueError(f"Existencias insuficientes o inválidas: {code} talla {size}.") from error
-            sheet.cell(row, headers["Cantidad"]).value = quantity - amount
-        descriptor, temp_name = tempfile.mkstemp(prefix=".ropa_pedido_", suffix=".xlsx", dir=DATA_DIR)
-        os.close(descriptor)
+                raise ValueError(f"Existencias insuficientes o inválidas: {codigo} talla {talla}.") from error
+            hoja.cell(fila, encabezados["Cantidad"]).value = cantidad_existente - cantidad_solicitada
+        descripcion, nombre_temporal = tempfile.mkstemp(prefix=".ropa_pedido_", suffix=".xlsx", dir=DIRECTORIO_DATOS)
+        os.close(descripcion)
         try:
-            workbook.save(temp_name)
-            return temp_name
+            libro.save(nombre_temporal)
+            return nombre_temporal
         except Exception:
-            if os.path.exists(temp_name):
-                os.remove(temp_name)
+            if os.path.exists(nombre_temporal):
+                os.remove(nombre_temporal)
             raise
     finally:
-        workbook.close()
+        libro.close()
 
 
-def _order_lines(order_id, email, date, details, total):
-    lines = []
-    for item in details:
-        name = str(item["Nombre"]).replace("|", "/").replace("\r", " ").replace("\n", " ")
-        lines.append("|".join((order_id, email, date, item["Codigo"], name,
-                               item["Talla"], str(item["Cantidad"]),
-                               f"{item['Precio']:.2f}", f"{item['Subtotal']:.2f}",
+def _lineas_pedido(id_pedido, correo, fecha, detalles, total):
+    lineas = []
+    for elemento in detalles:
+        nombre = str(elemento["Nombre"]).replace("|", "/").replace("\r", " ").replace("\n", " ")
+        lineas.append("|".join((id_pedido, correo, fecha, elemento["Codigo"], nombre,
+                               elemento["Talla"], str(elemento["Cantidad"]),
+                               f"{elemento['Precio']:.2f}", f"{elemento['Subtotal']:.2f}",
                                f"{total:.2f}", "Confirmada")) + "\n")
-    return lines
+    return lineas
 
 
-def _receipt(order_id, email, date, details, total):
-    lines = ["COMPROBANTE DE COMPRA - EFRATA MINI-MALL", f"Pedido: {order_id}",
-             f"Fecha: {date}", f"Correo: {email}", "", "ARTÍCULOS:"]
-    for item in details:
-        lines.append(f"{item['Nombre']} | Código: {item['Codigo']} | Talla: {item['Talla']} | "
-                     f"Cantidad: {item['Cantidad']} | Precio unitario: ${item['Precio']:,.2f} | "
-                     f"Subtotal: ${item['Subtotal']:,.2f}")
-    lines.extend(["", f"TOTAL: ${total:,.2f}", "Compra simulada; no se procesó ningún pago."])
-    return "\n".join(lines) + "\n"
+def _comprobante(id_pedido, correo, fecha, detalles, total):
+    lineas = ["COMPROBANTE DE COMPRA - EFRATA MINI-MALL", f"Pedido: {id_pedido}",
+             f"Fecha: {fecha}", f"Correo: {correo}", "", "ARTÍCULOS:"]
+    for elemento in detalles:
+        lineas.append(f"{elemento['Nombre']} | Código: {elemento['Codigo']} | Talla: {elemento['Talla']} | "
+                     f"Cantidad: {elemento['Cantidad']} | Precio unitario: ${elemento['Precio']:,.2f} | "
+                     f"Subtotal: ${elemento['Subtotal']:,.2f}")
+    lineas.extend(["", f"TOTAL: ${total:,.2f}", "Compra simulada; no se procesó ningún pago."])
+    return "\n".join(lineas) + "\n"
 
 
-def _temp_bytes(content, prefix):
-    descriptor, temp_name = tempfile.mkstemp(prefix=prefix, suffix=".tmp", dir=DATA_DIR)
+def _bytes_temporales(contenido, prefijo):
+    descripcion, nombre_temporal = tempfile.mkstemp(prefix=prefijo, suffix=".tmp", dir=DIRECTORIO_DATOS)
     try:
-        with os.fdopen(descriptor, "wb") as file:
-            file.write(content)
-        return temp_name
+        with os.fdopen(descripcion, "wb") as archivo:
+            archivo.write(contenido)
+        return nombre_temporal
     except Exception:
-        if os.path.exists(temp_name):
-            os.remove(temp_name)
+        if os.path.exists(nombre_temporal):
+            os.remove(nombre_temporal)
         raise
 
 
-def _cart_without_owner(email):
-    if not CART_FILE.exists():
+def _carrito_sin_usuario(correo):
+    if not ARCHIVO_CARRITO.exists():
         return b""
-    lines = []
-    with CART_FILE.open("r", encoding="utf-8", newline="") as file:
-        for line in file:
-            fields = line.rstrip("\r\n").split("|")
-            own = False
-            if len(fields) == 4 and fields[0].strip().casefold() == email:
+    lineas = []
+    with ARCHIVO_CARRITO.open("r", encoding="utf-8", newline="") as archivo:
+        for linea in archivo:
+            campos = linea.rstrip("\r\n").split("|")
+            propio = False
+            if len(campos) == 4 and campos[0].strip().casefold() == correo:
                 try:
-                    own = int(fields[3]) > 0
+                    propio = int(campos[3]) > 0
                 except ValueError:
                     pass
-            if not own:
-                lines.append(line if line.endswith(("\n", "\r")) else line + "\n")
-    return "".join(lines).encode("utf-8")
+            if not propio:
+                lineas.append(linea if linea.endswith(("\n", "\r")) else linea + "\n")
+    return "".join(lineas).encode("utf-8")
 
 
-def _restore(path, existed, content):
-    if not existed:
-        if path.exists():
-            path.unlink()
+def _restaurar_archivo(ruta, existia, contenido):
+    if not existia:
+        if ruta.exists():
+            ruta.unlink()
         return
-    descriptor, temp_name = tempfile.mkstemp(prefix=".compra_restaurar_", suffix=".tmp", dir=DATA_DIR)
+    descripcion, nombre_temporal = tempfile.mkstemp(prefix=".compra_restaurar_", suffix=".tmp", dir=DIRECTORIO_DATOS)
     try:
-        with os.fdopen(descriptor, "wb") as file:
-            file.write(content)
-        os.replace(temp_name, path)
+        with os.fdopen(descripcion, "wb") as archivo:
+            archivo.write(contenido)
+        os.replace(nombre_temporal, ruta)
     except Exception:
-        if os.path.exists(temp_name):
-            os.remove(temp_name)
+        if os.path.exists(nombre_temporal):
+            os.remove(nombre_temporal)
         raise
 
 
-def _new_order_id():
+def _nuevo_id_pedido():
     while True:
-        order_id = datetime.datetime.now().strftime("PED-%Y%m%d%H%M%S") + "-" + uuid.uuid4().hex[:8].upper()
-        receipt = RECEIPTS_DIR / f"{order_id}.txt"
-        used = False
-        if PURCHASES_FILE.exists():
-            with PURCHASES_FILE.open("r", encoding="utf-8") as file:
-                used = any(line.split("|", 1)[0] == order_id for line in file)
-        if not used and not receipt.exists():
-            return order_id, receipt
+        id_pedido = datetime.datetime.now().strftime("PED-%Y%m%d%H%M%S") + "-" + uuid.uuid4().hex[:8].upper()
+        comprobante = DIRECTORIO_COMPROBANTES / f"{id_pedido}.txt"
+        usado = False
+        if ARCHIVO_COMPRAS.exists():
+            with ARCHIVO_COMPRAS.open("r", encoding="utf-8") as archivo:
+                usado = any(linea.split("|", 1)[0] == id_pedido for linea in archivo)
+        if not usado and not comprobante.exists():
+            return id_pedido, comprobante
 
 
-def confirm_purchase(email, confirmed, date_time=None):
-    email = require_user(email)
-    details, total, error = prepare_purchase(email)
+def confirmar_compra(correo, confirmado, fecha_hora=None):
+    correo = requerir_usuario(correo)
+    detalles, total, error = preparar_compra(correo)
     if error:
         return {"ok": False, "message": error, "details": [], "total": 0.0}
-    if not confirmed:
+    if not confirmado:
         return {"ok": False, "message": "Compra cancelada. El carrito y las existencias no cambiaron.",
-                "details": details, "total": total}
-    current_details, current_total, error = prepare_purchase(email)
+                "details": detalles, "total": total}
+    detalles_actuales, total_actual, error = preparar_compra(correo)
     if error:
         return {"ok": False, "message": error, "details": [], "total": 0.0}
-    if current_details != details or current_total != total:
+    if detalles_actuales != detalles or total_actual != total:
         return {"ok": False, "message": "El carrito, el precio o las existencias cambiaron durante la confirmación.",
-                "details": current_details, "total": current_total}
-    details, total = current_details, current_total
-    timestamp = date_time or datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    order_id, receipt_path = _new_order_id()
-    paths = {"inventario": CLOTHING_FILE, "compras": PURCHASES_FILE, "carrito": CART_FILE}
-    snapshots = {}
+                "details": detalles_actuales, "total": total_actual}
+    detalles, total = detalles_actuales, total_actual
+    marca_temporal = fecha_hora or datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    id_pedido, ruta_comprobante = _nuevo_id_pedido()
+    rutas_archivos = {"inventario": ARCHIVO_ROPA, "compras": ARCHIVO_COMPRAS, "carrito": ARCHIVO_CARRITO}
+    copias_respaldo = {}
     try:
-        for name, path in paths.items():
-            snapshots[name] = (path.exists(), path.read_bytes() if path.exists() else b"")
+        for nombre, ruta in rutas_archivos.items():
+            copias_respaldo[nombre] = (ruta.exists(), ruta.read_bytes() if ruta.exists() else b"")
     except OSError as error:
-        return {"ok": False, "message": f"No se pudieron respaldar los archivos: {error}", "details": details, "total": total}
+        return {"ok": False, "message": f"No se pudieron respaldar los archivos: {error}", "details": detalles, "total": total}
 
-    temps, receipt_created = [], False
+    temporales, comprobante_creado = [], False
     try:
-        reductions = {}
-        for item in details:
-            key = (item["Codigo"], item["Talla"])
-            reductions[key] = reductions.get(key, 0) + item["Cantidad"]
-        temp_excel = _prepare_inventory(reductions)
-        temps.append(temp_excel)
-        previous_orders = snapshots["compras"][1]
-        if previous_orders and not previous_orders.endswith((b"\n", b"\r")):
-            previous_orders += b"\n"
-        temp_orders = _temp_bytes(previous_orders + "".join(
-            _order_lines(order_id, email, timestamp, details, total)
+        reducciones = {}
+        for elemento in detalles:
+            clave = (elemento["Codigo"], elemento["Talla"])
+            reducciones[clave] = reducciones.get(clave, 0) + elemento["Cantidad"]
+        excel_temporal = _preparar_inventario(reducciones)
+        temporales.append(excel_temporal)
+        pedidos_anteriores = copias_respaldo["compras"][1]
+        if pedidos_anteriores and not pedidos_anteriores.endswith((b"\n", b"\r")):
+            pedidos_anteriores += b"\n"
+        pedidos_temporales = _bytes_temporales(pedidos_anteriores + "".join(
+            _lineas_pedido(id_pedido, correo, marca_temporal, detalles, total)
         ).encode("utf-8"), ".compras_pedido_")
-        temps.append(temp_orders)
-        temp_cart = _temp_bytes(_cart_without_owner(email), ".carrito_pedido_")
-        temps.append(temp_cart)
-        RECEIPTS_DIR.mkdir(parents=True, exist_ok=True)
-        with receipt_path.open("x", encoding="utf-8") as file:
-            receipt_created = True
-            file.write(_receipt(order_id, email, timestamp, details, total))
-        for key, temp_name in (("compras", temp_orders), ("inventario", temp_excel), ("carrito", temp_cart)):
-            os.replace(temp_name, paths[key])
-            temps.remove(temp_name)
+        temporales.append(pedidos_temporales)
+        carrito_temporal = _bytes_temporales(_carrito_sin_usuario(correo), ".carrito_pedido_")
+        temporales.append(carrito_temporal)
+        DIRECTORIO_COMPROBANTES.mkdir(parents=True, exist_ok=True)
+        with ruta_comprobante.open("x", encoding="utf-8") as archivo:
+            comprobante_creado = True
+            archivo.write(_comprobante(id_pedido, correo, marca_temporal, detalles, total))
+        for clave, nombre_temporal in (("compras", pedidos_temporales), ("inventario", excel_temporal), ("carrito", carrito_temporal)):
+            os.replace(nombre_temporal, rutas_archivos[clave])
+            temporales.remove(nombre_temporal)
     except Exception as error:
-        restore_errors = []
-        for name, path in paths.items():
-            existed, content = snapshots[name]
+        errores_restauracion = []
+        for nombre, ruta in rutas_archivos.items():
+            existia, contenido = copias_respaldo[nombre]
             try:
-                _restore(path, existed, content)
-            except Exception as restore_error:
-                restore_errors.append(f"{path.name}: {restore_error}")
-        if receipt_created:
+                _restaurar_archivo(ruta, existia, contenido)
+            except Exception as error_restauracion:
+                errores_restauracion.append(f"{ruta.name}: {error_restauracion}")
+        if comprobante_creado:
             try:
-                receipt_path.unlink(missing_ok=True)
-            except OSError as receipt_error:
-                restore_errors.append(f"{receipt_path.name}: {receipt_error}")
-        for temp_name in temps:
+                ruta_comprobante.unlink(missing_ok=True)
+            except OSError as error_comprobante:
+                errores_restauracion.append(f"{ruta_comprobante.name}: {error_comprobante}")
+        for nombre_temporal in temporales:
             try:
-                Path(temp_name).unlink(missing_ok=True)
+                Path(nombre_temporal).unlink(missing_ok=True)
             except OSError:
                 pass
-        suffix = " No se pudo restaurar: " + "; ".join(restore_errors) if restore_errors else " Se restauraron los archivos anteriores."
-        return {"ok": False, "message": f"No se completó la compra: {error}.{suffix}",
-                "details": details, "total": total}
-    return {"ok": True, "message": "Compra confirmada.", "pedido": order_id,
-            "comprobante": str(receipt_path), "details": details, "total": total}
+        sufijo = " No se pudo restaurar: " + "; ".join(errores_restauracion) if errores_restauracion else " Se restauraron los archivos anteriores."
+        return {"ok": False, "message": f"No se completó la compra: {error}.{sufijo}",
+                "details": detalles, "total": total}
+    return {"ok": True, "message": "Compra confirmada.", "pedido": id_pedido,
+            "comprobante": str(ruta_comprobante), "details": detalles, "total": total}
 
 
-def list_purchases(email):
-    email = require_user(email)
-    if not PURCHASES_FILE.exists():
+def listar_compras(correo):
+    correo = requerir_usuario(correo)
+    if not ARCHIVO_COMPRAS.exists():
         return []
-    orders = {}
-    with PURCHASES_FILE.open("r", encoding="utf-8") as file:
-        for line in file:
-            fields = line.rstrip("\r\n").split("|")
-            if len(fields) != 11 or fields[1].strip().casefold() != email:
+    pedidos = {}
+    with ARCHIVO_COMPRAS.open("r", encoding="utf-8") as archivo:
+        for linea in archivo:
+            campos = linea.rstrip("\r\n").split("|")
+            if len(campos) != 11 or campos[1].strip().casefold() != correo:
                 continue
             try:
-                item = {"Codigo": fields[3], "Nombre": fields[4], "Talla": fields[5],
-                        "Cantidad": int(fields[6]), "Precio": float(fields[7]),
-                        "Subtotal": float(fields[8]), "Estado": fields[10]}
-                total = float(fields[9])
+                elemento = {"Codigo": campos[3], "Nombre": campos[4], "Talla": campos[5],
+                        "Cantidad": int(campos[6]), "Precio": float(campos[7]),
+                        "Subtotal": float(campos[8]), "Estado": campos[10]}
+                total = float(campos[9])
             except (ValueError, TypeError):
                 continue
-            order = orders.setdefault(fields[0], {"Pedido": fields[0], "Fecha": fields[2],
+            pedido = pedidos.setdefault(campos[0], {"Pedido": campos[0], "Fecha": campos[2],
                                                   "Total": total, "Articulos": []})
-            order["Articulos"].append(item)
-    return list(orders.values())
+            pedido["Articulos"].append(elemento)
+    return list(pedidos.values())
 
 
-def get_purchase_detail(email, order_id):
-    email = require_user(email)
-    return next((order for order in list_purchases(email)
-                 if order["Pedido"].casefold() == str(order_id).strip().casefold()), None)
+def obtener_detalle_compra(correo, id_pedido):
+    correo = requerir_usuario(correo)
+    return next((pedido for pedido in listar_compras(correo)
+                 if pedido["Pedido"].casefold() == str(id_pedido).strip().casefold()), None)

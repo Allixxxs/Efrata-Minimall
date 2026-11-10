@@ -5,145 +5,160 @@ import os
 import tempfile
 import pandas as pd
 from .rutas import (
-    CLOTHING_FILE, SUITS_FILE, AVAILABILITY_FILE, DATA_DIR,
+    ARCHIVO_ROPA, ARCHIVO_INVENTARIO_TRAJES, ARCHIVO_CONSULTA_DISPONIBILIDAD, DIRECTORIO_DATOS,
 )
 
-PRODUCT_COLUMNS = ["Codigo", "Nombre", "Seccion", "Tipo", "Precio", "Estado"]
-STOCK_COLUMNS = ["Codigo", "Talla", "Cantidad"]
+COLUMNAS_PRODUCTOS = ["Codigo", "Nombre", "Seccion", "Tipo", "Precio", "Estado"]
+COLUMNAS_EXISTENCIAS = ["Codigo", "Talla", "Cantidad"]
 
 
-def create_empty_clothing_workbook():
+def crear_libro_ropa_vacio():
     """Crea solo la plantilla vacía, y únicamente cuando el catálogo la necesita."""
-    if CLOTHING_FILE.exists():
+    if ARCHIVO_ROPA.exists():
         return False
-    with pd.ExcelWriter(CLOTHING_FILE, engine="openpyxl") as writer:
-        pd.DataFrame(columns=PRODUCT_COLUMNS).to_excel(
-            writer, sheet_name="Productos", index=False
+    with pd.ExcelWriter(ARCHIVO_ROPA, engine="openpyxl") as escritor:
+        pd.DataFrame(columns=COLUMNAS_PRODUCTOS).to_excel(
+            escritor, sheet_name="Productos", index=False
         )
-        pd.DataFrame(columns=STOCK_COLUMNS).to_excel(
-            writer, sheet_name="Existencias", index=False
+        pd.DataFrame(columns=COLUMNAS_EXISTENCIAS).to_excel(
+            escritor, sheet_name="Existencias", index=False
         )
     return True
 
 
-def validate_inventory(products, stock):
-    missing_products = [c for c in PRODUCT_COLUMNS if c not in products.columns]
-    missing_stock = [c for c in STOCK_COLUMNS if c not in stock.columns]
-    if missing_products or missing_stock:
+def validar_inventario(productos, existencias):
+    productos_faltantes = [caracter_c for caracter_c in COLUMNAS_PRODUCTOS if caracter_c not in productos.columns]
+    existencias_faltantes = [caracter_c for caracter_c in COLUMNAS_EXISTENCIAS if caracter_c not in existencias.columns]
+    if productos_faltantes or existencias_faltantes:
         raise ValueError("ropa.xlsx no tiene los encabezados requeridos en ambas hojas.")
-    products = products[PRODUCT_COLUMNS].dropna(how="all").copy()
-    stock = stock[STOCK_COLUMNS].dropna(how="all").copy()
-    for col in ("Codigo", "Nombre", "Seccion", "Tipo", "Estado"):
-        products[col] = products[col].fillna("").astype(str).str.strip()
-    products["_key"] = products["Codigo"].str.casefold()
-    if (products["_key"] == "").any() or products["_key"].duplicated().any():
+    if "Descripcion" not in productos.columns:
+        productos["Descripcion"] = None
+    productos = productos[COLUMNAS_PRODUCTOS + ["Descripcion"]].dropna(how="all").copy()
+    for columna in ("Codigo", "Nombre", "Seccion", "Tipo", "Descripcion", "Estado"):
+        productos[columna] = productos[columna].fillna("").astype(str).str.strip()
+    productos["_key"] = productos["Codigo"].str.casefold()
+    if (productos["_key"] == "").any() or productos["_key"].duplicated().any():
         raise ValueError("Cada producto debe tener un código único.")
-    for col in ("Codigo", "Nombre", "Seccion", "Tipo"):
-        if products[col].str.contains(r"[|\r\n]", regex=True).any():
-            raise ValueError(f"{col} no puede contener | ni saltos de línea.")
-    if (products["Nombre"] == "").any() or (products["Tipo"] == "").any():
+    for columna in ("Codigo", "Nombre", "Seccion", "Tipo", "Descripcion", "Estado"):
+        if productos[columna].str.contains(r"[|\r\n]", regex=True).any():
+            raise ValueError(f"{columna} no puede contener | ni saltos de línea.")
+    if (productos["Nombre"] == "").any() or (productos["Tipo"] == "").any():
         raise ValueError("Cada producto debe tener nombre y categoría.")
-    sections = {"mujer": "Mujer", "hombre": "Hombre", "unisex": "Unisex"}
-    products["Seccion"] = products["Seccion"].str.casefold().map(sections)
-    states = {"activo": "Activo", "inactivo": "Inactivo"}
-    products["Estado"] = products["Estado"].str.casefold().map(states)
-    if products["Seccion"].isna().any() or products["Estado"].isna().any():
+    secciones = {"mujer": "Mujer", "hombre": "Hombre", "unisex": "Unisex"}
+    productos["Seccion"] = productos["Seccion"].str.casefold().map(secciones)
+    estados = {"activo": "Activo", "inactivo": "Inactivo"}
+    productos["Estado"] = productos["Estado"].str.casefold().map(estados)
+    if productos["Seccion"].isna().any() or productos["Estado"].isna().any():
         raise ValueError("La sección o el estado de un producto no son válidos.")
-    products["Precio"] = pd.to_numeric(products["Precio"], errors="coerce")
-    invalid_price = products["Precio"].map(
-        lambda x: pd.isna(x) or not math.isfinite(float(x)) or x < 0
+    productos["Precio"] = pd.to_numeric(productos["Precio"], errors="coerce")
+    precio_invalido = productos["Precio"].map(
+        lambda elemento_x: pd.isna(elemento_x) or not math.isfinite(float(elemento_x)) or elemento_x < 0
     )
-    if invalid_price.any():
+    if precio_invalido.any():
         raise ValueError("El precio debe ser un número igual o mayor que cero.")
 
-    for col in ("Codigo", "Talla"):
-        stock[col] = stock[col].fillna("").astype(str).str.strip()
-    for col in ("Codigo", "Talla"):
-        if stock[col].str.contains(r"[|\r\n]", regex=True).any():
-            raise ValueError(f"{col} no puede contener | ni saltos de línea.")
-    stock["_code_key"] = stock["Codigo"].str.casefold()
-    stock["_size_key"] = stock["Talla"].str.casefold()
-    if (stock["_code_key"] == "").any() or (stock["_size_key"] == "").any():
+    for columna in ("Codigo", "Talla"):
+        existencias[columna] = existencias[columna].fillna("").astype(str).str.strip()
+    for columna in ("Codigo", "Talla"):
+        if existencias[columna].str.contains(r"[|\r\n]", regex=True).any():
+            raise ValueError(f"{columna} no puede contener | ni saltos de línea.")
+    existencias["_code_key"] = existencias["Codigo"].str.casefold()
+    existencias["_size_key"] = existencias["Talla"].str.casefold()
+    if (existencias["_code_key"] == "").any() or (existencias["_size_key"] == "").any():
         raise ValueError("Cada existencia debe tener código y talla.")
-    if stock.duplicated(["_code_key", "_size_key"]).any():
+    if existencias.duplicated(["_code_key", "_size_key"]).any():
         raise ValueError("La combinación de código y talla debe ser única.")
-    unknown = set(stock["_code_key"]) - set(products["_key"])
-    if unknown:
+    desconocido = set(existencias["_code_key"]) - set(productos["_key"])
+    if desconocido:
         raise ValueError("Hay existencias asociadas a productos inexistentes.")
-    stock["Cantidad"] = pd.to_numeric(stock["Cantidad"], errors="coerce")
-    invalid_qty = stock["Cantidad"].map(
-        lambda x: pd.isna(x) or not math.isfinite(float(x)) or x < 0 or x % 1 != 0
+    existencias["Cantidad"] = pd.to_numeric(existencias["Cantidad"], errors="coerce")
+    cantidad_invalida = existencias["Cantidad"].map(
+        lambda elemento_x: pd.isna(elemento_x) or not math.isfinite(float(elemento_x)) or elemento_x < 0 or elemento_x % 1 != 0
     )
-    if invalid_qty.any():
+    if cantidad_invalida.any():
         raise ValueError("Las cantidades deben ser enteros iguales o mayores que cero.")
-    stock["Cantidad"] = stock["Cantidad"].astype(int)
-    return products[PRODUCT_COLUMNS].reset_index(drop=True), stock[STOCK_COLUMNS].reset_index(drop=True)
+    existencias["Cantidad"] = existencias["Cantidad"].astype(int)
+    return productos[COLUMNAS_PRODUCTOS + ["Descripcion"]].reset_index(drop=True), existencias[COLUMNAS_EXISTENCIAS].reset_index(drop=True)
 
-
-def validate_clothing_catalog(products, stock):
-    products, stock = validate_inventory(products, stock)
-    stock_by_code = {}
-    for _, row in stock.iterrows():
-        stock_by_code.setdefault(str(row["Codigo"]).casefold(), []).append({
-            "Talla": row["Talla"], "Cantidad": int(row["Cantidad"]),
+def validar_catalogo_ropa(productos, existencias):
+    productos, existencias = validar_inventario(productos, existencias)
+    existencias_por_codigo = {}
+    for _, fila in existencias.iterrows():
+        existencias_por_codigo.setdefault(str(fila["Codigo"]).casefold(), []).append({
+            "Talla": fila["Talla"], "Cantidad": int(fila["Cantidad"]),
         })
-    result = []
-    for _, row in products[products["Estado"] == "Activo"].iterrows():
-        sizes = stock_by_code.get(str(row["Codigo"]).casefold(), [])
-        result.append({
-            "Codigo": row["Codigo"], "Nombre": row["Nombre"],
-            "Seccion": row["Seccion"], "Tipo": row["Tipo"],
-            "Precio": float(row["Precio"]), "Tallas": sizes,
-            "Disponibilidad": "Disponible" if any(s["Cantidad"] > 0 for s in sizes) else "Agotado",
+    resultado = []
+    for _, fila in productos[productos["Estado"] == "Activo"].iterrows():
+        tallas = existencias_por_codigo.get(str(fila["Codigo"]).casefold(), [])
+        resultado.append({
+            "Codigo": fila["Codigo"], "Nombre": fila["Nombre"],
+            "Seccion": fila["Seccion"], "Tipo": fila["Tipo"],
+            "Precio": float(fila["Precio"]), "Tallas": tallas,
+            "Disponibilidad": "Disponible" if any(elemento_s["Cantidad"] > 0 for elemento_s in tallas) else "Agotado",
+            "Descripcion": fila["Descripcion"],
         })
-    return result
+    return resultado
 
 
-def load_clothing_catalog():
-    if not CLOTHING_FILE.exists():
-        create_empty_clothing_workbook()
+def cargar_catalogo_ropa():
+    if not ARCHIVO_ROPA.exists():
+        crear_libro_ropa_vacio()
     try:
-        products = pd.read_excel(CLOTHING_FILE, sheet_name="Productos")
-        stock = pd.read_excel(CLOTHING_FILE, sheet_name="Existencias")
+        productos = pd.read_excel(ARCHIVO_ROPA, sheet_name="Productos")
+        existencias = pd.read_excel(ARCHIVO_ROPA, sheet_name="Existencias")
     except (ValueError, OSError, ImportError) as error:
         raise ValueError("No se pudo leer ropa.xlsx o faltan sus hojas.") from error
-    return validate_clothing_catalog(products, stock)
+    return validar_catalogo_ropa(productos, existencias)
 
 
-def filter_clothing_catalog(catalog, section=None, category=None):
+def filtrar_catalogo_ropa(catalogo, seccion=None, categoria=None):
     return [
-        product for product in catalog
-        if (not section or product["Seccion"].casefold() == section.casefold())
-        and (not category or product["Tipo"].casefold() == category.casefold())
+        producto for producto in catalogo
+        if (not seccion or producto["Seccion"].casefold() == seccion.casefold())
+        and (not categoria or producto["Tipo"].casefold() == categoria.casefold())
     ]
 
 
-def load_suits():
-    if not SUITS_FILE.exists():
-        raise FileNotFoundError(f"No se encontró el inventario de trajes: {SUITS_FILE.name}")
-    frame = pd.read_excel(SUITS_FILE)
-    required = ["Codigo", "Nombre", "Tallas", "Precio", "Estado"]
-    if any(col not in frame.columns for col in required):
+def cargar_trajes():
+    if not ARCHIVO_INVENTARIO_TRAJES.exists():
+        raise FileNotFoundError(f"No se encontró el inventario de trajes: {ARCHIVO_INVENTARIO_TRAJES.name}")
+    marco = pd.read_excel(ARCHIVO_INVENTARIO_TRAJES)
+    requerido = ["Codigo", "Nombre", "Tallas", "Precio", "Estado"]
+    if any(columna not in marco.columns for columna in requerido):
         raise ValueError("inventario.xlsx no tiene los encabezados de trajes requeridos.")
-    return [[str(row[0]), row[1], row[2], int(row[3]), row[4]] for row in frame[required].values]
+    return [[str(fila[0]), fila[1], fila[2], int(fila[3]), fila[4]] for fila in marco[requerido].values]
 
+def cargar_descripciones_trajes():
+    """Devuelve un diccionario {codigo: descripcion} de los trajes."""
+    if not ARCHIVO_INVENTARIO_TRAJES.exists():
+        return {}
+    marco = pd.read_excel(ARCHIVO_INVENTARIO_TRAJES)
+    if "Descripcion" not in marco.columns:
+        return {}
+    descripciones = {}
+    for _, fila in marco.iterrows():
+        descripcion = fila["Descripcion"]
+        if pd.isna(descripcion):
+            descripcion = ""
+        descripciones[str(fila["Codigo"])] = str(descripcion).strip()
+    return descripciones
 
-def save_suits(suits):
-    frame = pd.DataFrame(suits, columns=["Codigo", "Nombre", "Tallas", "Precio", "Estado"])
-    descriptor, temp_name = tempfile.mkstemp(prefix=".inventario_", suffix=".xlsx", dir=DATA_DIR)
-    os.close(descriptor)
+def guardar_trajes(trajes):
+    marco = pd.DataFrame(trajes, columns=["Codigo", "Nombre", "Tallas", "Precio", "Estado"])
+    descripcion, nombre_temporal = tempfile.mkstemp(prefix=".inventario_", suffix=".xlsx", dir=DIRECTORIO_DATOS)
+    os.close(descripcion)
     try:
-        frame.to_excel(temp_name, index=False)
-        os.replace(temp_name, SUITS_FILE)
+        marco.to_excel(nombre_temporal, index=False)
+        os.replace(nombre_temporal, ARCHIVO_INVENTARIO_TRAJES)
     except Exception:
-        if os.path.exists(temp_name):
-            os.remove(temp_name)
+        if os.path.exists(nombre_temporal):
+            os.remove(nombre_temporal)
         raise
 
 
-def update_suit_availability():
-    rows = load_suits()
-    with AVAILABILITY_FILE.open("w", encoding="utf-8") as file:
-        for suit in rows:
-            file.write(f"{suit[0]}|{suit[1]}|{suit[4]}\n")
+def actualizar_disponibilidad_traje():
+    filas = cargar_trajes()
+    with ARCHIVO_CONSULTA_DISPONIBILIDAD.open("w", encoding="utf-8") as archivo:
+        for traje in filas:
+            archivo.write(f"{traje[0]}|{traje[1]}|{traje[4]}\n")
     return True

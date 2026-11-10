@@ -2,3 +2,5 @@ cliente.demo01@gmail.com|T001|Traje Sol Demo|S|12/11/2026|15/11/2026|Activo|1200
 cliente.demo02@hotmail.com|T001|Traje Sol Demo|M|12/11/2026|15/11/2026|Activo|120000|ALQ-DEMO-002|
 cliente.demo03@gmail.com|T002|Traje Luna Demo|L|19/11/2026|21/11/2026|Activo|135000|ALQ-DEMO-003|
 cliente.demo01@gmail.com|T003|Traje Brisa Demo|M|06/10/2026|10/10/2026|Devuelto|95000|ALQ-DEMO-004|11/10/2026
+a@gmail.com|T002|Traje Luna Demo|L|20/12/2026|22/12/2026|Devuelto|135000|0613c17e-05e8-4f0e-a6dd-92b9892df24c|07/11/2026
+a@gmail.com|T004|Traje Roble Demo|L|09/11/2026|02/12/2026|Activo|110000|186bf945-e879-40df-8464-27a08fbe3a67|

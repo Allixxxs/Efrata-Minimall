@@ -2,101 +2,101 @@
 
 import os
 import tempfile
-from .rutas import PERSONAL_DATA_FILE, DATA_DIR
-from .sesion import require_user
+from .rutas import ARCHIVO_DATOS_PERSONALES, DIRECTORIO_DATOS
+from .sesion import requerir_usuario
 
 
-def validate_personal_data(data):
-    def name(value, label):
-        value = str(value).strip()
-        if (not value or "|" in value or "\n" in value or "\r" in value
-                or not any(ch.isalpha() for ch in value)
-                or any(not (ch.isalpha() or ch in " -'’") for ch in value)):
-            raise ValueError(f"{label} debe contener letras y puede incluir espacios o guiones.")
-        return " ".join(value.split())
+def validar_datos_personales(datos):
+    def nombre(valor, etiqueta):
+        valor = str(valor).strip()
+        if (not valor or "|" in valor or "\n" in valor or "\r" in valor
+                or not any(ch.isalpha() for ch in valor)
+                or any(not (ch.isalpha() or ch in " -'’") for ch in valor)):
+            raise ValueError(f"{etiqueta} debe contener letras y puede incluir espacios o guiones.")
+        return " ".join(valor.split())
 
-    result = {
-        "Nombre": name(data.get("Nombre", ""), "El nombre"),
-        "Apellidos": name(data.get("Apellidos", ""), "Los apellidos"),
-        "Telefono": str(data.get("Telefono", "")).strip(),
-        "TipoDocumento": str(data.get("TipoDocumento", "")).strip().upper(),
-        "NumeroDocumento": str(data.get("NumeroDocumento", "")).strip(),
-        "Direccion": str(data.get("Direccion", "")).strip(),
-        "CodigoPostal": str(data.get("CodigoPostal", "")).strip(),
+    resultado = {
+        "Nombre": nombre(datos.get("Nombre", ""), "El nombre"),
+        "Apellidos": nombre(datos.get("Apellidos", ""), "Los apellidos"),
+        "Telefono": str(datos.get("Telefono", "")).strip(),
+        "TipoDocumento": str(datos.get("TipoDocumento", "")).strip().upper(),
+        "NumeroDocumento": str(datos.get("NumeroDocumento", "")).strip(),
+        "Direccion": str(datos.get("Direccion", "")).strip(),
+        "CodigoPostal": str(datos.get("CodigoPostal", "")).strip(),
     }
-    if not result["Telefono"].isdigit() or len(result["Telefono"]) != 10:
+    if not resultado["Telefono"].isdigit() or len(resultado["Telefono"]) != 10:
         raise ValueError("El teléfono debe contener 10 dígitos.")
-    if result["TipoDocumento"] not in {"CC", "CE", "NIT"}:
+    if resultado["TipoDocumento"] not in {"CC", "CE", "NIT"}:
         raise ValueError("El tipo de documento debe ser CC, CE o NIT.")
-    if not result["NumeroDocumento"].isdigit():
+    if not resultado["NumeroDocumento"].isdigit():
         raise ValueError("El número de documento debe contener solo dígitos.")
-    if not result["Direccion"] or any(c in result["Direccion"] for c in "|\r\n"):
+    if not resultado["Direccion"] or any(caracter_c in resultado["Direccion"] for caracter_c in "|\r\n"):
         raise ValueError("La dirección no puede estar vacía ni contener separadores o saltos de línea.")
-    if not result["CodigoPostal"].isdigit() or len(result["CodigoPostal"]) != 6:
+    if not resultado["CodigoPostal"].isdigit() or len(resultado["CodigoPostal"]) != 6:
         raise ValueError("El código postal debe contener seis dígitos.")
-    return result
+    return resultado
 
 
-def read_personal_data(email):
-    email = require_user(email)
-    if not PERSONAL_DATA_FILE.exists():
+def leer_datos_personales(correo):
+    correo = requerir_usuario(correo)
+    if not ARCHIVO_DATOS_PERSONALES.exists():
         return None
-    found = []
-    with PERSONAL_DATA_FILE.open("r", encoding="utf-8") as file:
-        for line in file:
-            fields = line.rstrip("\r\n").split("|")
-            if len(fields) == 8 and fields[0].strip().casefold() == email:
-                found.append(dict(zip(
+    encontrado = []
+    with ARCHIVO_DATOS_PERSONALES.open("r", encoding="utf-8") as archivo:
+        for linea in archivo:
+            campos = linea.rstrip("\r\n").split("|")
+            if len(campos) == 8 and campos[0].strip().casefold() == correo:
+                encontrado.append(dict(zip(
                     ("Correo", "Nombre", "Apellidos", "Telefono", "TipoDocumento",
-                     "NumeroDocumento", "Direccion", "CodigoPostal"), fields
+                     "NumeroDocumento", "Direccion", "CodigoPostal"), campos
                 )))
-    return found[-1] if found else None
+    return encontrado[-1] if encontrado else None
 
 
-def _replace_personal_lines(lines):
-    descriptor, temp_name = tempfile.mkstemp(
-        prefix=".datos_personales_", suffix=".tmp", dir=DATA_DIR
+def _reemplazar_lineas_personales(lineas):
+    descripcion, nombre_temporal = tempfile.mkstemp(
+        prefix=".datos_personales_", suffix=".tmp", dir=DIRECTORIO_DATOS
     )
     try:
-        with os.fdopen(descriptor, "w", encoding="utf-8", newline="") as file:
-            file.writelines(lines)
-        os.replace(temp_name, PERSONAL_DATA_FILE)
+        with os.fdopen(descripcion, "w", encoding="utf-8", newline="") as archivo:
+            archivo.writelines(lineas)
+        os.replace(nombre_temporal, ARCHIVO_DATOS_PERSONALES)
     except Exception:
-        if os.path.exists(temp_name):
-            os.remove(temp_name)
+        if os.path.exists(nombre_temporal):
+            os.remove(nombre_temporal)
         raise
 
 
-def save_personal_data(email, data):
-    email = require_user(email)
-    data = validate_personal_data(data)
-    lines = []
-    if PERSONAL_DATA_FILE.exists():
-        with PERSONAL_DATA_FILE.open("r", encoding="utf-8", newline="") as file:
-            for line in file:
-                owner = line.rstrip("\r\n").split("|", 1)[0].strip().casefold()
-                if owner != email:
-                    lines.append(line if line.endswith(("\n", "\r")) else line + "\n")
-    lines.append("|".join((email, *(data[key] for key in (
+def guardar_datos_personales(correo, datos):
+    correo = requerir_usuario(correo)
+    datos = validar_datos_personales(datos)
+    lineas = []
+    if ARCHIVO_DATOS_PERSONALES.exists():
+        with ARCHIVO_DATOS_PERSONALES.open("r", encoding="utf-8", newline="") as archivo:
+            for linea in archivo:
+                propietario = linea.rstrip("\r\n").split("|", 1)[0].strip().casefold()
+                if propietario != correo:
+                    lineas.append(linea if linea.endswith(("\n", "\r")) else linea + "\n")
+    lineas.append("|".join((correo, *(datos[clave] for clave in (
         "Nombre", "Apellidos", "Telefono", "TipoDocumento", "NumeroDocumento",
         "Direccion", "CodigoPostal"
     )))) + "\n")
-    _replace_personal_lines(lines)
-    return read_personal_data(email)
+    _reemplazar_lineas_personales(lineas)
+    return leer_datos_personales(correo)
 
 
-def delete_personal_data(email):
-    email = require_user(email)
-    if not PERSONAL_DATA_FILE.exists():
+def eliminar_datos_personales(correo):
+    correo = requerir_usuario(correo)
+    if not ARCHIVO_DATOS_PERSONALES.exists():
         return False
-    lines, removed = [], False
-    with PERSONAL_DATA_FILE.open("r", encoding="utf-8", newline="") as file:
-        for line in file:
-            owner = line.rstrip("\r\n").split("|", 1)[0].strip().casefold()
-            if owner == email:
-                removed = True
+    lineas, eliminado = [], False
+    with ARCHIVO_DATOS_PERSONALES.open("r", encoding="utf-8", newline="") as archivo:
+        for linea in archivo:
+            propietario = linea.rstrip("\r\n").split("|", 1)[0].strip().casefold()
+            if propietario == correo:
+                eliminado = True
             else:
-                lines.append(line if line.endswith(("\n", "\r")) else line + "\n")
-    if removed:
-        _replace_personal_lines(lines)
-    return removed
+                lineas.append(linea if linea.endswith(("\n", "\r")) else linea + "\n")
+    if eliminado:
+        _reemplazar_lineas_personales(lineas)
+    return eliminado

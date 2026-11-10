@@ -4,137 +4,137 @@ import datetime
 import os
 import tempfile
 import uuid
-from .rutas import RENTALS_FILE, DATA_DIR
-from .catalogo import load_suits
-from .sesion import require_user
+from .rutas import ARCHIVO_ALQUILERES, DIRECTORIO_DATOS
+from .catalogo import cargar_trajes
+from .sesion import requerir_usuario
 
 
-def _parse_line(line):
-    fields = line.rstrip("\r\n").split("|")
-    return fields if len(fields) in {8, 10} else None
+def _interpretar_linea(linea):
+    campos = linea.rstrip("\r\n").split("|")
+    return campos if len(campos) in {8, 10} else None
 
 
-def _date(value):
-    return datetime.datetime.strptime(str(value), "%d/%m/%Y").date()
+def _convertir_fecha(valor):
+    return datetime.datetime.strptime(str(valor), "%d/%m/%Y").date()
 
 
-def check_rental_conflict(code, size, start, end):
-    if not RENTALS_FILE.exists():
+def hay_conflicto_alquiler(codigo, talla, fecha_inicio, fecha_fin):
+    if not ARCHIVO_ALQUILERES.exists():
         return False
-    start = _date(start) if isinstance(start, str) else start
-    end = _date(end) if isinstance(end, str) else end
-    if isinstance(start, datetime.datetime):
-        start = start.date()
-    if isinstance(end, datetime.datetime):
-        end = end.date()
-    with RENTALS_FILE.open("r", encoding="utf-8") as file:
-        for line in file:
-            fields = _parse_line(line)
-            if fields is None or fields[1] != str(code).strip():
+    fecha_inicio = _convertir_fecha(fecha_inicio) if isinstance(fecha_inicio, str) else fecha_inicio
+    fecha_fin = _convertir_fecha(fecha_fin) if isinstance(fecha_fin, str) else fecha_fin
+    if isinstance(fecha_inicio, datetime.datetime):
+        fecha_inicio = fecha_inicio.date()
+    if isinstance(fecha_fin, datetime.datetime):
+        fecha_fin = fecha_fin.date()
+    with ARCHIVO_ALQUILERES.open("r", encoding="utf-8") as archivo:
+        for linea in archivo:
+            campos = _interpretar_linea(linea)
+            if campos is None or campos[1] != str(codigo).strip():
                 continue
-            if fields[3].strip().casefold() != str(size).strip().casefold():
+            if campos[3].strip().casefold() != str(talla).strip().casefold():
                 continue
             try:
-                existing_start, programmed_return = _date(fields[4]), _date(fields[5])
+                inicio_existente, devolucion_programada = _convertir_fecha(campos[4]), _convertir_fecha(campos[5])
             except ValueError:
                 continue
-            occupied_through = programmed_return + datetime.timedelta(days=2)
-            if start <= occupied_through and end >= existing_start:
+            ocupado_hasta = devolucion_programada + datetime.timedelta(days=2)
+            if fecha_inicio <= ocupado_hasta and fecha_fin >= inicio_existente:
                 return True
     return False
 
 
-def get_user_rentals(email):
-    email = require_user(email)
-    if not RENTALS_FILE.exists():
+def obtener_alquileres_usuario(correo):
+    correo = requerir_usuario(correo)
+    if not ARCHIVO_ALQUILERES.exists():
         return []
-    rentals = []
-    with RENTALS_FILE.open("r", encoding="utf-8") as file:
-        for line_number, line in enumerate(file):
-            fields = _parse_line(line)
-            if fields and fields[0].strip().casefold() == email:
-                rentals.append({
-                    "Correo": email, "Codigo": fields[1], "Nombre": fields[2],
-                    "Talla": fields[3], "FechaAlquiler": fields[4],
-                    "FechaProgramada": fields[5], "Estado": fields[6],
-                    "Precio": fields[7],
-                    "Id": fields[8] if len(fields) == 10 else "",
-                    "FechaReal": fields[9] if len(fields) == 10 else "",
-                    "IndiceArchivo": line_number,
+    alquileres = []
+    with ARCHIVO_ALQUILERES.open("r", encoding="utf-8") as archivo:
+        for numero_linea, linea in enumerate(archivo):
+            campos = _interpretar_linea(linea)
+            if campos and campos[0].strip().casefold() == correo:
+                alquileres.append({
+                    "Correo": correo, "Codigo": campos[1], "Nombre": campos[2],
+                    "Talla": campos[3], "FechaAlquiler": campos[4],
+                    "FechaProgramada": campos[5], "Estado": campos[6],
+                    "Precio": campos[7],
+                    "Id": campos[8] if len(campos) == 10 else "",
+                    "FechaReal": campos[9] if len(campos) == 10 else "",
+                    "IndiceArchivo": numero_linea,
                 })
-    return rentals
+    return alquileres
 
 
-def register_rental(email, code, size, start, programmed_return):
-    email = require_user(email)
-    code, size = str(code).strip(), str(size).strip().upper()
-    start_date, return_date = _date(start), _date(programmed_return)
-    if start_date < datetime.date.today():
+def registrar_alquiler(correo, codigo, talla, fecha_inicio, devolucion_programada):
+    correo = requerir_usuario(correo)
+    codigo, talla = str(codigo).strip(), str(talla).strip().upper()
+    fecha_inicio, fecha_devolucion = _convertir_fecha(fecha_inicio), _convertir_fecha(devolucion_programada)
+    if fecha_inicio < datetime.date.today():
         raise ValueError("La fecha de alquiler no puede ser anterior a hoy.")
-    if return_date <= start_date:
+    if fecha_devolucion <= fecha_inicio:
         raise ValueError("La devolución debe ser posterior al alquiler.")
-    suit = next((item for item in load_suits() if item[0] == code), None)
-    if suit is None:
+    traje = next((elemento for elemento in cargar_trajes() if elemento[0] == codigo), None)
+    if traje is None:
         raise ValueError("No se encontró el traje solicitado.")
-    if str(suit[4]).strip().casefold() != "activo":
+    if str(traje[4]).strip().casefold() != "activo":
         raise ValueError("El traje seleccionado no está activo y no se puede alquilar.")
-    sizes = {value.strip().upper() for value in str(suit[2]).split(",")}
-    if size not in sizes:
+    tallas = {valor.strip().upper() for valor in str(traje[2]).split(",")}
+    if talla not in tallas:
         raise ValueError("La talla no está disponible para este traje.")
-    if check_rental_conflict(code, size, start_date, return_date):
+    if hay_conflicto_alquiler(codigo, talla, fecha_inicio, fecha_devolucion):
         raise ValueError("Esta talla ya tiene un alquiler o revisión que se cruza con esas fechas.")
-    rental_id = str(uuid.uuid4())
-    if RENTALS_FILE.exists() and RENTALS_FILE.stat().st_size:
-        with RENTALS_FILE.open("rb") as existing:
-            existing.seek(-1, os.SEEK_END)
-            if existing.read(1) not in {b"\n", b"\r"}:
-                with RENTALS_FILE.open("a", encoding="utf-8") as file:
-                    file.write("\n")
-    with RENTALS_FILE.open("a", encoding="utf-8") as file:
-        file.write(
-            f"{email}|{code}|{suit[1]}|{size}|{start_date.strftime('%d/%m/%Y')}|"
-            f"{return_date.strftime('%d/%m/%Y')}|Activo|{suit[3]}|{rental_id}|\n"
+    id_alquiler = str(uuid.uuid4())
+    if ARCHIVO_ALQUILERES.exists() and ARCHIVO_ALQUILERES.stat().st_size:
+        with ARCHIVO_ALQUILERES.open("rb") as existente:
+            existente.seek(-1, os.SEEK_END)
+            if existente.read(1) not in {b"\n", b"\r"}:
+                with ARCHIVO_ALQUILERES.open("a", encoding="utf-8") as archivo:
+                    archivo.write("\n")
+    with ARCHIVO_ALQUILERES.open("a", encoding="utf-8") as archivo:
+        archivo.write(
+            f"{correo}|{codigo}|{traje[1]}|{talla}|{fecha_inicio.strftime('%d/%m/%Y')}|"
+            f"{fecha_devolucion.strftime('%d/%m/%Y')}|Activo|{traje[3]}|{id_alquiler}|\n"
         )
     return {
-        "Correo": email, "Codigo": code, "Nombre": suit[1], "Talla": size,
-        "FechaAlquiler": start_date.strftime("%d/%m/%Y"),
-        "FechaProgramada": return_date.strftime("%d/%m/%Y"),
-        "Estado": "Activo", "Precio": suit[3], "Id": rental_id, "FechaReal": "",
+        "Correo": correo, "Codigo": codigo, "Nombre": traje[1], "Talla": talla,
+        "FechaAlquiler": fecha_inicio.strftime("%d/%m/%Y"),
+        "FechaProgramada": fecha_devolucion.strftime("%d/%m/%Y"),
+        "Estado": "Activo", "Precio": traje[3], "Id": id_alquiler, "FechaReal": "",
     }
 
 
-def return_rental(email, rental_token):
-    email = require_user(email)
-    if not RENTALS_FILE.exists():
+def devolver_alquiler(correo, identificador_alquiler):
+    correo = requerir_usuario(correo)
+    if not ARCHIVO_ALQUILERES.exists():
         raise ValueError("No hay alquileres registrados.")
-    with RENTALS_FILE.open("r", encoding="utf-8", newline="") as file:
-        lines = file.readlines()
-    rentals = get_user_rentals(email)
-    active = [r for r in rentals if r["Estado"].strip().casefold() == "activo"]
-    selected = next((r for r in active if str(r["IndiceArchivo"]) == str(rental_token)
-                     or (r["Id"] and r["Id"].casefold() == str(rental_token).casefold())), None)
-    if selected is None:
+    with ARCHIVO_ALQUILERES.open("r", encoding="utf-8", newline="") as archivo:
+        lineas = archivo.readlines()
+    alquileres = obtener_alquileres_usuario(correo)
+    activa = [registro_r for registro_r in alquileres if registro_r["Estado"].strip().casefold() == "activo"]
+    seleccionado = next((registro_r for registro_r in activa if str(registro_r["IndiceArchivo"]) == str(identificador_alquiler)
+                     or (registro_r["Id"] and registro_r["Id"].casefold() == str(identificador_alquiler).casefold())), None)
+    if seleccionado is None:
         raise ValueError("No se encontró un alquiler activo de esta cuenta.")
-    fields = _parse_line(lines[selected["IndiceArchivo"]])
-    today = datetime.date.today().strftime("%d/%m/%Y")
-    fields[6] = "Devuelto"
-    if len(fields) == 8:
-        fields.extend([str(uuid.uuid4()), today])
+    campos = _interpretar_linea(lineas[seleccionado["IndiceArchivo"]])
+    hoy = datetime.date.today().strftime("%d/%m/%Y")
+    campos[6] = "Devuelto"
+    if len(campos) == 8:
+        campos.extend([str(uuid.uuid4()), hoy])
     else:
-        if not fields[8].strip():
-            fields[8] = str(uuid.uuid4())
-        fields[9] = today
-    lines[selected["IndiceArchivo"]] = "|".join(fields) + "\n"
-    descriptor, temp_name = tempfile.mkstemp(
-        prefix=".alquiler_devolucion_", suffix=".tmp", dir=DATA_DIR
+        if not campos[8].strip():
+            campos[8] = str(uuid.uuid4())
+        campos[9] = hoy
+    lineas[seleccionado["IndiceArchivo"]] = "|".join(campos) + "\n"
+    descripcion, nombre_temporal = tempfile.mkstemp(
+        prefix=".alquiler_devolucion_", suffix=".tmp", dir=DIRECTORIO_DATOS
     )
     try:
-        with os.fdopen(descriptor, "w", encoding="utf-8", newline="") as file:
-            file.writelines(lines)
-        os.replace(temp_name, RENTALS_FILE)
+        with os.fdopen(descripcion, "w", encoding="utf-8", newline="") as archivo:
+            archivo.writelines(lineas)
+        os.replace(nombre_temporal, ARCHIVO_ALQUILERES)
     except Exception:
-        if os.path.exists(temp_name):
-            os.remove(temp_name)
+        if os.path.exists(nombre_temporal):
+            os.remove(nombre_temporal)
         raise
-    selected.update({"Estado": "Devuelto", "FechaReal": today, "Id": fields[8]})
-    return selected
+    seleccionado.update({"Estado": "Devuelto", "FechaReal": hoy, "Id": campos[8]})
+    return seleccionado

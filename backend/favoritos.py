@@ -3,96 +3,96 @@
 import os
 import tempfile
 import pandas as pd
-from .rutas import FAVORITES_FILE, DATA_DIR, CLOTHING_FILE
-from .sesion import require_user
-from .catalogo import load_clothing_catalog
+from .rutas import ARCHIVO_FAVORITOS, DIRECTORIO_DATOS, ARCHIVO_ROPA
+from .sesion import requerir_usuario
+from .catalogo import cargar_catalogo_ropa
 
 
-def _records():
-    if not FAVORITES_FILE.exists():
+def _registros():
+    if not ARCHIVO_FAVORITOS.exists():
         return []
-    records = []
-    with FAVORITES_FILE.open("r", encoding="utf-8", newline="") as file:
-        for line in file:
-            fields = line.rstrip("\r\n").split("|")
-            if len(fields) == 2 and all(field.strip() for field in fields):
-                records.append((fields[0].strip().casefold(), fields[1].strip()))
-    return records
+    registros = []
+    with ARCHIVO_FAVORITOS.open("r", encoding="utf-8", newline="") as archivo:
+        for linea in archivo:
+            campos = linea.rstrip("\r\n").split("|")
+            if len(campos) == 2 and all(campo.strip() for campo in campos):
+                registros.append((campos[0].strip().casefold(), campos[1].strip()))
+    return registros
 
 
-def list_favorites(email):
-    email = require_user(email)
-    codes, seen = [], set()
-    for owner, code in _records():
-        if owner == email and code.casefold() not in seen:
-            seen.add(code.casefold())
-            codes.append(code)
-    catalog = {item["Codigo"].casefold(): item for item in load_clothing_catalog()}
-    inactive = {}
-    if CLOTHING_FILE.exists():
-        products = pd.read_excel(CLOTHING_FILE, sheet_name="Productos")
-        if "Codigo" in products and "Estado" in products:
-            for _, row in products.iterrows():
-                code = str(row.get("Codigo", "")).strip()
-                state = str(row.get("Estado", "")).strip().casefold()
-                if code and state == "inactivo":
-                    inactive[code.casefold()] = str(row.get("Nombre", ""))
-    result = []
-    for code in codes:
-        product = catalog.get(code.casefold())
-        if product:
-            result.append({**product, "EstadoFavorito": "Activo"})
-        elif code.casefold() in inactive:
-            result.append({"Codigo": code, "Nombre": inactive[code.casefold()], "EstadoFavorito": "Inactivo"})
+def listar_favoritos(correo):
+    correo = requerir_usuario(correo)
+    codigos, vistos = [], set()
+    for propietario, codigo in _registros():
+        if propietario == correo and codigo.casefold() not in vistos:
+            vistos.add(codigo.casefold())
+            codigos.append(codigo)
+    catalogo = {elemento["Codigo"].casefold(): elemento for elemento in cargar_catalogo_ropa()}
+    inactivo = {}
+    if ARCHIVO_ROPA.exists():
+        productos = pd.read_excel(ARCHIVO_ROPA, sheet_name="Productos")
+        if "Codigo" in productos and "Estado" in productos:
+            for _, fila in productos.iterrows():
+                codigo = str(fila.get("Codigo", "")).strip()
+                estado = str(fila.get("Estado", "")).strip().casefold()
+                if codigo and estado == "inactivo":
+                    inactivo[codigo.casefold()] = str(fila.get("Nombre", ""))
+    resultado = []
+    for codigo in codigos:
+        producto = catalogo.get(codigo.casefold())
+        if producto:
+            resultado.append({**producto, "EstadoFavorito": "Activo"})
+        elif codigo.casefold() in inactivo:
+            resultado.append({"Codigo": codigo, "Nombre": inactivo[codigo.casefold()], "EstadoFavorito": "Inactivo"})
         else:
-            result.append({"Codigo": code, "Nombre": "", "EstadoFavorito": "No encontrado"})
-    return result
+            resultado.append({"Codigo": codigo, "Nombre": "", "EstadoFavorito": "No encontrado"})
+    return resultado
 
 
-def _write_owner_change(lines):
-    descriptor, temp_name = tempfile.mkstemp(prefix=".favoritos_", suffix=".tmp", dir=DATA_DIR)
+def _escribir_cambios_usuario(lineas):
+    descripcion, nombre_temporal = tempfile.mkstemp(prefix=".favoritos_", suffix=".tmp", dir=DIRECTORIO_DATOS)
     try:
-        with os.fdopen(descriptor, "w", encoding="utf-8", newline="") as file:
-            file.writelines(lines)
-        os.replace(temp_name, FAVORITES_FILE)
+        with os.fdopen(descripcion, "w", encoding="utf-8", newline="") as archivo:
+            archivo.writelines(lineas)
+        os.replace(nombre_temporal, ARCHIVO_FAVORITOS)
     except Exception:
-        if os.path.exists(temp_name):
-            os.remove(temp_name)
+        if os.path.exists(nombre_temporal):
+            os.remove(nombre_temporal)
         raise
 
 
-def add_favorite(email, code):
-    email = require_user(email)
-    code = str(code).strip()
-    catalog = load_clothing_catalog()
-    product = next((p for p in catalog if p["Codigo"].casefold() == code.casefold()), None)
-    if product is None:
+def agregar_favorito(correo, codigo):
+    correo = requerir_usuario(correo)
+    codigo = str(codigo).strip()
+    catalogo = cargar_catalogo_ropa()
+    producto = next((producto_p for producto_p in catalogo if producto_p["Codigo"].casefold() == codigo.casefold()), None)
+    if producto is None:
         raise ValueError("El producto no existe o está inactivo.")
-    lines = FAVORITES_FILE.read_text(encoding="utf-8").splitlines(keepends=True) if FAVORITES_FILE.exists() else []
-    for line in lines:
-        fields = line.rstrip("\r\n").split("|")
-        if len(fields) == 2 and fields[0].strip().casefold() == email and fields[1].strip().casefold() == code.casefold():
+    lineas = ARCHIVO_FAVORITOS.read_text(encoding="utf-8").splitlines(keepends=True) if ARCHIVO_FAVORITOS.exists() else []
+    for linea in lineas:
+        campos = linea.rstrip("\r\n").split("|")
+        if len(campos) == 2 and campos[0].strip().casefold() == correo and campos[1].strip().casefold() == codigo.casefold():
             raise ValueError("Ese producto ya está en tus favoritos.")
-    if lines and not lines[-1].endswith(("\n", "\r")):
-        lines[-1] += "\n"
-    lines.append(f"{email}|{product['Codigo']}\n")
-    _write_owner_change(lines)
+    if lineas and not lineas[-1].endswith(("\n", "\r")):
+        lineas[-1] += "\n"
+    lineas.append(f"{correo}|{producto['Codigo']}\n")
+    _escribir_cambios_usuario(lineas)
     return True
 
 
-def remove_favorite(email, code):
-    email = require_user(email)
-    code = str(code).strip().casefold()
-    if not FAVORITES_FILE.exists():
+def eliminar_favorito(correo, codigo):
+    correo = requerir_usuario(correo)
+    codigo = str(codigo).strip().casefold()
+    if not ARCHIVO_FAVORITOS.exists():
         return False
-    lines, removed = [], False
-    with FAVORITES_FILE.open("r", encoding="utf-8", newline="") as file:
-        for line in file:
-            fields = line.rstrip("\r\n").split("|")
-            if len(fields) == 2 and fields[0].strip().casefold() == email and fields[1].strip().casefold() == code:
-                removed = True
+    lineas, eliminado = [], False
+    with ARCHIVO_FAVORITOS.open("r", encoding="utf-8", newline="") as archivo:
+        for linea in archivo:
+            campos = linea.rstrip("\r\n").split("|")
+            if len(campos) == 2 and campos[0].strip().casefold() == correo and campos[1].strip().casefold() == codigo:
+                eliminado = True
             else:
-                lines.append(line)
-    if removed:
-        _write_owner_change(lines)
-    return removed
+                lineas.append(linea)
+    if eliminado:
+        _escribir_cambios_usuario(lineas)
+    return eliminado

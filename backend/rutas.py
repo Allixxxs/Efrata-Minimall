@@ -2,18 +2,18 @@
 
 from pathlib import Path
 
-PROJECT_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT_DIR / "data"
-USERS_FILE = DATA_DIR / "usuarios.txt"
-LOGIN_LOG_FILE = DATA_DIR / "iniciossesion.txt"
-ADMIN_FILE = DATA_DIR / "administradores.txt"
-PERSONAL_DATA_FILE = DATA_DIR / "datos_personales.txt"
-SUITS_FILE = DATA_DIR / "inventario.xlsx"
-RENTALS_FILE = DATA_DIR / "registraralquiler.txt"
-AVAILABILITY_FILE = DATA_DIR / "consultardisponibilidad.txt"
-AVAILABLE_SUITS_FILE = DATA_DIR / "trajesdisponibles.txt"
-CLOTHING_FILE = DATA_DIR / "ropa.xlsx"
-CART_FILE = DATA_DIR / "carrito.txt"
-PURCHASES_FILE = DATA_DIR / "compras.txt"
-FAVORITES_FILE = DATA_DIR / "favoritos.txt"
-RECEIPTS_DIR = PROJECT_DIR / "comprobantes"
+DIRECTORIO_PROYECTO = Path(__file__).resolve().parent.parent
+DIRECTORIO_DATOS = DIRECTORIO_PROYECTO / "data"
+ARCHIVO_USUARIOS = DIRECTORIO_DATOS / "usuarios.txt"
+ARCHIVO_REGISTRO_SESIONES = DIRECTORIO_DATOS / "iniciossesion.txt"
+ARCHIVO_ADMINISTRADORES = DIRECTORIO_DATOS / "administradores.txt"
+ARCHIVO_DATOS_PERSONALES = DIRECTORIO_DATOS / "datos_personales.txt"
+ARCHIVO_INVENTARIO_TRAJES = DIRECTORIO_DATOS / "inventario.xlsx"
+ARCHIVO_ALQUILERES = DIRECTORIO_DATOS / "registraralquiler.txt"
+ARCHIVO_CONSULTA_DISPONIBILIDAD = DIRECTORIO_DATOS / "consultardisponibilidad.txt"
+ARCHIVO_TRAJES_DISPONIBLES = DIRECTORIO_DATOS / "trajesdisponibles.txt"
+ARCHIVO_ROPA = DIRECTORIO_DATOS / "ropa.xlsx"
+ARCHIVO_CARRITO = DIRECTORIO_DATOS / "carrito.txt"
+ARCHIVO_COMPRAS = DIRECTORIO_DATOS / "compras.txt"
+ARCHIVO_FAVORITOS = DIRECTORIO_DATOS / "favoritos.txt"
+DIRECTORIO_COMPROBANTES = DIRECTORIO_PROYECTO / "comprobantes"

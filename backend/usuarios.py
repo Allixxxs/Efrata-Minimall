@@ -1,83 +1,83 @@
 """Registro, autenticación y cierre de sesión."""
 
 from datetime import datetime
-from .rutas import USERS_FILE, LOGIN_LOG_FILE
-from .sesion import current_session
+from .rutas import ARCHIVO_USUARIOS, ARCHIVO_REGISTRO_SESIONES
+from .sesion import sesion_actual
 
 
-def normalize_email(email):
-    value = str(email or "").strip().casefold()
+def normalizar_correo(correo):
+    valor = str(correo or "").strip().casefold()
     if (
-        not value or "|" in value or "\n" in value or "\r" in value
-        or " " in value or value.count("@") != 1
+        not valor or "|" in valor or "\n" in valor or "\r" in valor
+        or " " in valor or valor.count("@") != 1
     ):
         raise ValueError("El correo electrónico no tiene un formato válido.")
-    local, domain = value.rsplit("@", 1)
-    if not local or domain not in {"gmail.com", "hotmail.com"}:
+    parte_local, dominio = valor.rsplit("@", 1)
+    if not parte_local or dominio not in {"gmail.com", "hotmail.com"}:
         raise ValueError("El correo debe ser de Gmail o Hotmail.")
-    return value
+    return valor
 
 
-def validate_password(password):
-    value = str(password or "")
+def validar_contrasena(contrasena):
+    valor = str(contrasena or "")
     if (
-        len(value) < 8 or not any(c.isupper() for c in value)
-        or not any(c.islower() for c in value) or not any(c.isdigit() for c in value)
-        or "|" in value or "\n" in value or "\r" in value
+        len(valor) < 8 or not any(caracter_c.isupper() for caracter_c in valor)
+        or not any(caracter_c.islower() for caracter_c in valor) or not any(caracter_c.isdigit() for caracter_c in valor)
+        or "|" in valor or "\n" in valor or "\r" in valor
     ):
         raise ValueError("La contraseña requiere 8 caracteres, mayúscula, minúscula y número.")
-    return value
+    return valor
 
 
-def _read_users():
-    if not USERS_FILE.exists():
+def _leer_usuarios():
+    if not ARCHIVO_USUARIOS.exists():
         return {}
-    users = {}
-    with USERS_FILE.open("r", encoding="utf-8") as file:
-        for line in file:
-            fields = line.rstrip("\r\n").split("|")
-            if len(fields) == 2 and fields[0].strip():
-                users[fields[0].strip().casefold()] = fields[1]
-    return users
+    usuarios = {}
+    with ARCHIVO_USUARIOS.open("r", encoding="utf-8") as archivo:
+        for linea in archivo:
+            campos = linea.rstrip("\r\n").split("|")
+            if len(campos) == 2 and campos[0].strip():
+                usuarios[campos[0].strip().casefold()] = campos[1]
+    return usuarios
 
 
-def user_exists(email):
-    return normalize_email(email) in _read_users()
+def existe_usuario(correo):
+    return normalizar_correo(correo) in _leer_usuarios()
 
 
-def register_user(email, password):
-    email = normalize_email(email)
-    password = validate_password(password)
-    if email in _read_users():
+def registrar_usuario(correo, contrasena):
+    correo = normalizar_correo(correo)
+    contrasena = validar_contrasena(contrasena)
+    if correo in _leer_usuarios():
         raise ValueError("Ya existe una cuenta con ese correo.")
-    with USERS_FILE.open("a", encoding="utf-8") as file:
-        file.write(f"{email}|{password}\n")
-    _start_session(email, password)
-    _record_login(email)
+    with ARCHIVO_USUARIOS.open("a", encoding="utf-8") as archivo:
+        archivo.write(f"{correo}|{contrasena}\n")
+    _iniciar_sesion(correo, contrasena)
+    _registrar_inicio_sesion(correo)
     return True
 
 
-def authenticate_user(email, password):
-    email = normalize_email(email)
-    if _read_users().get(email) != str(password):
+def autenticar_usuario(correo, contrasena):
+    correo = normalizar_correo(correo)
+    if _leer_usuarios().get(correo) != str(contrasena):
         return False
-    _start_session(email, str(password))
-    _record_login(email)
+    _iniciar_sesion(correo, str(contrasena))
+    _registrar_inicio_sesion(correo)
     return True
 
 
-def _start_session(email, password):
-    current_session.email = email
-    current_session.password = password
-    current_session.active = True
+def _iniciar_sesion(correo, contrasena):
+    sesion_actual.correo = correo
+    sesion_actual.contrasena = contrasena
+    sesion_actual.activa = True
 
 
-def _record_login(email):
-    with LOGIN_LOG_FILE.open("a", encoding="utf-8") as file:
-        file.write(f"{email}|{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
+def _registrar_inicio_sesion(correo):
+    with ARCHIVO_REGISTRO_SESIONES.open("a", encoding="utf-8") as archivo:
+        archivo.write(f"{correo}|{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
 
 
-def close_session():
-    current_session.email = ""
-    current_session.password = ""
-    current_session.active = False
+def cerrar_sesion():
+    sesion_actual.correo = ""
+    sesion_actual.contrasena = ""
+    sesion_actual.activa = False

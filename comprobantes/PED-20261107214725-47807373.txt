@@ -1,0 +1,11 @@
+COMPROBANTE DE COMPRA - EFRATA MINI-MALL
+Pedido: PED-20261107214725-47807373
+Fecha: 07/11/2026 21:47:25
+Correo: a@gmail.com
+
+ARTÍCULOS:
+Blusa Lirio Demo | Código: CL-MU-001 | Talla: S | Cantidad: 1 | Precio unitario: $45,000.00 | Subtotal: $45,000.00
+Chaqueta Prisma Demo | Código: CL-UNI-001 | Talla: S | Cantidad: 1 | Precio unitario: $125,000.00 | Subtotal: $125,000.00
+
+TOTAL: $170,000.00
+Compra simulada; no se procesó ningún pago.

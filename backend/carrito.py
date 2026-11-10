@@ -2,164 +2,164 @@
 
 import os
 import tempfile
-from .rutas import CART_FILE, DATA_DIR
-from .sesion import require_user
-from .catalogo import load_clothing_catalog
+from .rutas import ARCHIVO_CARRITO, DIRECTORIO_DATOS
+from .sesion import requerir_usuario
+from .catalogo import cargar_catalogo_ropa
 
 
-def normalize_email(email):
-    return require_user(email)
+def normalizar_correo(correo):
+    return requerir_usuario(correo)
 
 
-def read_cart(email):
-    email = require_user(email)
-    quantities = {}
-    if not CART_FILE.exists():
+def leer_carrito(correo):
+    correo = requerir_usuario(correo)
+    cantidades = {}
+    if not ARCHIVO_CARRITO.exists():
         return []
-    with CART_FILE.open("r", encoding="utf-8", newline="") as file:
-        for line in file:
-            fields = line.rstrip("\r\n").split("|")
-            if len(fields) != 4 or fields[0].strip().casefold() != email:
+    with ARCHIVO_CARRITO.open("r", encoding="utf-8", newline="") as archivo:
+        for linea in archivo:
+            campos = linea.rstrip("\r\n").split("|")
+            if len(campos) != 4 or campos[0].strip().casefold() != correo:
                 continue
             try:
-                amount = int(fields[3])
+                cantidad = int(campos[3])
             except ValueError:
                 continue
-            if amount <= 0:
+            if cantidad <= 0:
                 continue
-            key = (fields[1].strip().upper(), fields[2].strip().upper())
-            quantities[key] = quantities.get(key, 0) + amount
-    return [{"Codigo": code, "Talla": size, "Cantidad": amount}
-            for (code, size), amount in quantities.items()]
+            clave = (campos[1].strip().upper(), campos[2].strip().upper())
+            cantidades[clave] = cantidades.get(clave, 0) + cantidad
+    return [{"Codigo": codigo, "Talla": talla, "Cantidad": cantidad}
+            for (codigo, talla), cantidad in cantidades.items()]
 
 
-def validate_quantity(amount):
+def validar_cantidad(cantidad):
     try:
-        value = float(amount)
-        integer = int(value)
+        valor = float(cantidad)
+        entero = int(valor)
     except (TypeError, ValueError, OverflowError) as error:
         raise ValueError("La cantidad debe ser un número entero positivo.") from error
-    if value != integer or integer <= 0:
+    if valor != entero or entero <= 0:
         raise ValueError("La cantidad debe ser un número entero positivo.")
-    return integer
+    return entero
 
 
-def save_cart(email, items):
-    email = require_user(email)
-    preserved = []
-    if CART_FILE.exists():
-        with CART_FILE.open("r", encoding="utf-8", newline="") as file:
-            for line in file:
-                fields = line.rstrip("\r\n").split("|")
-                own_valid_line = False
-                if len(fields) == 4:
+def guardar_carrito(correo, articulos):
+    correo = requerir_usuario(correo)
+    conservado = []
+    if ARCHIVO_CARRITO.exists():
+        with ARCHIVO_CARRITO.open("r", encoding="utf-8", newline="") as archivo:
+            for linea in archivo:
+                campos = linea.rstrip("\r\n").split("|")
+                linea_propia_valida = False
+                if len(campos) == 4:
                     try:
-                        own_valid_line = fields[0].strip().casefold() == email and int(fields[3]) > 0
+                        linea_propia_valida = campos[0].strip().casefold() == correo and int(campos[3]) > 0
                     except ValueError:
                         pass
-                if not own_valid_line:
-                    preserved.append(line if line.endswith(("\n", "\r")) else line + "\n")
-    for item in items:
-        amount = int(item["Cantidad"])
-        if amount > 0:
-            code, size = item["Codigo"].strip().upper(), item["Talla"].strip().upper()
-            if any(char in value for value in (code, size) for char in "|\r\n"):
+                if not linea_propia_valida:
+                    conservado.append(linea if linea.endswith(("\n", "\r")) else linea + "\n")
+    for elemento in articulos:
+        cantidad = int(elemento["Cantidad"])
+        if cantidad > 0:
+            codigo, talla = elemento["Codigo"].strip().upper(), elemento["Talla"].strip().upper()
+            if any(caracter in valor for valor in (codigo, talla) for caracter in "|\r\n"):
                 raise ValueError("El código y la talla no pueden contener separadores.")
-            preserved.append(f"{email}|{code}|{size}|{amount}\n")
-    descriptor, temp_name = tempfile.mkstemp(prefix=".carrito_", suffix=".tmp", dir=DATA_DIR)
+            conservado.append(f"{correo}|{codigo}|{talla}|{cantidad}\n")
+    descripcion, nombre_temporal = tempfile.mkstemp(prefix=".carrito_", suffix=".tmp", dir=DIRECTORIO_DATOS)
     try:
-        with os.fdopen(descriptor, "w", encoding="utf-8", newline="") as file:
-            file.writelines(preserved)
-        os.replace(temp_name, CART_FILE)
+        with os.fdopen(descripcion, "w", encoding="utf-8", newline="") as archivo:
+            archivo.writelines(conservado)
+        os.replace(nombre_temporal, ARCHIVO_CARRITO)
     except Exception:
-        if os.path.exists(temp_name):
-            os.remove(temp_name)
+        if os.path.exists(nombre_temporal):
+            os.remove(nombre_temporal)
         raise
 
 
-def get_variant(catalog, code, size):
-    code, size = str(code).strip().upper(), str(size).strip().upper()
-    for product in catalog:
-        if product["Codigo"].strip().upper() == code:
-            for variant in product["Tallas"]:
-                if variant["Talla"].strip().upper() == size:
-                    return product, variant
-            return product, None
+def obtener_variante(catalogo, codigo, talla):
+    codigo, talla = str(codigo).strip().upper(), str(talla).strip().upper()
+    for producto in catalogo:
+        if producto["Codigo"].strip().upper() == codigo:
+            for variante in producto["Tallas"]:
+                if variante["Talla"].strip().upper() == talla:
+                    return producto, variante
+            return producto, None
     return None, None
 
 
-def add_to_cart(email, code, size, amount, catalog=None):
-    email, amount = require_user(email), validate_quantity(amount)
-    catalog = load_clothing_catalog() if catalog is None else catalog
-    product, variant = get_variant(catalog, code, size)
-    if product is None:
+def agregar_al_carrito(correo, codigo, talla, cantidad, catalogo=None):
+    correo, cantidad = requerir_usuario(correo), validar_cantidad(cantidad)
+    catalogo = cargar_catalogo_ropa() if catalogo is None else catalogo
+    producto, variante = obtener_variante(catalogo, codigo, talla)
+    if producto is None:
         raise ValueError("El producto no existe o está inactivo.")
-    if variant is None:
+    if variante is None:
         raise ValueError("La talla no está disponible para este producto.")
-    items = read_cart(email)
-    code, size = product["Codigo"].strip().upper(), variant["Talla"].strip().upper()
-    current = next((x for x in items if x["Codigo"] == code and x["Talla"] == size), None)
-    new_amount = (current["Cantidad"] if current else 0) + amount
-    if new_amount > variant["Cantidad"]:
-        raise ValueError(f"Solo hay {variant['Cantidad']} unidades disponibles de {product['Nombre']} talla {size}.")
-    if current:
-        current["Cantidad"] = new_amount
+    articulos = leer_carrito(correo)
+    codigo, talla = producto["Codigo"].strip().upper(), variante["Talla"].strip().upper()
+    actual = next((elemento_x for elemento_x in articulos if elemento_x["Codigo"] == codigo and elemento_x["Talla"] == talla), None)
+    nueva_cantidad = (actual["Cantidad"] if actual else 0) + cantidad
+    if nueva_cantidad > variante["Cantidad"]:
+        raise ValueError(f"Solo hay {variante['Cantidad']} unidades disponibles de {producto['Nombre']} talla {talla}.")
+    if actual:
+        actual["Cantidad"] = nueva_cantidad
     else:
-        items.append({"Codigo": code, "Talla": size, "Cantidad": new_amount})
-    save_cart(email, items)
-    return new_amount
+        articulos.append({"Codigo": codigo, "Talla": talla, "Cantidad": nueva_cantidad})
+    guardar_carrito(correo, articulos)
+    return nueva_cantidad
 
 
-def update_cart_quantity(email, code, size, amount, catalog=None):
-    email, amount = require_user(email), validate_quantity(amount)
-    catalog = load_clothing_catalog() if catalog is None else catalog
-    product, variant = get_variant(catalog, code, size)
-    if product is None:
+def actualizar_cantidad_carrito(correo, codigo, talla, cantidad, catalogo=None):
+    correo, cantidad = requerir_usuario(correo), validar_cantidad(cantidad)
+    catalogo = cargar_catalogo_ropa() if catalogo is None else catalogo
+    producto, variante = obtener_variante(catalogo, codigo, talla)
+    if producto is None:
         raise ValueError("El producto no existe o está inactivo.")
-    if variant is None:
+    if variante is None:
         raise ValueError("La talla no está disponible para este producto.")
-    if amount > variant["Cantidad"]:
-        raise ValueError(f"Solo hay {variant['Cantidad']} unidades disponibles de {product['Nombre']} talla {variant['Talla']}.")
-    items = read_cart(email)
-    item = next((x for x in items if x["Codigo"] == product["Codigo"].upper()
-                 and x["Talla"] == variant["Talla"].upper()), None)
-    if item is None:
+    if cantidad > variante["Cantidad"]:
+        raise ValueError(f"Solo hay {variante['Cantidad']} unidades disponibles de {producto['Nombre']} talla {variante['Talla']}.")
+    articulos = leer_carrito(correo)
+    elemento = next((elemento_x for elemento_x in articulos if elemento_x["Codigo"] == producto["Codigo"].upper()
+                 and elemento_x["Talla"] == variante["Talla"].upper()), None)
+    if elemento is None:
         raise ValueError("Esa variante no está en tu carrito.")
-    item["Cantidad"] = amount
-    save_cart(email, items)
-    return amount
+    elemento["Cantidad"] = cantidad
+    guardar_carrito(correo, articulos)
+    return cantidad
 
 
-def remove_from_cart(email, code, size):
-    email = require_user(email)
-    key = (str(code).strip().upper(), str(size).strip().upper())
-    items = read_cart(email)
-    remaining = [x for x in items if (x["Codigo"], x["Talla"]) != key]
-    if len(remaining) == len(items):
+def eliminar_del_carrito(correo, codigo, talla):
+    correo = requerir_usuario(correo)
+    clave = (str(codigo).strip().upper(), str(talla).strip().upper())
+    articulos = leer_carrito(correo)
+    restante = [elemento_x for elemento_x in articulos if (elemento_x["Codigo"], elemento_x["Talla"]) != clave]
+    if len(restante) == len(articulos):
         return False
-    save_cart(email, remaining)
+    guardar_carrito(correo, restante)
     return True
 
 
-def get_cart_details(email, catalog=None):
-    email = require_user(email)
-    catalog = load_clothing_catalog() if catalog is None else catalog
-    details = []
-    for item in read_cart(email):
-        product, variant = get_variant(catalog, item["Codigo"], item["Talla"])
-        if product is None:
-            details.append({**item, "Nombre": "Producto no disponible", "Precio": None,
+def obtener_detalles_carrito(correo, catalogo=None):
+    correo = requerir_usuario(correo)
+    catalogo = cargar_catalogo_ropa() if catalogo is None else catalogo
+    detalles = []
+    for elemento in leer_carrito(correo):
+        producto, variante = obtener_variante(catalogo, elemento["Codigo"], elemento["Talla"])
+        if producto is None:
+            detalles.append({**elemento, "Nombre": "Producto no disponible", "Precio": None,
                             "Subtotal": None, "StockActual": None,
                             "Aviso": "El producto ya no está activo o no existe en el catálogo."})
-        elif variant is None:
-            details.append({**item, "Nombre": product["Nombre"], "Precio": product["Precio"],
-                            "Subtotal": product["Precio"] * item["Cantidad"], "StockActual": 0,
+        elif variante is None:
+            detalles.append({**elemento, "Nombre": producto["Nombre"], "Precio": producto["Precio"],
+                            "Subtotal": producto["Precio"] * elemento["Cantidad"], "StockActual": 0,
                             "Aviso": "La talla ya no está registrada en el inventario."})
         else:
-            stock = variant["Cantidad"]
-            notice = (f"La existencia cambió: quedan {stock} unidades. El artículo se conserva en el carrito."
-                      if item["Cantidad"] > stock else "")
-            details.append({**item, "Nombre": product["Nombre"], "Precio": product["Precio"],
-                            "Subtotal": product["Precio"] * item["Cantidad"], "StockActual": stock,
-                            "Aviso": notice})
-    return details
+            existencias = variante["Cantidad"]
+            aviso = (f"La existencia cambió: quedan {existencias} unidades. El artículo se conserva en el carrito."
+                      if elemento["Cantidad"] > existencias else "")
+            detalles.append({**elemento, "Nombre": producto["Nombre"], "Precio": producto["Precio"],
+                            "Subtotal": producto["Precio"] * elemento["Cantidad"], "StockActual": existencias,
+                            "Aviso": aviso})
+    return detalles

@@ -6,13 +6,11 @@ venv/
 __pycache__/
 *.py[cod]
 *$py.class
-
 # Cachés de herramientas de desarrollo
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .coverage
-
 # Archivos temporales y del sistema
 *.tmp
 *.temp

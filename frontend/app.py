@@ -5,7 +5,9 @@ from tkinter import messagebox
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import customtkinter as ctk
-from backend import authenticate_user, close_session, load_suits, register_rental, current_session, get_user_rentals, return_rental, register_user, read_personal_data, save_personal_data, load_clothing_catalog, filter_clothing_catalog, add_to_cart, get_cart_details, update_cart_quantity, remove_from_cart, prepare_purchase, confirm_purchase, list_purchases, list_favorites, add_favorite, remove_favorite
+from PIL import Image, ImageOps
+from tkcalendar import DateEntry
+from backend import autenticar_usuario, cerrar_sesion, cargar_trajes, registrar_alquiler, sesion_actual, obtener_alquileres_usuario, devolver_alquiler, registrar_usuario, leer_datos_personales, guardar_datos_personales, cargar_catalogo_ropa, filtrar_catalogo_ropa, agregar_al_carrito, obtener_detalles_carrito, actualizar_cantidad_carrito, eliminar_del_carrito, preparar_compra, confirmar_compra, listar_compras, listar_favoritos, agregar_favorito, eliminar_favorito, cargar_descripciones_trajes
 
 
 morado = "#4A2560"
@@ -20,7 +22,7 @@ morado_oscuro = "#3A1C4C"
 letra_titulo = "Georgia"
 letra_texto = "Segoe UI"
 
-#Crear la ventana 
+#Crear la ventana
 ventana = ctk.CTk()
 ventana.title("EFRATA Mini-Mall")
 ventana.geometry("420x760")
@@ -35,7 +37,7 @@ tulo.place(relx=0.5, rely=0.5, anchor="center")
 pantalla_login = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
 pantalla_login.pack(fill="both", expand=True)
 
-pantalla_actual = pantalla_login  
+pantalla_actual = pantalla_login
 
 def mostrar(pantalla_nueva):
     global pantalla_actual
@@ -43,6 +45,28 @@ def mostrar(pantalla_nueva):
     pantalla_nueva.pack(fill="both", expand=True)
     pantalla_actual = pantalla_nueva
 
+carpeta_imagenes = Path(__file__).resolve().parent / "imagenes"
+
+iconos_ropa = {"Blusa": "👚", "Vestido": "👗", "Camisa": "👔", "Pantalón": "👖", "Chaqueta": "🧥", "Falda": "👗"}
+
+def mostrar_foto_producto(contenedor, codigo, icono):
+    ruta = None
+    for extension in [".jpg", ".jpeg", ".png"]:
+        posible = carpeta_imagenes / (codigo + extension)
+        if posible.exists():
+            ruta = posible
+
+    if ruta is None:
+        recuadro = ctk.CTkFrame(contenedor, fg_color=borde, corner_radius=10, height=220)
+        recuadro.pack(fill="x", padx=14, pady=(14, 4))
+        recuadro.pack_propagate(False)
+        ctk.CTkLabel(recuadro, text=icono, font=ctk.CTkFont(size=50)).pack(expand=True)
+        return
+
+    imagen = Image.open(ruta)
+    imagen = ImageOps.pad(imagen, (620, 440), color=blanco)   # la foto completa, centrada, sin recortar
+    foto = ctk.CTkImage(light_image=imagen, size=(310, 220))
+    ctk.CTkLabel(contenedor, image=foto, text="").pack(padx=14, pady=(14, 4))
 
 #Inicio de sesión
 ctk.CTkLabel(pantalla_login, text="Iniciar sesión", text_color=texto, font=ctk.CTkFont(family=letra_titulo, size=24, weight="bold"), anchor="w").pack(fill="x", padx=24, pady=(28, 16))
@@ -58,7 +82,7 @@ caja_clave.pack(fill="x", padx=24, pady=(6, 14))
 mensaje= ctk.CTkLabel(pantalla_login, text="", text_color=rojo, font=ctk.CTkFont(family=letra_texto, size=13), wraplength=372, justify="left", anchor="w")
 mensaje.pack(fill="x", padx=24)
 
-def entrar():
+def iniciar_sesion_interfaz():
     correo = caja_correo.get().strip()
     clave = caja_clave.get()
 
@@ -67,7 +91,7 @@ def entrar():
         return
 
     try:
-        correcto = authenticate_user(correo, clave)
+        correcto = autenticar_usuario(correo, clave)
     except ValueError as problema:
         mensaje.configure(text=str(problema), text_color=rojo)
         return
@@ -81,7 +105,7 @@ def entrar():
 
 #botón entrar
 
-boton_entrar= ctk.CTkButton(pantalla_login, text="Entrar", command=entrar, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold"))
+boton_entrar= ctk.CTkButton(pantalla_login, text="Entrar", command=iniciar_sesion_interfaz, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold"))
 boton_entrar.pack(fill="x", padx=24, pady=(8, 6))
 
 pantalla_menu = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
@@ -92,40 +116,40 @@ bienvenida.pack(fill="x", padx=24, pady=(0, 12))
 
 #OPCIONES
 
-def abrir_opcion(nombre):
+def abrir_opcion_menu(nombre):
     if nombre == "Alquilar trajes":
-        ver_trajes()
+        mostrar_trajes()
     elif nombre == "Consultar alquileres" or nombre == "Devolver traje":
-        ver_alquileres()
+        mostrar_alquileres()
     elif nombre == "Mis datos":
-        ver_datos()
+        mostrar_datos_personales()
     elif nombre == "Buscar ropa":
-        ver_ropa()
+        mostrar_catalogo_ropa()
     elif nombre == "Ver carrito":
-        ver_carrito()
+        mostrar_carrito()
     elif nombre == "Mis compras":
-        ver_compras()
+        mostrar_compras()
     elif nombre == "Ver favoritos":
-        ver_favoritos()
+        mostrar_favoritos()
     elif nombre == "Inicio":
-        mostrar(pantalla_inicio)     
+        mostrar(pantalla_inicio)
     else:
         aviso.configure(text=f"La opción '{nombre}' aún no está disponible.", text_color=gris)
 
 for opcion in ["Inicio", "Buscar ropa", "Alquilar trajes", "Consultar alquileres", "Devolver traje", "Ver carrito", "Ver favoritos", "Mis datos", "Mis compras"]:
-    ctk.CTkButton(pantalla_menu, text=opcion, command=lambda o=opcion: abrir_opcion(o), height=40, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=24, pady= 4)
+    ctk.CTkButton(pantalla_menu, text=opcion, command=lambda opcion_o=opcion: abrir_opcion_menu(opcion_o), height=40, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=24, pady= 4)
 
 aviso = ctk.CTkLabel(pantalla_menu, text="", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=13))
 aviso.pack(pady=(6, 0))
 
-def cerrar_sesion():
-    close_session()                   
-    caja_correo.delete(0, "end")  
-    caja_clave.delete(0, "end")         
-    mensaje.configure(text="")          
+def cerrar_sesion_interfaz():
+    cerrar_sesion()
+    caja_correo.delete(0, "end")
+    caja_clave.delete(0, "end")
+    mensaje.configure(text="")
     mostrar(pantalla_login)
 
-ctk.CTkButton(pantalla_menu, text="Cerrar sesión", command=cerrar_sesion, fg_color="transparent", hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(pady=(8, 0))
+ctk.CTkButton(pantalla_menu, text="Cerrar sesión", command=cerrar_sesion_interfaz, fg_color="transparent", hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(pady=(8, 0))
 
 #Pantalla trajes
 pantalla_trajes = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
@@ -136,27 +160,36 @@ ctk.CTkLabel(pantalla_trajes, text="Trajes para alquilar", text_color=texto, fon
 lista_trajes = ctk.CTkScrollableFrame(pantalla_trajes, fg_color=fondo)
 lista_trajes.pack(fill="both", expand=True, padx=12, pady=(0, 12))
 
-def ver_trajes():
+def mostrar_trajes():
     for tarjeta in lista_trajes.winfo_children():
         tarjeta.destroy()
 
-    trajes = load_suits()
+    trajes = cargar_trajes()
+    descripciones = cargar_descripciones_trajes()
     for codigo, nombre, tallas, precio, estado in trajes:
         tarjeta = ctk.CTkFrame(lista_trajes, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
         tarjeta.pack(fill="x", padx=8, pady=6)
+        mostrar_foto_producto(tarjeta, codigo, "🤵")
 
         ctk.CTkLabel(tarjeta, text=nombre, text_color=texto, anchor="w",  font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 0))
         ctk.CTkLabel(tarjeta, text=f"Código {codigo} · Tallas: {tallas}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=12)).pack(fill="x", padx=14)
+        ctk.CTkLabel(tarjeta, text=descripciones.get(codigo, ""), text_color=texto, anchor="w", justify="left", wraplength=310, font=ctk.CTkFont(family=letra_texto, size=12)).pack(fill="x", padx=14, pady=(4, 2))
         ctk.CTkLabel(tarjeta, text=f"${precio:,}".replace(",", "."), text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=14)
-       
+
         if estado == "Activo":
             texto_estado = "Disponible"
             color_estado = verde
+            estado_boton= "normal"
+            color_boton = morado
+            texto_boton = "Alquilar"
         else:
             texto_estado = "No disponible"
             color_estado = rojo
+            estado_boton= "disabled"
+            color_boton = borde
+            texto_boton = "No disponible"
         ctk.CTkLabel(tarjeta, text=texto_estado, text_color=color_estado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")).pack(fill="x", padx=14, pady=(0, 8))
-        ctk.CTkButton(tarjeta, text="Alquilar", height=36, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda c=codigo, n=nombre, t=tallas, p=precio: abrir_alquiler(c, n, t, p)).pack(fill="x", padx=14, pady=(0, 12))
+        ctk.CTkButton(tarjeta, text=texto_boton, height=36, state=estado_boton, text_color_disabled=gris, corner_radius=10, fg_color=color_boton, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda caracter_c=codigo, numero_n=nombre, talla_t=tallas, producto_p=precio: abrir_formulario_alquiler(caracter_c, numero_n, talla_t, producto_p)).pack(fill="x", padx=14, pady=(0, 12))
 
     mostrar(pantalla_trajes)
 
@@ -176,12 +209,12 @@ selector_talla.pack(fill="x", padx=24, pady=(6, 14))
 
 #Fechas de alquiler
 ctk.CTkLabel(pantalla_alquiler, text="Fecha de alquiler", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=24)
-caja_fecha1 = ctk.CTkEntry(pantalla_alquiler, placeholder_text="dd/mm/aaaa", height=46, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
-caja_fecha1.pack(fill="x", padx=24, pady=(6, 14))
+caja_fecha1 = DateEntry(pantalla_alquiler, date_pattern="dd/mm/yyyy", locale="es_ES", mindate=datetime.date.today(), font=(letra_texto, 13), background=morado, foreground=blanco, selectbackground=morado, headersbackground=borde)
+caja_fecha1.pack(fill="x", padx=24, pady=(6, 14), ipady=8)
 
 ctk.CTkLabel(pantalla_alquiler, text="Fecha de devolución", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=24)
-caja_fecha2 = ctk.CTkEntry(pantalla_alquiler, placeholder_text="dd/mm/aaaa", height=46, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
-caja_fecha2.pack(fill="x", padx=24, pady=(6, 14))
+caja_fecha2 = DateEntry(pantalla_alquiler, date_pattern="dd/mm/yyyy", locale="es_ES", mindate=datetime.date.today(), font=(letra_texto, 13), background=morado, foreground=blanco, selectbackground=morado, headersbackground=borde)
+caja_fecha2.pack(fill="x", padx=24, pady=(6, 14), ipady=8)
 
 #Error o mensaje de éxito
 mensaje_alquiler = ctk.CTkLabel(pantalla_alquiler, text="", text_color=rojo, wraplength=372, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=13))
@@ -190,7 +223,7 @@ mensaje_alquiler.pack(fill="x", padx=24)
 #Formulario
 codigo_elegido = ""
 
-def abrir_alquiler(codigo, nombre, tallas, precio):
+def abrir_formulario_alquiler(codigo, nombre, tallas, precio):
     global codigo_elegido
     codigo_elegido = codigo
 
@@ -201,13 +234,13 @@ def abrir_alquiler(codigo, nombre, tallas, precio):
     selector_talla.configure(values=lista_tallas)
     selector_talla.set("Elija una talla")
 
-    caja_fecha1.delete(0, "end")
-    caja_fecha2.delete(0, "end")
+    caja_fecha1.set_date(datetime.date.today())
+    caja_fecha2.set_date(datetime.date.today() + datetime.timedelta(days=1))
     mensaje_alquiler.configure(text="")
     mostrar(pantalla_alquiler)
 
 #Confrimar alquiler
-def confirmar_alquiler():
+def confirmar_alquiler_interfaz():
     talla = selector_talla.get()
     fecha1 = caja_fecha1.get().strip()
     fecha2 = caja_fecha2.get().strip()
@@ -224,7 +257,7 @@ def confirmar_alquiler():
         return
 
     try:
-        alquiler= register_rental (current_session.email, codigo_elegido, talla, fecha1, fecha2)
+        alquiler= registrar_alquiler (sesion_actual.correo, codigo_elegido, talla, fecha1, fecha2)
     except ValueError as problema:
         mensaje_alquiler.configure(text=str(problema), text_color=rojo)
         return
@@ -233,7 +266,7 @@ def confirmar_alquiler():
         text=f"¡Alquiler registrado exitosamente!\n{alquiler['Nombre']} · Talla {alquiler['Talla']}\nDel {alquiler['FechaAlquiler']} al {alquiler['FechaProgramada']}",
         text_color= verde)
 
-bonton_confirmar = ctk.CTkButton(pantalla_alquiler, text="Confirmar alquiler", command=confirmar_alquiler, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold"))
+bonton_confirmar = ctk.CTkButton(pantalla_alquiler, text="Confirmar alquiler", command=confirmar_alquiler_interfaz, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold"))
 bonton_confirmar.pack(fill="x", padx=24, pady=(8, 6))
 
 #Mis alquileres
@@ -252,12 +285,12 @@ mensaje_devolucion.pack(fill="x", padx=24)
 lista_alquileres = ctk.CTkScrollableFrame(pantalla_alquileres, fg_color=fondo)
 lista_alquileres.pack(fill="both", expand=True, padx=12, pady=(0,16))
 
-def ver_alquileres():
+def mostrar_alquileres():
     mensaje_devolucion.configure(text="")
     for tarjeta in lista_alquileres.winfo_children():
         tarjeta.destroy()
 
-    alquileres = get_user_rentals(current_session.email)
+    alquileres = obtener_alquileres_usuario(sesion_actual.correo)
 
     if len (alquileres)== 0:
         ctk.CTkLabel(lista_alquileres, text="Todavía no tienes alquileres.", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=20)
@@ -272,7 +305,7 @@ def ver_alquileres():
 
         if alquiler["Estado"] == "Activo":
             color_estado= verde
-            ctk.CTkButton(tarjeta, text="Devolver traje", height=36, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda i=alquiler["IndiceArchivo"]: devolver(i)).pack(fill="x", padx=14, pady=(0, 12))
+            ctk.CTkButton(tarjeta, text="Devolver traje", height=36, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda indice_i=alquiler["IndiceArchivo"]: devolver(indice_i)).pack(fill="x", padx=14, pady=(0, 12))
 
         else:
             color_estado = gris
@@ -282,14 +315,16 @@ def ver_alquileres():
 
 #Devolver traje
 def devolver(indice):
+    if not messagebox.askyesno("Confirmar devolución", "¿Seguro que quieres devolver este traje?"):
+        return
     try:
-        traje= return_rental(current_session.email, indice)
+        traje= devolver_alquiler(sesion_actual.correo, indice)
     except ValueError as problema:
         mensaje_devolucion.configure(text=str(problema), text_color=rojo)
         return
-    
-    ver_alquileres()
-    mensaje_devolucion.configure(text=f"¡{traje['Nombre']} devuelto exitosamente el {traje['FechaReal']}!", text_color=verde) 
+
+    mostrar_alquileres()
+    mensaje_devolucion.configure(text=f"¡{traje['Nombre']} devuelto exitosamente el {traje['FechaReal']}!", text_color=verde)
 
 #CREAR CUENTA
 pantalla_registro = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
@@ -313,7 +348,7 @@ mensaje_registro = ctk.CTkLabel(pantalla_registro, text="", text_color=rojo, fon
 mensaje_registro.pack(fill="x", padx=24)
 
 
-def crear_cuenta():
+def crear_cuenta_interfaz():
     correo = registro_correo.get().strip()
     clave = registro_clave.get()
     clave2 = registro_clave2.get()
@@ -321,9 +356,9 @@ def crear_cuenta():
     if clave != clave2:
         mensaje_registro.configure(text="Las dos contraseñas no son iguales.")
         return
-    
+
     try:
-        register_user(correo, clave)
+        registrar_usuario(correo, clave)
     except ValueError as problema:
         mensaje_registro.configure(text=str(problema))
         return
@@ -331,7 +366,7 @@ def crear_cuenta():
     bienvenida.configure(text=f"Bienvenida, {correo}")
     mostrar(pantalla_menu)
 
-ctk.CTkButton(pantalla_registro, text="Crear cuenta", command=crear_cuenta, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=24, pady=(8, 6))
+ctk.CTkButton(pantalla_registro, text="Crear cuenta", command=crear_cuenta_interfaz, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=24, pady=(8, 6))
 ctk.CTkButton(pantalla_registro, text="¿Ya tienes cuenta? Inicia sesión", command=lambda: mostrar(pantalla_login), fg_color="transparent", hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(pady=(4, 0))
 
 def ir_a_registro():
@@ -353,50 +388,50 @@ ctk.CTkLabel(pantalla_datos, text="Mis datos", text_color=texto, anchor="w", fon
 formulario = ctk.CTkScrollableFrame(pantalla_datos, fg_color=fondo)
 formulario.pack(fill="both", expand=True, padx=8, pady=(0, 16))
 
-def campo(etiqueta, ejemplo):
+def crear_campo(etiqueta, ejemplo):
     ctk.CTkLabel(formulario, text=etiqueta, text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=16)
     caja = ctk.CTkEntry(formulario, placeholder_text=ejemplo, height=42, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
     caja.pack(fill="x", padx=16, pady=(6, 12))
     return caja
 
-caja_nombre = campo("Nombre", "Ej: Isabella")
-caja_apellidos = campo("Apellidos", "Ej: Caro López")
-caja_telefono = campo("Teléfono", "10 dígitos")
+caja_nombre = crear_campo("Nombre", "Ej: Isabella")
+caja_apellidos = crear_campo("Apellidos", "Ej: Caro López")
+caja_telefono = crear_campo("Teléfono", "10 dígitos")
 
 ctk.CTkLabel(formulario, text="Tipo de documento", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=16)
 selector_documento = ctk.CTkOptionMenu(formulario, values=["CC", "CE", "NIT"], height=42, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
 selector_documento.pack(fill="x", padx=16, pady=(6, 12))
 
-caja_documento = campo("Número de documento", "Solo números")
-caja_direccion = campo("Dirección", "Ej: Calle 5 # 10-20")
-caja_postal = campo("Código postal", "6 dígitos")
+caja_documento = crear_campo("Número de documento", "Solo números")
+caja_direccion = crear_campo("Dirección", "Ej: Calle 5 # 10-20")
+caja_postal = crear_campo("Código postal", "6 dígitos")
 
 mensaje_datos = ctk.CTkLabel(formulario, text="", text_color=rojo, wraplength=340, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=13))
 mensaje_datos.pack(fill="x", padx=16)
 
 
-def llenar(caja, valor):
+def llenar_campo(caja, valor):
     caja.delete(0, "end")
     if valor:
         caja.insert(0, valor)
 
-def ver_datos():
-    datos = read_personal_data(current_session.email)
-    if datos is None:     
+def mostrar_datos_personales():
+    datos = leer_datos_personales(sesion_actual.correo)
+    if datos is None:
         datos = {}
 
-    llenar(caja_nombre, datos.get("Nombre", ""))
-    llenar(caja_apellidos, datos.get("Apellidos", ""))
-    llenar(caja_telefono, datos.get("Telefono", ""))
+    llenar_campo(caja_nombre, datos.get("Nombre", ""))
+    llenar_campo(caja_apellidos, datos.get("Apellidos", ""))
+    llenar_campo(caja_telefono, datos.get("Telefono", ""))
     selector_documento.set(datos.get("TipoDocumento", "CC"))
-    llenar(caja_documento, datos.get("NumeroDocumento", ""))
-    llenar(caja_direccion, datos.get("Direccion", ""))
-    llenar(caja_postal, datos.get("CodigoPostal", ""))
+    llenar_campo(caja_documento, datos.get("NumeroDocumento", ""))
+    llenar_campo(caja_direccion, datos.get("Direccion", ""))
+    llenar_campo(caja_postal, datos.get("CodigoPostal", ""))
 
     mensaje_datos.configure(text="")
     mostrar(pantalla_datos)
 
-def guardar_datos():
+def guardar_datos_interfaz():
     datos = {
         "Nombre": caja_nombre.get(),
         "Apellidos": caja_apellidos.get(),
@@ -408,14 +443,14 @@ def guardar_datos():
     }
 
     try:
-        save_personal_data(current_session.email, datos)
+        guardar_datos_personales(sesion_actual.correo, datos)
     except ValueError as problema:
         mensaje_datos.configure(text=str(problema), text_color=rojo)
         return
 
     mensaje_datos.configure(text="¡Datos guardados exitosamente!", text_color=verde)
 
-ctk.CTkButton(formulario, text="Guardar datos", command=guardar_datos, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=16, pady=(8, 12))
+ctk.CTkButton(formulario, text="Guardar datos", command=guardar_datos_interfaz, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=16, pady=(8, 12))
 
 #BUSCAR ROPA
 pantalla_buscar = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
@@ -426,11 +461,22 @@ ctk.CTkLabel(pantalla_buscar, text="Buscar ropa", text_color=texto, anchor="w", 
 filtros = ctk.CTkFrame(pantalla_buscar, fg_color=fondo)
 filtros.pack(fill="x", padx=24, pady=(0, 8))
 
-selector_seccion = ctk.CTkOptionMenu(filtros, values=["Todas", "Mujer", "Hombre", "Unisex"], command=lambda valor: mostrar_ropa(), width=170, height=38, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
+selector_seccion = ctk.CTkOptionMenu(filtros, values=["Todas", "Mujer", "Hombre", "Unisex"], command=lambda valor: mostrar_productos_ropa(), width=170, height=38, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
 selector_seccion.pack(side="left", padx=(0, 8))
 
-selector_tipo = ctk.CTkOptionMenu(filtros, values=["Todos"], command=lambda valor: mostrar_ropa(), width=170, height=38, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
+selector_tipo = ctk.CTkOptionMenu(filtros, values=["Todos"], command=lambda valor: mostrar_productos_ropa(), width=170, height=38, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
 selector_tipo.pack(side="left")
+
+filtros2 = ctk.CTkFrame(pantalla_buscar, fg_color=fondo)
+filtros2.pack(fill="x", padx=24, pady=(0, 8))
+
+caja_busqueda = ctk.CTkEntry(filtros2, placeholder_text="🔍 Nombre o código", width=210, height=38, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
+caja_busqueda.pack(side="left", padx=(0, 8))
+caja_busqueda.bind("<KeyRelease>", lambda evento: mostrar_productos_ropa())
+
+selector_disponibilidad= ctk.CTkOptionMenu(filtros2, values=["Todas", "Disponible", "Agotado"], command=lambda valor: mostrar_productos_ropa(), width=130, height=38, corner_radius=10, fg_color=blanco, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
+selector_disponibilidad.pack(side="left")
+
 
 mensaje_buscar = ctk.CTkLabel(pantalla_buscar, text="", text_color=rojo, wraplength=372, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=13))
 mensaje_buscar.pack(fill="x", padx=24)
@@ -440,11 +486,11 @@ lista_ropa.pack(fill="both", expand=True, padx=16, pady=(0, 16))
 
 catalogo = []
 
-def ver_ropa():
+def mostrar_catalogo_ropa():
     global catalogo
     mensaje_buscar.configure(text="")
     try:
-        catalogo = load_clothing_catalog()
+        catalogo = cargar_catalogo_ropa()
     except ValueError as problema:
         mensaje_buscar.configure(text=str(problema))
         catalogo = []
@@ -455,12 +501,12 @@ def ver_ropa():
             tipos.append(producto["Tipo"])
     selector_tipo.configure(values=tipos)
 
-    selector_seccion.set("Todas")
-    selector_tipo.set("Todos")
-    mostrar_ropa()
+    selector_disponibilidad.set("Todas")
+    caja_busqueda.delete(0, "end")
+    mostrar_productos_ropa()
     mostrar(pantalla_buscar)
 
-def mostrar_ropa():
+def mostrar_productos_ropa():
     for tarjeta in lista_ropa.winfo_children():
         tarjeta.destroy()
 
@@ -471,7 +517,19 @@ def mostrar_ropa():
     if tipo == "Todos":
         tipo = None
 
-    productos = filter_clothing_catalog(catalogo, seccion, tipo)
+    productos = filtrar_catalogo_ropa(catalogo, seccion, tipo)
+
+    busqueda= caja_busqueda.get().strip().lower()
+    disponibilidad = selector_disponibilidad.get()
+
+    productos_filtrados = []
+    for producto in productos:
+        coincide_texto = busqueda in producto["Nombre"].lower() or busqueda in producto["Codigo"].lower()
+        coincide_disponibilidad = disponibilidad == "Todas" or producto["Disponibilidad"] == disponibilidad
+
+        if coincide_texto and coincide_disponibilidad:
+            productos_filtrados.append(producto)
+    productos = productos_filtrados
 
     if len(productos) == 0:
         ctk.CTkLabel(lista_ropa, text="No hay prendas con esos filtros.", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=20)
@@ -479,6 +537,7 @@ def mostrar_ropa():
     for producto in productos:
         tarjeta = ctk.CTkFrame(lista_ropa, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
         tarjeta.pack(fill="x", padx=8, pady=6)
+        mostrar_foto_producto(tarjeta, producto["Codigo"], iconos_ropa.get(producto["Tipo"], "🛍️"))
 
         texto_tallas = ""
         tallas_disponibles = []
@@ -491,6 +550,7 @@ def mostrar_ropa():
 
         ctk.CTkLabel(tarjeta, text=producto["Nombre"], text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 2))
         ctk.CTkLabel(tarjeta, text=f"{producto['Seccion']} · {producto['Tipo']} · Código {producto['Codigo']}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
+        ctk.CTkLabel(tarjeta, text=producto["Descripcion"], text_color=texto, anchor="w", justify="left", wraplength=310, font=ctk.CTkFont(family=letra_texto, size=12)).pack(fill="x", padx=14, pady=(4, 2))
         ctk.CTkLabel(tarjeta, text=f"Tallas: {texto_tallas}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
         ctk.CTkLabel(tarjeta, text=precio_texto, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=14, pady=(4, 0))
 
@@ -507,23 +567,23 @@ def mostrar_ropa():
             selector = ctk.CTkOptionMenu(fila, values=tallas_disponibles, width=90, height=36, corner_radius=10, fg_color=fondo, button_color=morado, button_hover_color=morado_oscuro, text_color=texto, dropdown_fg_color=blanco, dropdown_text_color=texto)
             selector.pack(side="left", padx=(0, 8))
 
-            ctk.CTkButton(fila, text="Agregar al carrito", height=36, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda c=producto["Codigo"], s=selector: agregar_carrito(c, s.get())).pack(side="left", fill="x", expand=True)
-        ctk.CTkButton(tarjeta, text="♡ Agregar a favoritos", height=30, fg_color="transparent", hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), command=lambda c=producto["Codigo"]: agregar_favorito(c)).pack(anchor="w", padx=8, pady=(0, 10))
+            ctk.CTkButton(fila, text="Agregar al carrito", height=36, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold"), command=lambda caracter_c=producto["Codigo"], elemento_s=selector: agregar_producto_carrito(caracter_c, elemento_s.get())).pack(side="left", fill="x", expand=True)
+        ctk.CTkButton(tarjeta, text="♡ Agregar a favoritos", height=30, fg_color="transparent", hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), command=lambda caracter_c=producto["Codigo"]: agregar_producto_favorito(caracter_c)).pack(anchor="w", padx=8, pady=(0, 10))
 #AGREGAR AL CARRITO
 
-def agregar_carrito(codigo, talla):
+def agregar_producto_carrito(codigo, talla):
     try:
-        cantidad = add_to_cart(current_session.email, codigo, talla, 1, catalogo)
+        cantidad = agregar_al_carrito(sesion_actual.correo, codigo, talla, 1, catalogo)
     except ValueError as problema:
         mensaje_buscar.configure(text=str(problema), text_color=rojo)
         return
 
     mensaje_buscar.configure(text=f"¡Agregado al carrito! (talla {talla}, llevas {cantidad})", text_color=verde)
 
-def pesos(valor):
+def formatear_pesos(valor):
     return f"${valor:,.0f}".replace(",", ".")
 
-#VER MI CARRITO 
+#VER MI CARRITO
 
 pantalla_carrito = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
 
@@ -540,12 +600,12 @@ total_carrito = ctk.CTkLabel(pantalla_carrito, text="", text_color=texto, anchor
 total_carrito.pack(fill="x", padx=24, pady=(0, 8))
 
 
-def ver_carrito():
+def mostrar_carrito():
     mensaje_carrito.configure(text="")
     for tarjeta in lista_carrito.winfo_children():
         tarjeta.destroy()
 
-    detalles = get_cart_details(current_session.email)
+    detalles = obtener_detalles_carrito(sesion_actual.correo)
     total=0
 
     if len(detalles) == 0:
@@ -561,7 +621,7 @@ def ver_carrito():
         if detalle ["Subtotal"] is None:
             subtotal_texto = "Precio no disponible"
         else:
-            subtotal_texto = f"{pesos(detalle['Precio'])} c/u · Subtotal {pesos(detalle['Subtotal'])}"
+            subtotal_texto = f"{formatear_pesos(detalle['Precio'])} c/u · Subtotal {formatear_pesos(detalle['Subtotal'])}"
             total = total + detalle["Subtotal"]
         ctk.CTkLabel(tarjeta, text=subtotal_texto, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=14, pady=(4, 0))
 
@@ -571,44 +631,44 @@ def ver_carrito():
         fila = ctk.CTkFrame(tarjeta, fg_color=blanco)
         fila.pack(fill="x", padx=14, pady=(8, 12))
 
-        ctk.CTkButton(fila, text="−", width=36, height=32, corner_radius=8, fg_color=fondo, hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold"), command=lambda c=detalle["Codigo"], t=detalle["Talla"], n=detalle["Cantidad"] - 1: cambiar_cantidad(c, t, n)).pack(side="left")
+        ctk.CTkButton(fila, text="−", width=36, height=32, corner_radius=8, fg_color=fondo, hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold"), command=lambda caracter_c=detalle["Codigo"], talla_t=detalle["Talla"], numero_n=detalle["Cantidad"] - 1: cambiar_cantidad_carrito(caracter_c, talla_t, numero_n)).pack(side="left")
         ctk.CTkLabel(fila, text=str(detalle["Cantidad"]), width=36, text_color=texto, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(side="left")
-        ctk.CTkButton(fila, text="+", width=36, height=32, corner_radius=8, fg_color=fondo, hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold"), command=lambda c=detalle["Codigo"], t=detalle["Talla"], n=detalle["Cantidad"] + 1: cambiar_cantidad(c, t, n)).pack(side="left")
+        ctk.CTkButton(fila, text="+", width=36, height=32, corner_radius=8, fg_color=fondo, hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold"), command=lambda caracter_c=detalle["Codigo"], talla_t=detalle["Talla"], numero_n=detalle["Cantidad"] + 1: cambiar_cantidad_carrito(caracter_c, talla_t, numero_n)).pack(side="left")
 
-        ctk.CTkButton(fila, text="Quitar", width=70, height=32, fg_color="transparent", hover_color=borde, text_color=rojo, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), command=lambda c=detalle["Codigo"], t=detalle["Talla"]: quitar(c, t)).pack(side="right")
+        ctk.CTkButton(fila, text="Quitar", width=70, height=32, fg_color="transparent", hover_color=borde, text_color=rojo, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), command=lambda caracter_c=detalle["Codigo"], talla_t=detalle["Talla"]: quitar(caracter_c, talla_t)).pack(side="right")
 
-    total_carrito.configure(text=f"Total: {pesos(total)}")
+    total_carrito.configure(text=f"Total: {formatear_pesos(total)}")
     mostrar(pantalla_carrito)
 
-def cambiar_cantidad(codigo,talla,nueva):
+def cambiar_cantidad_carrito(codigo,talla,nueva):
     if nueva <= 0:
         quitar(codigo, talla)
         return
     try:
-        update_cart_quantity(current_session.email, codigo, talla, nueva)
+        actualizar_cantidad_carrito(sesion_actual.correo, codigo, talla, nueva)
     except ValueError as problema:
         mensaje_carrito.configure(text=str(problema), text_color=rojo)
         return
-    ver_carrito()
+    mostrar_carrito()
 
 def quitar(codigo, talla):
-    remove_from_cart(current_session.email, codigo, talla)
-    ver_carrito()
+    eliminar_del_carrito(sesion_actual.correo, codigo, talla)
+    mostrar_carrito()
 
 #CONFIRMAR COMPRA
 
 def comprar():
-    detalles, total, error = prepare_purchase(current_session.email)
+    detalles, total, error = preparar_compra(sesion_actual.correo)
     if error:
         mensaje_carrito.configure(text=error, text_color=rojo)
         return
 
-    respuesta = messagebox.askyesno("Confirmar compra", f"¿Desea confirmar la compra por {pesos(total)}?")
+    respuesta = messagebox.askyesno("Confirmar compra", f"¿Desea confirmar la compra por {formatear_pesos(total)}?")
 
-    resultado = confirm_purchase(current_session.email, respuesta)
+    resultado = confirmar_compra(sesion_actual.correo, respuesta)
 
     if resultado["ok"]:
-        ver_carrito()
+        mostrar_carrito()
         mensaje_carrito.configure(text=f"¡Compra confirmada! Pedido {resultado['pedido']}", text_color=verde)
     else:
         mensaje_carrito.configure(text=resultado["message"], text_color=rojo)
@@ -625,11 +685,11 @@ ctk.CTkLabel(pantalla_compras, text="Mis compras", text_color=texto, anchor="w",
 lista_compras = ctk.CTkScrollableFrame(pantalla_compras, fg_color=fondo)
 lista_compras.pack(fill="both", expand=True, padx=16, pady=(0, 16))
 
-def ver_compras():
+def mostrar_compras():
     for tarjeta in lista_compras.winfo_children():
         tarjeta.destroy()
 
-    pedidos = list_purchases(current_session.email)
+    pedidos = listar_compras(sesion_actual.correo)
 
     if len(pedidos) == 0:
         ctk.CTkLabel(lista_compras, text="Aún no tienes compras registradas.", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=20)
@@ -642,17 +702,17 @@ def ver_compras():
         ctk.CTkLabel(tarjeta, text=f"Pedido {pedido['Pedido']}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=11)).pack(fill="x", padx=14, pady=(0, 6))
 
         for articulo in pedido["Articulos"]:
-            ctk.CTkLabel(tarjeta, text=f"• {articulo['Nombre']} (talla {articulo['Talla']}) x{articulo['Cantidad']}  —  {pesos(articulo['Subtotal'])}", text_color=texto, anchor="w", justify="left", wraplength=320, font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
+            ctk.CTkLabel(tarjeta, text=f"• {articulo['Nombre']} (talla {articulo['Talla']}) x{articulo['Cantidad']}  —  {formatear_pesos(articulo['Subtotal'])}", text_color=texto, anchor="w", justify="left", wraplength=320, font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
 
-        ctk.CTkLabel(tarjeta, text=f"Total: {pesos(pedido['Total'])}", text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=14, pady=(6, 12))
+        ctk.CTkLabel(tarjeta, text=f"Total: {formatear_pesos(pedido['Total'])}", text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=14, pady=(6, 12))
 
     mostrar(pantalla_compras)
 
 #FAVORITOS
 
-def agregar_favorito(codigo):
+def agregar_producto_favorito(codigo):
     try:
-        add_favorite(current_session.email, codigo)
+        agregar_favorito(sesion_actual.correo, codigo)
     except ValueError as problema:
         mensaje_buscar.configure(text=str(problema), text_color=rojo)
         return
@@ -667,11 +727,11 @@ lista_favoritos = ctk.CTkScrollableFrame(pantalla_favoritos, fg_color=fondo)
 lista_favoritos.pack(fill="both", expand=True, padx=16, pady=(0, 16))
 
 
-def ver_favoritos():
+def mostrar_favoritos():
     for tarjeta in lista_favoritos.winfo_children():
         tarjeta.destroy()
 
-    favoritos = list_favorites(current_session.email)
+    favoritos = listar_favoritos(sesion_actual.correo)
 
     if len(favoritos) == 0:
         ctk.CTkLabel(lista_favoritos, text="No tienes productos favoritos.", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=20)
@@ -683,7 +743,7 @@ def ver_favoritos():
         if favorito["EstadoFavorito"] == "Activo":
             ctk.CTkLabel(tarjeta, text=favorito["Nombre"], text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 2))
             ctk.CTkLabel(tarjeta, text=f"{favorito['Seccion']} · {favorito['Tipo']}", text_color=gris, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
-            ctk.CTkLabel(tarjeta, text=pesos(favorito["Precio"]), text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=14, pady=(4, 0))
+            ctk.CTkLabel(tarjeta, text=formatear_pesos(favorito["Precio"]), text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")).pack(fill="x", padx=14, pady=(4, 0))
             if favorito["Disponibilidad"] == "Disponible":
                 color_estado = verde
             else:
@@ -694,44 +754,59 @@ def ver_favoritos():
             ctk.CTkLabel(tarjeta, text=f"{favorito['Nombre']} ({favorito['Codigo']})", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(fill="x", padx=14, pady=(12, 2))
             ctk.CTkLabel(tarjeta, text="Ya no está disponible en la tienda.", text_color=rojo, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13)).pack(fill="x", padx=14)
 
-        ctk.CTkButton(tarjeta, text="Quitar de favoritos", height=30, fg_color="transparent", hover_color=borde, text_color=rojo, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), command=lambda c=favorito["Codigo"]: quitar_favorito(c)).pack(anchor="w", padx=8, pady=(4, 10))
+        ctk.CTkButton(tarjeta, text="Quitar de favoritos", height=30, fg_color="transparent", hover_color=borde, text_color=rojo, font=ctk.CTkFont(family=letra_texto, size=13, weight="bold"), command=lambda caracter_c=favorito["Codigo"]: quitar_producto_favorito(caracter_c)).pack(anchor="w", padx=8, pady=(4, 10))
 
     mostrar(pantalla_favoritos)
 
 
-def quitar_favorito(codigo):
-    remove_favorite(current_session.email, codigo)
-    ver_favoritos()
+def quitar_producto_favorito(codigo):
+    eliminar_favorito(sesion_actual.correo, codigo)
+    mostrar_favoritos()
 
 #INICIO
-
+# PANTALLA: INICIO
 pantalla_inicio = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
 
-ctk.CTkButton(pantalla_inicio, text="← Volver al menú", command=lambda: mostrar(pantalla_menu), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=16, pady=(16, 0))
+ctk.CTkButton(pantalla_inicio, text="← Volver al menú", command=lambda: mostrar(pantalla_menu), fg_color="transparent", hover_color=borde, text_color=morado, anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(fill="x", padx=16, pady=(16, 8))
 
-ctk.CTkLabel(pantalla_inicio, text="¡Bienvenidos a\nEFRATA Mini-Mall!", text_color=morado, justify="center", font=ctk.CTkFont(family=letra_titulo, size=28, weight="bold")).pack(pady=(24, 8))
-ctk.CTkLabel(pantalla_inicio, text="Moda, alquiler de trajes y arreglos\nen un solo lugar", text_color=gris, justify="center", font=ctk.CTkFont(family=letra_texto, size=15)).pack(pady=(0, 20))
+bienvenida_inicio = ctk.CTkFrame(pantalla_inicio, fg_color=morado, corner_radius=16)
+bienvenida_inicio.pack(fill="x", padx=24, pady=(0, 18))
 
-servicios = ctk.CTkFrame(pantalla_inicio, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
-servicios.pack(fill="x", padx=24, pady=(0, 16))
-for servicio in ["👗  Moda nacional e importada", "🤵  Trajes para toda ocasión", "🧵  Arreglo de ropa"]:
-    ctk.CTkLabel(servicios, text=servicio, text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15)).pack(fill="x", padx=18, pady=8)
+ctk.CTkLabel(bienvenida_inicio, text="¡Bienvenidos a\nEFRATA Mini-Mall!", text_color=blanco, justify="center", font=ctk.CTkFont(family=letra_titulo, size=26, weight="bold")).pack(pady=(22, 6))
+ctk.CTkLabel(bienvenida_inicio, text="Moda, alquiler de trajes y arreglos\nen un solo lugar", text_color=borde, justify="center", font=ctk.CTkFont(family=letra_texto, size=14)).pack(pady=(0, 16))
+
+# Botones de acceso rápido
+accesos = ctk.CTkFrame(bienvenida_inicio, fg_color=morado)
+accesos.pack(pady=(0, 22))
+ctk.CTkButton(accesos, text="Ver ropa", command=mostrar_catalogo_ropa, width=140, height=40, corner_radius=10, fg_color=blanco, hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(side="left", padx=6)
+ctk.CTkButton(accesos, text="Alquilar trajes", command=mostrar_trajes, width=140, height=40, corner_radius=10, fg_color="transparent", border_width=2, border_color=blanco, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(side="left", padx=6)
+
+ctk.CTkLabel(pantalla_inicio, text="Lo que ofrecemos", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_titulo, size=18, weight="bold")).pack(fill="x", padx=24, pady=(0, 8))
+
+fila_servicios = ctk.CTkFrame(pantalla_inicio, fg_color=fondo)
+fila_servicios.pack(fill="x", padx=20, pady=(0, 18))
+
+for icono, servicio in [("👗", "Moda nacional\ne importada"), ("🤵", "Trajes para\ntoda ocasión"), ("🧵", "Arreglo\nde ropa")]:
+    tarjeta_servicio = ctk.CTkFrame(fila_servicios, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
+    tarjeta_servicio.pack(side="left", fill="both", expand=True, padx=4)
+    ctk.CTkLabel(tarjeta_servicio, text=icono, font=ctk.CTkFont(size=30)).pack(pady=(14, 2))
+    ctk.CTkLabel(tarjeta_servicio, text=servicio, text_color=texto, justify="center", font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")).pack(padx=6, pady=(0, 14))
+
 
 contacto = ctk.CTkFrame(pantalla_inicio, fg_color=blanco, corner_radius=12, border_width=1, border_color=borde)
 contacto.pack(fill="x", padx=24, pady=(0, 16))
 ctk.CTkLabel(contacto, text="📍  Cali, Colombia", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15)).pack(fill="x", padx=18, pady=(12, 4))
 ctk.CTkLabel(contacto, text="📞  323 965 5863", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15)).pack(fill="x", padx=18, pady=(4, 12))
 
-ctk.CTkLabel(pantalla_inicio, text="¡Será un placer atenderte! 💜", text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(pady=(8, 0))
+ctk.CTkLabel(pantalla_inicio, text="¡Será un placer atenderte! 💜", text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(pady=(4, 0))
 
 
-
-def run():
+def ejecutar_interfaz():
     ventana.mainloop()
 
 
 if __name__ == "__main__":
-    run()
+    ejecutar_interfaz()
 
 
 

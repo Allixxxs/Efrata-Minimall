@@ -1,8 +1,8 @@
 """Punto de entrada definitivo de Efrata Minimall."""
 
 def main():
-    from frontend.app import run
-    run()
+    from frontend.app import ejecutar_interfaz
+    ejecutar_interfaz()
 
 if __name__ == "__main__":
     main()
