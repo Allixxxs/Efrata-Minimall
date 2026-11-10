@@ -1,4 +1,3 @@
-
 def main():
     from frontend.app import ejecutar_interfaz
     ejecutar_interfaz()
