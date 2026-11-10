@@ -11,7 +11,7 @@ Este proyecto consiste en el desarrollo de una aplicación que busca facilitar l
 
 La consulta de disponibilidad de trajes y la organización de los alquileres representan dificultades para el negocio, especialmente al momento de verificar si una prenda está disponible para determinadas fechas, registrar un alquiler y controlar su devolución.
 
-Por esta razón, se propone una solución informática que permita centralizar estas operaciones y facilitar la consulta de la información.
+Por esta razón, se propone una solución de software que permita centralizar estas operaciones y facilitar la consulta de la información.
 
 ## Funcionalidades principales
 
@@ -100,8 +100,8 @@ También se realizaron sesiones de validación con cuatro participantes, incluye
 
 
 **Integrantes:**
-- Allison Castrillón Núñez
 - Isabella Caro Giraldo
+- Allison Castrillón Núñez
 
 **Docente:** Juan Manuel Núñez Velasco.
 
