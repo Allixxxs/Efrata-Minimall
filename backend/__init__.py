@@ -1,8 +1,3 @@
-"""Servicios de negocio de Efrata Minimall.
-
-Importar este paquete no inicia la consola ni crea archivos de datos.
-"""
-
 from .sesion import EstadoSesion, sesion_actual
 from .usuarios import autenticar_usuario, registrar_usuario, cerrar_sesion
 from .datos_personales import leer_datos_personales, guardar_datos_personales, eliminar_datos_personales
