@@ -1,4 +1,5 @@
 # Efrata Minimall
+<img width="500" height="500" alt="526696872_1297498519053003_1711582319059823326_n" src="https://github.com/user-attachments/assets/bee38036-1c73-4e82-bc53-e4d0b1e7719f" />
 
 **Sistema de gestión de catálogo, ventas y alquiler de trajes para Efrata Minimall.**
 
