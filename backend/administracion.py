@@ -220,6 +220,13 @@ def listar_clientes_administracion():
                         "Nombre": f"{campos[1].strip()} {campos[2].strip()}".strip()
                     }
 
+    administradores = set()
+    if ARCHIVO_ADMINISTRADORES.exists():
+        with ARCHIVO_ADMINISTRADORES.open("r", encoding="utf-8") as archivo:
+            for linea in archivo:
+                if linea.strip() and not linea.lstrip().startswith("#"):
+                    administradores.add(linea.strip().casefold())
+
     clientes = []
     if ARCHIVO_USUARIOS.exists():
         with ARCHIVO_USUARIOS.open("r", encoding="utf-8") as archivo:
@@ -227,6 +234,8 @@ def listar_clientes_administracion():
                 campos = linea.rstrip("\r\n").split("|")
                 if len(campos) == 2 and campos[0].strip():
                     correo = campos[0].strip()
+                    if correo.casefold() in administradores:
+                        continue
                     clientes.append({
                         "Correo": correo,
                         "Nombre": nombres.get(correo.casefold(), {}).get("Nombre", "Sin datos"),

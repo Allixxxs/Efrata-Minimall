@@ -833,8 +833,7 @@ mensaje_admin = ctk.CTkLabel(
     pantalla_admin, text="", text_color="#9B241B", wraplength=380,
     justify="left", font=ctk.CTkFont(family=letra_texto, size=12)
 )
-mensaje_admin.pack(fill="x", padx=18, pady=(0, 4))
-
+mensaje_admin.pack(fill="x", padx=18, pady=(0, 4), before=contenido_admin)
 
 def _limpiar_admin():
     for elemento in contenido_admin.winfo_children():
@@ -892,7 +891,7 @@ def _mostrar_dashboard():
     try:
         estadisticas = obtener_estadisticas_administracion()
     except (OSError, ValueError, PermissionError) as problema:
-        mensaje_admin.configure(text=str(problema))
+        mensaje_admin.configure(text=str(problema), text_color=rojo)
         return
     for nombre, valor in estadisticas.items():
         if nombre == "Ventas simuladas":
@@ -935,8 +934,7 @@ def _mostrar_inventario(vista="prendas"):
     ctk.CTkButton(
         controles, text="+ Agregar prenda", height=38, fg_color=morado,
         hover_color=morado_oscuro, text_color=blanco,
-        command=lambda: _abrir_formulario_prenda()
-    ).pack(side="right")
+        command=lambda: _abrir_formulario_prenda(actualizar_lista=cargar_prendas)    ).pack(side="right")
 
     lista_prendas = ctk.CTkFrame(contenido_admin, fg_color=color_admin_marfil)
     lista_prendas.pack(fill="x", padx=4)
@@ -947,7 +945,7 @@ def _mostrar_inventario(vista="prendas"):
         try:
             productos, existencias = cargar_inventario_administracion()
         except (OSError, ValueError, PermissionError) as problema:
-            mensaje_admin.configure(text=str(problema))
+            mensaje_admin.configure(text=str(problema), text_color=rojo)
             return
         texto_busqueda = busqueda.get().strip().casefold()
         encontrados = productos[
@@ -1020,7 +1018,7 @@ def _mostrar_trajes_admin_contenido():
     ctk.CTkButton(
         controles, text="+ Agregar traje", height=38, fg_color=morado,
         hover_color=morado_oscuro, text_color=blanco,
-        command=lambda: _abrir_formulario_traje(actualizar_lista=None)
+        command=lambda: _abrir_formulario_traje(actualizar_lista=cargar_trajes_admin)
     ).pack(side="right")
 
     lista_trajes_admin = ctk.CTkFrame(
@@ -1154,8 +1152,9 @@ def _desactivar_prenda(codigo, actualizar_lista):
     try:
         desactivar_producto(codigo)
     except (OSError, ValueError, PermissionError) as problema:
-        mensaje_admin.configure(text=str(problema))
+        mensaje_admin.configure(text=str(problema), text_color=rojo)
         return
+    mensaje_admin.configure(text=f"Prenda {codigo} desactivada.", text_color=verde)
     actualizar_lista()
 
 
@@ -1302,6 +1301,7 @@ def _abrir_formulario_traje(traje=None, actualizar_lista=None):
             actualizar_lista()
         else:
             _mostrar_inventario("trajes")
+        mensaje_admin.configure(text="¡Traje guardado exitosamente!", text_color=verde)
 
     ctk.CTkButton(
         formulario, text="Guardar traje", height=40, fg_color=morado,
@@ -1536,6 +1536,7 @@ def _abrir_formulario_prenda(producto=None, variantes=None, actualizar_lista=Non
             actualizar_lista()
         else:
             _mostrar_inventario()
+        mensaje_admin.configure(text="¡Prenda guardada exitosamente!", text_color=verde)
 
     ctk.CTkButton(
         formulario, text="Guardar prenda", height=40, fg_color=morado,
@@ -1566,7 +1567,7 @@ def _mostrar_compras_admin():
     try:
         compras = listar_compras_administracion()
     except (OSError, ValueError, PermissionError) as problema:
-        mensaje_admin.configure(text=str(problema))
+        mensaje_admin.configure(text=str(problema), text_color=rojo)
         return
     if not compras:
         _tarjeta_admin("No hay compras registradas.")
@@ -1586,7 +1587,7 @@ def _mostrar_alquileres_admin(solo_devoluciones=False):
     try:
         alquileres = listar_alquileres_administracion()
     except (OSError, ValueError, PermissionError) as problema:
-        mensaje_admin.configure(text=str(problema))
+        mensaje_admin.configure(text=str(problema), text_color=rojo)
         return
     if solo_devoluciones:
         alquileres = [alquiler for alquiler in alquileres if alquiler["Estado"].casefold() == "devuelto"]
@@ -1612,7 +1613,7 @@ def _mostrar_clientes_admin():
     try:
         clientes = listar_clientes_administracion()
     except (OSError, ValueError, PermissionError) as problema:
-        mensaje_admin.configure(text=str(problema))
+        mensaje_admin.configure(text=str(problema), text_color=rojo)
         return
     if not clientes:
         _tarjeta_admin("No hay clientes registrados.")
@@ -1627,7 +1628,7 @@ def _mostrar_estadisticas_admin():
     try:
         estadisticas = obtener_estadisticas_administracion()
     except (OSError, ValueError, PermissionError) as problema:
-        mensaje_admin.configure(text=str(problema))
+        mensaje_admin.configure(text=str(problema), text_color=rojo)
         return
     nombres = (
         "Compras confirmadas", "Unidades vendidas", "Ventas simuladas",
