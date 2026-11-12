@@ -8,7 +8,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import customtkinter as ctk
 from PIL import Image, ImageOps
-from tkcalendar import DateEntry
+from tkcalendar import Calendar
 from backend import (
     autenticar_usuario, cerrar_sesion, cargar_trajes, registrar_alquiler,
     sesion_actual, obtener_alquileres_usuario, devolver_alquiler,
@@ -246,12 +246,20 @@ selector_talla.pack(fill="x", padx=24, pady=(6, 14))
 
 #Fechas de alquiler
 ctk.CTkLabel(pantalla_alquiler, text="Fecha de alquiler", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=24)
-caja_fecha1 = DateEntry(pantalla_alquiler, date_pattern="dd/mm/yyyy", locale="es_ES", mindate=datetime.date.today(), font=(letra_texto, 13), background=morado, foreground=blanco, selectbackground=morado, headersbackground=borde)
-caja_fecha1.pack(fill="x", padx=24, pady=(6, 14), ipady=8)
+fecha_alquiler = ctk.StringVar()
+fila_fecha1 = ctk.CTkFrame(pantalla_alquiler, fg_color=fondo)
+fila_fecha1.pack(fill="x", padx=24, pady=(6, 14))
+caja_fecha1 = ctk.CTkEntry(fila_fecha1, textvariable=fecha_alquiler, state="readonly", height=46, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
+caja_fecha1.pack(side="left", fill="x", expand=True)
+ctk.CTkButton(fila_fecha1, text="📅", width=46, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(size=18), command=lambda: abrir_calendario(fecha_alquiler)).pack(side="left", padx=(8, 0))
 
 ctk.CTkLabel(pantalla_alquiler, text="Fecha de devolución", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")).pack(fill="x", padx=24)
-caja_fecha2 = DateEntry(pantalla_alquiler, date_pattern="dd/mm/yyyy", locale="es_ES", mindate=datetime.date.today(), font=(letra_texto, 13), background=morado, foreground=blanco, selectbackground=morado, headersbackground=borde)
-caja_fecha2.pack(fill="x", padx=24, pady=(6, 14), ipady=8)
+fecha_devolucion = ctk.StringVar()
+fila_fecha2 = ctk.CTkFrame(pantalla_alquiler, fg_color=fondo)
+fila_fecha2.pack(fill="x", padx=24, pady=(6, 14))
+caja_fecha2 = ctk.CTkEntry(fila_fecha2, textvariable=fecha_devolucion, state="readonly", height=46, corner_radius=10, fg_color=blanco, border_color=borde, text_color=texto)
+caja_fecha2.pack(side="left", fill="x", expand=True)
+ctk.CTkButton(fila_fecha2, text="📅", width=46, height=46, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(size=18), command=lambda: abrir_calendario(fecha_devolucion)).pack(side="left", padx=(8, 0))
 
 #Error o mensaje de éxito
 mensaje_alquiler = ctk.CTkLabel(pantalla_alquiler, text="", text_color=rojo, wraplength=372, justify="left", anchor="w", font=ctk.CTkFont(family=letra_texto, size=13))
@@ -271,8 +279,8 @@ def abrir_formulario_alquiler(codigo, nombre, tallas, precio):
     selector_talla.configure(values=lista_tallas)
     selector_talla.set("Elija una talla")
 
-    caja_fecha1.set_date(datetime.date.today())
-    caja_fecha2.set_date(datetime.date.today() + datetime.timedelta(days=1))
+    fecha_alquiler.set(datetime.date.today().strftime("%d/%m/%Y"))
+    fecha_devolucion.set((datetime.date.today() + datetime.timedelta(days=1)).strftime("%d/%m/%Y"))
     mensaje_alquiler.configure(text="")
     mostrar(pantalla_alquiler)
 
@@ -1715,6 +1723,52 @@ ctk.CTkLabel(contacto, text="📍  Cali, Colombia", text_color=texto, anchor="w"
 ctk.CTkLabel(contacto, text="📞  323 965 5863", text_color=texto, anchor="w", font=ctk.CTkFont(family=letra_texto, size=15)).pack(fill="x", padx=18, pady=(4, 12))
 
 ctk.CTkLabel(pantalla_inicio, text="¡Será un placer atenderte! 💜", text_color=morado, font=ctk.CTkFont(family=letra_texto, size=16, weight="bold")).pack(pady=(4, 0))
+
+#Ventana calendario GRANDE 
+
+ventana_calendario = None
+
+def abrir_calendario(variable):
+    global ventana_calendario
+
+    if ventana_calendario is not None and ventana_calendario.winfo_exists():
+        ventana_calendario.lift()
+        return
+
+    ventana_calendario = ctk.CTkToplevel(ventana)
+    ventana_calendario.title("Seleccionar fecha")
+    ventana_calendario.geometry("390x400")
+    ventana_calendario.resizable(False, False)
+    ventana_calendario.configure(fg_color=fondo)
+    ventana_calendario.transient(ventana)
+    ventana_calendario.after(200, ventana_calendario.lift)
+
+    calendario = Calendar(ventana_calendario, selectmode="day", date_pattern="dd/mm/yyyy", locale="es_ES",
+                          mindate=datetime.date.today(), font=(letra_texto, 12),
+                          background=morado, foreground=blanco, headersbackground=morado, headersforeground=blanco,
+                          selectbackground=morado, selectforeground=blanco,
+                          normalbackground=blanco, normalforeground=texto,
+                          weekendbackground=borde, weekendforeground=texto)
+    calendario.pack(padx=20, pady=20, fill="both", expand=True)
+
+    def confirmar_fecha():
+        fecha = calendario.selection_get()
+        if fecha is not None:
+            variable.set(fecha.strftime("%d/%m/%Y"))
+        ventana_calendario.destroy()
+
+    ctk.CTkButton(ventana_calendario, text="Confirmar fecha", command=confirmar_fecha, height=40, corner_radius=10, fg_color=morado, hover_color=morado_oscuro, text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(padx=20, pady=(0, 20), fill="x")
+
+
+
+
+
+
+
+
+
+
+
 
 
 def ejecutar_interfaz():
