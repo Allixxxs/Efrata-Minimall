@@ -828,12 +828,13 @@ barra_admin.pack(fill="x", padx=8, pady=(7, 3))
 for columna in range(2):
     barra_admin.grid_columnconfigure(columna, weight=1)
 contenido_admin = ctk.CTkScrollableFrame(pantalla_admin, fg_color=color_admin_marfil)
-contenido_admin.pack(fill="both", expand=True, padx=8, pady=(0, 7))
+
 mensaje_admin = ctk.CTkLabel(
     pantalla_admin, text="", text_color="#9B241B", wraplength=380,
     justify="left", font=ctk.CTkFont(family=letra_texto, size=12)
 )
-mensaje_admin.pack(fill="x", padx=18, pady=(0, 4), before=contenido_admin)
+mensaje_admin.pack(fill="x", padx=18, pady=(0, 4))
+contenido_admin.pack(fill="both", expand=True, padx=8, pady=(0, 7))
 
 def _limpiar_admin():
     for elemento in contenido_admin.winfo_children():
