@@ -1,4 +1,4 @@
-"""Rutas centralizadas para el código y los datos del proyecto."""
+
 
 from pathlib import Path
 

@@ -1,4 +1,4 @@
-"""Estado de sesión compartido por la consola y los servicios."""
+
 
 from dataclasses import dataclass
 

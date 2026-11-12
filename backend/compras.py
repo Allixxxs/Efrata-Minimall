@@ -1,4 +1,4 @@
-"""Preparación, confirmación e historial de compras."""
+
 
 import datetime
 import os

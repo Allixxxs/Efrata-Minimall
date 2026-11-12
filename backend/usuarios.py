@@ -1,4 +1,4 @@
-"""Registro, autenticación y cierre de sesión."""
+
 
 from datetime import datetime
 from .rutas import ARCHIVO_USUARIOS, ARCHIVO_REGISTRO_SESIONES

@@ -1,6 +1,3 @@
 cliente.demo01@gmail.com|DemoCliente1A
-cliente.demo02@hotmail.com|DemoCliente2B
-cliente.demo03@gmail.com|DemoCliente3C
-cliente.demo04@hotmail.com|DemoCliente4D
-admin.prueba@gmail.com|AdminDemo5A
 a@gmail.com|Mariposa2008
+efrataminimall@gmail.com|Efrata1111

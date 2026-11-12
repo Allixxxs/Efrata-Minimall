@@ -1,14 +1,31 @@
 import sys
+import shutil
+import logging
 from pathlib import Path
 import datetime
-from tkinter import messagebox
+from tkinter import filedialog, messagebox
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import customtkinter as ctk
 from PIL import Image, ImageOps
 from tkcalendar import DateEntry
-from backend import autenticar_usuario, cerrar_sesion, cargar_trajes, registrar_alquiler, sesion_actual, obtener_alquileres_usuario, devolver_alquiler, registrar_usuario, leer_datos_personales, guardar_datos_personales, cargar_catalogo_ropa, filtrar_catalogo_ropa, agregar_al_carrito, obtener_detalles_carrito, actualizar_cantidad_carrito, eliminar_del_carrito, preparar_compra, confirmar_compra, listar_compras, listar_favoritos, agregar_favorito, eliminar_favorito, cargar_descripciones_trajes
+from backend import (
+    autenticar_usuario, cerrar_sesion, cargar_trajes, registrar_alquiler,
+    sesion_actual, obtener_alquileres_usuario, devolver_alquiler,
+    registrar_usuario, leer_datos_personales, guardar_datos_personales,
+    cargar_catalogo_ropa, filtrar_catalogo_ropa, agregar_al_carrito,
+    obtener_detalles_carrito, actualizar_cantidad_carrito, eliminar_del_carrito,
+    preparar_compra, confirmar_compra, listar_compras, listar_favoritos,
+    agregar_favorito, eliminar_favorito, cargar_descripciones_trajes,
+    es_administrador, cargar_inventario_administracion,
+    listar_clientes_administracion, listar_compras_administracion,
+    listar_alquileres_administracion, obtener_estadisticas_administracion,
+    registrar_producto, actualizar_producto, agregar_variante_existencias,
+    actualizar_existencias, desactivar_producto,
+    cargar_trajes_administracion, registrar_traje, actualizar_traje,
+)
 
+logger = logging.getLogger(__name__)
 
 morado = "#4A2560"
 fondo = "#F4F2F7"
@@ -42,6 +59,10 @@ pantalla_actual = pantalla_login
 def mostrar(pantalla_nueva):
     global pantalla_actual
     pantalla_actual.pack_forget()
+    if pantalla_nueva is globals().get("pantalla_admin"):
+        encabezado.pack_forget()
+    elif not encabezado.winfo_manager():
+        encabezado.pack(fill="x")
     pantalla_nueva.pack(fill="both", expand=True)
     pantalla_actual = pantalla_nueva
 
@@ -101,6 +122,10 @@ def iniciar_sesion_interfaz():
         return
 
     bienvenida.configure(text=f"Bienvenida, {correo}")
+    if es_administrador(correo):
+        boton_panel_admin.pack(fill="x", padx=24, pady=4, before=boton_cerrar_sesion)
+    else:
+        boton_panel_admin.pack_forget()
     mostrar(pantalla_menu)
 
 #botón entrar
@@ -142,14 +167,26 @@ for opcion in ["Inicio", "Buscar ropa", "Alquilar trajes", "Consultar alquileres
 aviso = ctk.CTkLabel(pantalla_menu, text="", text_color=gris, font=ctk.CTkFont(family=letra_texto, size=13))
 aviso.pack(pady=(6, 0))
 
+boton_panel_admin = ctk.CTkButton(
+    pantalla_menu, text="Panel administrativo", command=lambda: mostrar_panel_admin("Dashboard"),
+    height=40, corner_radius=10, fg_color=morado, hover_color=morado_oscuro,
+    text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")
+)
+
 def cerrar_sesion_interfaz():
     cerrar_sesion()
     caja_correo.delete(0, "end")
     caja_clave.delete(0, "end")
     mensaje.configure(text="")
+    boton_panel_admin.pack_forget()
     mostrar(pantalla_login)
 
-ctk.CTkButton(pantalla_menu, text="Cerrar sesión", command=cerrar_sesion_interfaz, fg_color="transparent", hover_color=borde, text_color=morado, font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")).pack(pady=(8, 0))
+boton_cerrar_sesion = ctk.CTkButton(
+    pantalla_menu, text="Cerrar sesión", command=cerrar_sesion_interfaz,
+    fg_color="transparent", hover_color=borde, text_color=morado,
+    font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")
+)
+boton_cerrar_sesion.pack(pady=(8, 0))
 
 #Pantalla trajes
 pantalla_trajes = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
@@ -763,6 +800,885 @@ def quitar_producto_favorito(codigo):
     eliminar_favorito(sesion_actual.correo, codigo)
     mostrar_favoritos()
 
+# PANEL ADMINISTRATIVO
+# Reutiliza la identidad visual del cliente: morado, fondo claro, blanco y borde lavanda.
+color_admin_negro = texto
+color_admin_marfil = fondo
+color_admin_dorado = morado
+color_admin_dorado_oscuro = morado_oscuro
+
+pantalla_admin = ctk.CTkFrame(ventana, fg_color=color_admin_marfil, corner_radius=0)
+encabezado_admin = ctk.CTkFrame(pantalla_admin, fg_color=morado, corner_radius=0)
+encabezado_admin.pack(fill="x")
+ctk.CTkLabel(
+    encabezado_admin, text="Panel administrativo", text_color=blanco,
+    font=ctk.CTkFont(family=letra_titulo, size=22, weight="bold")
+).pack(pady=(10, 10))
+
+barra_admin = ctk.CTkFrame(pantalla_admin, fg_color=color_admin_marfil)
+barra_admin.pack(fill="x", padx=8, pady=(7, 3))
+for columna in range(2):
+    barra_admin.grid_columnconfigure(columna, weight=1)
+contenido_admin = ctk.CTkScrollableFrame(pantalla_admin, fg_color=color_admin_marfil)
+contenido_admin.pack(fill="both", expand=True, padx=8, pady=(0, 7))
+mensaje_admin = ctk.CTkLabel(
+    pantalla_admin, text="", text_color="#9B241B", wraplength=380,
+    justify="left", font=ctk.CTkFont(family=letra_texto, size=12)
+)
+mensaje_admin.pack(fill="x", padx=18, pady=(0, 4))
+
+
+def _limpiar_admin():
+    for elemento in contenido_admin.winfo_children():
+        elemento.destroy()
+    mensaje_admin.configure(text="")
+
+
+def _titulo_admin(texto):
+    ctk.CTkLabel(
+        contenido_admin, text=texto, text_color=color_admin_negro, anchor="w",
+        font=ctk.CTkFont(family=letra_titulo, size=24, weight="bold")
+    ).pack(fill="x", padx=10, pady=(8, 10))
+
+
+def _tarjeta_admin(texto, detalle=""):
+    tarjeta = ctk.CTkFrame(
+        contenido_admin, fg_color=blanco, corner_radius=12,
+        border_width=1, border_color=borde
+    )
+    tarjeta.pack(fill="x", padx=6, pady=4)
+    ctk.CTkLabel(
+        tarjeta, text=texto, text_color=color_admin_negro, anchor="w",
+        justify="left", wraplength=360,
+        font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")
+    ).pack(fill="x", padx=16, pady=(13, 4))
+    if detalle:
+        ctk.CTkLabel(
+            tarjeta, text=detalle, text_color=gris, anchor="w",
+            justify="left", wraplength=360,
+            font=ctk.CTkFont(family=letra_texto, size=13)
+        ).pack(fill="x", padx=16, pady=(0, 13))
+    return tarjeta
+
+
+def _tarjeta_estadistica(contenedor, texto, valor):
+    tarjeta = ctk.CTkFrame(
+        contenedor, fg_color=blanco, corner_radius=12,
+        border_width=1, border_color=borde
+    )
+    ctk.CTkLabel(
+        tarjeta, text=texto, text_color=gris, anchor="w",
+        justify="left", wraplength=150,
+        font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")
+    ).pack(fill="x", padx=12, pady=(10, 2))
+    ctk.CTkLabel(
+        tarjeta, text=str(valor), text_color=morado, anchor="w",
+        font=ctk.CTkFont(family=letra_titulo, size=18, weight="bold")
+    ).pack(fill="x", padx=12, pady=(0, 10))
+    return tarjeta
+
+
+def _mostrar_dashboard():
+    _limpiar_admin()
+    _titulo_admin("Dashboard")
+    try:
+        estadisticas = obtener_estadisticas_administracion()
+    except (OSError, ValueError, PermissionError) as problema:
+        mensaje_admin.configure(text=str(problema))
+        return
+    for nombre, valor in estadisticas.items():
+        if nombre == "Ventas simuladas":
+            valor = formatear_pesos(valor)
+        _tarjeta_admin(nombre, str(valor))
+
+
+def _mostrar_inventario(vista="prendas"):
+    _limpiar_admin()
+    _titulo_admin("Inventario")
+    barra_inventario = ctk.CTkFrame(contenido_admin, fg_color=color_admin_marfil)
+    barra_inventario.pack(fill="x", padx=4, pady=(0, 6))
+    ctk.CTkButton(
+        barra_inventario, text="Prendas",
+        fg_color=morado if vista == "prendas" else blanco,
+        hover_color=morado_oscuro, text_color=blanco if vista == "prendas" else morado,
+        height=34,
+        text_color_disabled=gris,
+        command=lambda: _mostrar_inventario("prendas")
+    ).pack(side="left", padx=(0, 6))
+    ctk.CTkButton(
+        barra_inventario, text="Trajes",
+        fg_color=morado if vista == "trajes" else blanco,
+        hover_color=morado_oscuro if vista == "trajes" else borde,
+        text_color=blanco if vista == "trajes" else morado, height=34,
+        command=lambda: _mostrar_inventario("trajes")
+    ).pack(side="left")
+
+    if vista == "trajes":
+        _mostrar_trajes_admin_contenido()
+        return
+
+    controles = ctk.CTkFrame(contenido_admin, fg_color=color_admin_marfil)
+    controles.pack(fill="x", padx=4, pady=(0, 8))
+    busqueda = ctk.CTkEntry(
+        controles, placeholder_text="Buscar por nombre o código",
+        height=38, fg_color=blanco, border_color=borde, text_color=texto
+    )
+    busqueda.pack(side="left", fill="x", expand=True, padx=(0, 6))
+    ctk.CTkButton(
+        controles, text="+ Agregar prenda", height=38, fg_color=morado,
+        hover_color=morado_oscuro, text_color=blanco,
+        command=lambda: _abrir_formulario_prenda()
+    ).pack(side="right")
+
+    lista_prendas = ctk.CTkFrame(contenido_admin, fg_color=color_admin_marfil)
+    lista_prendas.pack(fill="x", padx=4)
+
+    def cargar_prendas():
+        for elemento in lista_prendas.winfo_children():
+            elemento.destroy()
+        try:
+            productos, existencias = cargar_inventario_administracion()
+        except (OSError, ValueError, PermissionError) as problema:
+            mensaje_admin.configure(text=str(problema))
+            return
+        texto_busqueda = busqueda.get().strip().casefold()
+        encontrados = productos[
+            productos.apply(
+                lambda fila: texto_busqueda in str(fila["Nombre"]).casefold()
+                or texto_busqueda in str(fila["Codigo"]).casefold(), axis=1
+            )
+        ]
+        if encontrados.empty:
+            _tarjeta_admin("No hay prendas que coincidan con la búsqueda.")
+            return
+        for _, producto in encontrados.iterrows():
+            variantes = existencias[
+                existencias["Codigo"].astype(str).str.casefold()
+                == str(producto["Codigo"]).casefold()
+            ]
+            tallas = ", ".join(
+                f"{fila['Talla']}: {int(fila['Cantidad'])}"
+                for _, fila in variantes.iterrows()
+            ) or "Sin tallas registradas"
+            tarjeta = ctk.CTkFrame(
+                lista_prendas, fg_color=blanco, corner_radius=12,
+                border_width=1, border_color=borde
+            )
+            tarjeta.pack(fill="x", pady=4)
+            mostrar_foto_admin(tarjeta, str(producto["Codigo"]))
+            ctk.CTkLabel(
+                tarjeta, text=str(producto["Nombre"]), text_color=texto,
+                anchor="w", font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")
+            ).pack(fill="x", padx=14, pady=(10, 2))
+            ctk.CTkLabel(
+                tarjeta,
+                text=f"Código: {producto['Codigo']} · Precio: {formatear_pesos(producto['Precio'])}",
+                text_color=gris, anchor="w",
+                font=ctk.CTkFont(family=letra_texto, size=12)
+            ).pack(fill="x", padx=14)
+            ctk.CTkLabel(
+                tarjeta, text=f"Estado: {producto['Estado']} · Tallas: {tallas}",
+                text_color=verde if producto["Estado"] == "Activo" else rojo,
+                anchor="w", wraplength=360,
+                font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")
+            ).pack(fill="x", padx=14, pady=(3, 5))
+            acciones = ctk.CTkFrame(tarjeta, fg_color=blanco)
+            acciones.pack(fill="x", padx=10, pady=(0, 10))
+            ctk.CTkButton(
+                acciones, text="Editar", height=30, fg_color=morado,
+                hover_color=morado_oscuro, text_color=blanco,
+                command=lambda producto_p=producto, variantes_v=variantes:
+                    _abrir_formulario_prenda(producto_p, variantes_v, cargar_prendas)
+            ).pack(side="left", expand=True, fill="x", padx=(0, 4))
+            ctk.CTkButton(
+                acciones, text="Desactivar", height=30, fg_color="transparent",
+                hover_color=borde, text_color=rojo,
+                state="disabled" if producto["Estado"] != "Activo" else "normal",
+                command=lambda codigo_c=producto["Codigo"]: _desactivar_prenda(codigo_c, cargar_prendas)
+            ).pack(side="left", expand=True, fill="x", padx=(4, 0))
+
+    busqueda.bind("<KeyRelease>", lambda evento: cargar_prendas())
+    cargar_prendas()
+
+
+def _mostrar_trajes_admin_contenido():
+    controles = ctk.CTkFrame(contenido_admin, fg_color=color_admin_marfil)
+    controles.pack(fill="x", padx=4, pady=(0, 8))
+    busqueda = ctk.CTkEntry(
+        controles, placeholder_text="Buscar por nombre o código",
+        height=38, fg_color=blanco, border_color=borde, text_color=texto
+    )
+    busqueda.pack(side="left", fill="x", expand=True, padx=(0, 6))
+    ctk.CTkButton(
+        controles, text="+ Agregar traje", height=38, fg_color=morado,
+        hover_color=morado_oscuro, text_color=blanco,
+        command=lambda: _abrir_formulario_traje(actualizar_lista=None)
+    ).pack(side="right")
+
+    lista_trajes_admin = ctk.CTkFrame(
+        contenido_admin, fg_color=color_admin_marfil
+    )
+    lista_trajes_admin.pack(fill="x", padx=4)
+
+    def cargar_trajes_admin():
+        for elemento in lista_trajes_admin.winfo_children():
+            elemento.destroy()
+        try:
+            trajes = cargar_trajes_administracion()
+        except (OSError, ValueError, PermissionError, ImportError) as problema:
+            mensaje_admin.configure(
+                text=f"No se pudieron cargar los trajes: {problema}",
+                text_color=rojo
+            )
+            return
+
+        texto_busqueda = busqueda.get().strip().casefold()
+        if texto_busqueda:
+            encontrados = trajes[
+                trajes["Codigo"].astype(str).str.casefold().str.contains(texto_busqueda, regex=False)
+                | trajes["Nombre"].astype(str).str.casefold().str.contains(texto_busqueda, regex=False)
+            ]
+        else:
+            encontrados = trajes
+        if encontrados.empty:
+            ctk.CTkLabel(
+                lista_trajes_admin, text="No hay trajes que coincidan con la búsqueda.",
+                text_color=gris, anchor="w",
+                font=ctk.CTkFont(family=letra_texto, size=14)
+            ).pack(fill="x", padx=10, pady=20)
+            return
+
+        for _, traje in encontrados.iterrows():
+            codigo = traje["Codigo"]
+            nombre = traje["Nombre"]
+            tallas = traje["Tallas"]
+            precio = traje["Precio"]
+            estado = traje["Estado"]
+            descripcion = traje["Descripcion"]
+            tarjeta = ctk.CTkFrame(
+                lista_trajes_admin, fg_color=blanco, corner_radius=12,
+                border_width=1, border_color=borde
+            )
+            tarjeta.pack(fill="x", pady=4)
+            try:
+                mostrar_foto_admin(tarjeta, str(codigo))
+                ctk.CTkLabel(
+                    tarjeta, text=str(nombre), text_color=texto,
+                    anchor="w",
+                    font=ctk.CTkFont(family=letra_texto, size=14, weight="bold")
+                ).pack(fill="x", padx=14, pady=(10, 2))
+                ctk.CTkLabel(
+                    tarjeta, text=f"Código: {codigo}",
+                    text_color=gris, anchor="w",
+                    font=ctk.CTkFont(family=letra_texto, size=12)
+                ).pack(fill="x", padx=14)
+                ctk.CTkLabel(
+                    tarjeta, text=f"Precio: {formatear_pesos(precio)}",
+                    text_color=morado, anchor="w",
+                    font=ctk.CTkFont(family=letra_texto, size=15, weight="bold")
+                ).pack(fill="x", padx=14, pady=(4, 0))
+                ctk.CTkLabel(
+                    tarjeta, text=f"Tallas: {tallas}", text_color=texto,
+                    anchor="w", wraplength=360,
+                    font=ctk.CTkFont(family=letra_texto, size=12)
+                ).pack(fill="x", padx=14, pady=(3, 2))
+                ctk.CTkLabel(
+                    tarjeta, text=f"Estado: {estado}",
+                    text_color=verde if str(estado).casefold() == "activo" else rojo,
+                    anchor="w",
+                    font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")
+                ).pack(fill="x", padx=14, pady=(0, 3))
+                ctk.CTkLabel(
+                    tarjeta, text=str(descripcion),
+                    text_color=texto, anchor="w", justify="left",
+                    wraplength=360,
+                    font=ctk.CTkFont(family=letra_texto, size=12)
+                ).pack(fill="x", padx=14, pady=(0, 10))
+                ctk.CTkButton(
+                    tarjeta, text="Editar", height=30, fg_color=morado,
+                    hover_color=morado_oscuro, text_color=blanco,
+                    command=lambda traje_p=traje: _abrir_formulario_traje(
+                        traje_p, cargar_trajes_admin
+                    )
+                ).pack(fill="x", padx=10, pady=(0, 10))
+            except (OSError, TypeError, ValueError, RuntimeError) as problema:
+                logger.exception("No se pudo renderizar el traje %s", codigo)
+                tarjeta.destroy()
+                ctk.CTkLabel(
+                    lista_trajes_admin,
+                    text=f"No se pudo mostrar el traje {codigo}: {problema}",
+                    text_color=rojo, anchor="w", wraplength=360,
+                    font=ctk.CTkFont(family=letra_texto, size=13)
+                ).pack(fill="x", padx=10, pady=8)
+
+    busqueda.bind("<KeyRelease>", lambda evento: cargar_trajes_admin())
+    cargar_trajes_admin()
+
+
+def _mostrar_trajes_admin_pendiente():
+    _mostrar_inventario("trajes")
+
+
+def mostrar_foto_admin(contenedor, codigo):
+    ruta = next(
+        (carpeta_imagenes / f"{codigo}{extension}"
+         for extension in (".jpg", ".jpeg", ".png")
+         if (carpeta_imagenes / f"{codigo}{extension}").exists()),
+        None
+    )
+    if ruta is None:
+        ctk.CTkLabel(
+            contenedor, text=iconos_ropa.get("Prenda", "🛍️"),
+            text_color=gris, font=ctk.CTkFont(size=28)
+        ).pack(anchor="w", padx=14, pady=(8, 0))
+        return
+    imagen = Image.open(ruta)
+    imagen = ImageOps.pad(imagen, (120, 80), color=blanco)
+    foto = ctk.CTkImage(light_image=imagen, size=(120, 80))
+    etiqueta = ctk.CTkLabel(contenedor, image=foto, text="")
+    etiqueta.image = foto
+    etiqueta.pack(anchor="w", padx=14, pady=(8, 0))
+
+
+def _desactivar_prenda(codigo, actualizar_lista):
+    if not messagebox.askyesno("Desactivar prenda", f"¿Deseas desactivar {codigo}?"):
+        return
+    try:
+        desactivar_producto(codigo)
+    except (OSError, ValueError, PermissionError) as problema:
+        mensaje_admin.configure(text=str(problema))
+        return
+    actualizar_lista()
+
+
+def _abrir_formulario_traje(traje=None, actualizar_lista=None):
+    editar = traje is not None
+    ventana_formulario = ctk.CTkToplevel(ventana)
+    ventana_formulario.title("Editar traje" if editar else "Agregar traje")
+    ventana_formulario.configure(fg_color=fondo)
+    ventana_formulario.transient(ventana)
+    ancho_formulario, alto_formulario = 420, 620
+    ventana.update_idletasks()
+    posicion_x = ventana.winfo_rootx() + (ventana.winfo_width() - ancho_formulario) // 2
+    posicion_y = ventana.winfo_rooty() + (ventana.winfo_height() - alto_formulario) // 2
+    pantalla_ancho = ventana_formulario.winfo_screenwidth()
+    pantalla_alto = ventana_formulario.winfo_screenheight()
+    posicion_x = min(max(posicion_x, 0), pantalla_ancho - ancho_formulario)
+    posicion_y = min(max(posicion_y, 0), pantalla_alto - alto_formulario)
+    ventana_formulario.geometry(
+        f"{ancho_formulario}x{alto_formulario}+{posicion_x}+{posicion_y}"
+    )
+    ventana_formulario.grab_set()
+
+    formulario = ctk.CTkScrollableFrame(ventana_formulario, fg_color=fondo)
+    formulario.pack(fill="both", expand=True, padx=12, pady=12)
+
+    def campo(etiqueta, valor="", estado="normal"):
+        ctk.CTkLabel(
+            formulario, text=etiqueta, text_color=texto, anchor="w",
+            font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")
+        ).pack(fill="x", pady=(5, 2))
+        entrada = ctk.CTkEntry(
+            formulario, height=38, fg_color=blanco, border_color=borde,
+            text_color=texto, state=estado
+        )
+        entrada.pack(fill="x", pady=(0, 3))
+        entrada.configure(state="normal")
+        entrada.insert(0, str(valor))
+        if estado == "disabled":
+            entrada.configure(state="disabled")
+        return entrada
+
+    valor = lambda campo_nombre: traje[campo_nombre] if editar else ""
+    codigo = campo("Código único", valor("Codigo"), "disabled" if editar else "normal")
+    nombre = campo("Nombre", valor("Nombre"))
+    precio = campo("Precio", valor("Precio"))
+    descripcion = campo("Descripción", valor("Descripcion"))
+    tallas = campo("Tallas disponibles", valor("Tallas"))
+
+    def normalizar_mayusculas(entrada, evento=None):
+        texto_actual = entrada.get()
+        normalizado = texto_actual.upper()
+        if texto_actual != normalizado:
+            posicion = entrada.index("insert")
+            entrada.delete(0, "end")
+            entrada.insert(0, normalizado)
+            entrada.icursor(min(posicion, len(normalizado)))
+
+    codigo.bind("<KeyRelease>", lambda evento: normalizar_mayusculas(codigo, evento))
+    tallas.bind("<KeyRelease>", lambda evento: normalizar_mayusculas(tallas, evento))
+
+    ctk.CTkLabel(
+        formulario, text="Estado", text_color=texto, anchor="w",
+        font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")
+    ).pack(fill="x", pady=(5, 2))
+    estado = ctk.CTkOptionMenu(
+        formulario, values=["Activo", "Inactivo"], fg_color=blanco,
+        button_color=morado, button_hover_color=morado_oscuro, text_color=texto
+    )
+    estado.pack(fill="x", pady=(0, 8))
+    estado.set(valor("Estado") or "Activo")
+
+    foto_seleccionada = {"ruta": None}
+    vista_foto = ctk.CTkLabel(formulario, text="Sin fotografía nueva", text_color=gris)
+    vista_foto.pack(fill="x", pady=(4, 4))
+
+    def seleccionar_foto():
+        ruta = filedialog.askopenfilename(
+            title="Seleccionar fotografía",
+            filetypes=[("Imágenes", "*.jpg *.jpeg *.png"), ("Todos los archivos", "*.*")]
+        )
+        if not ruta:
+            return
+        origen = Path(ruta)
+        if origen.suffix.casefold() not in {".jpg", ".jpeg", ".png"}:
+            messagebox.showerror("Formato no válido", "La fotografía debe ser JPG, JPEG o PNG.")
+            return
+        try:
+            imagen = Image.open(origen)
+            imagen.verify()
+            imagen = Image.open(origen)
+            foto = ctk.CTkImage(
+                light_image=ImageOps.pad(imagen, (150, 100), color=blanco),
+                size=(150, 100)
+            )
+        except (OSError, ValueError) as problema:
+            messagebox.showerror("Imagen no válida", f"No se pudo abrir la imagen: {problema}")
+            return
+        foto_seleccionada["ruta"] = origen
+        vista_foto.configure(image=foto, text="")
+        vista_foto.image = foto
+
+    ctk.CTkButton(
+        formulario, text="Seleccionar fotografía", height=34, fg_color=morado,
+        hover_color=morado_oscuro, text_color=blanco, command=seleccionar_foto
+    ).pack(fill="x", pady=(2, 8))
+
+    def guardar():
+        codigo_valor = str(codigo.get()).strip().upper()
+        try:
+            if editar:
+                actualizar_traje(
+                    codigo_valor, nombre.get(), precio.get(), tallas.get(),
+                    descripcion.get(), estado.get()
+                )
+            else:
+                registrar_traje(
+                    codigo_valor, nombre.get(), precio.get(), tallas.get(),
+                    descripcion.get(), estado.get()
+                )
+            foto = foto_seleccionada["ruta"]
+            if foto is not None:
+                destinos = [
+                    carpeta_imagenes / f"{codigo_valor}{extension}"
+                    for extension in (".jpg", ".jpeg", ".png")
+                ]
+                if any(destino.exists() for destino in destinos):
+                    confirmar = messagebox.askyesno(
+                        "Reemplazar fotografía",
+                        f"Ya existe una fotografía para {codigo_valor}. ¿Deseas reemplazarla?"
+                    )
+                    if not confirmar:
+                        ventana_formulario.destroy()
+                        if actualizar_lista:
+                            actualizar_lista()
+                        else:
+                            _mostrar_inventario("trajes")
+                        return
+                _copiar_fotografia_producto(codigo_valor, foto)
+        except (OSError, ValueError, PermissionError, ImportError) as problema:
+            messagebox.showerror("No se pudo guardar el traje", str(problema))
+            return
+        ventana_formulario.destroy()
+        if actualizar_lista:
+            actualizar_lista()
+        else:
+            _mostrar_inventario("trajes")
+
+    ctk.CTkButton(
+        formulario, text="Guardar traje", height=40, fg_color=morado,
+        hover_color=morado_oscuro, text_color=blanco, command=guardar
+    ).pack(fill="x", pady=(8, 3))
+    ctk.CTkButton(
+        formulario, text="Cancelar", height=34, fg_color="transparent",
+        hover_color=borde, text_color=morado, command=ventana_formulario.destroy
+    ).pack(fill="x", pady=(0, 8))
+
+
+def _abrir_formulario_prenda(producto=None, variantes=None, actualizar_lista=None):
+    editar = producto is not None
+    ventana_formulario = ctk.CTkToplevel(ventana)
+    ventana_formulario.title("Editar prenda" if editar else "Agregar prenda")
+    ventana_formulario.configure(fg_color=fondo)
+    ventana_formulario.transient(ventana)
+    ancho_formulario = min(420, max(320, ventana_formulario.winfo_screenwidth() - 40))
+    alto_formulario = min(680, max(520, ventana_formulario.winfo_screenheight() - 80))
+    ventana.update_idletasks()
+    ventana_formulario.update_idletasks()
+    principal_x = ventana.winfo_rootx()
+    principal_y = ventana.winfo_rooty()
+    principal_ancho = ventana.winfo_width()
+    principal_alto = ventana.winfo_height()
+    pantalla_ancho = ventana_formulario.winfo_screenwidth()
+    pantalla_alto = ventana_formulario.winfo_screenheight()
+    posicion_x = principal_x + (principal_ancho - ancho_formulario) // 2
+    posicion_y = principal_y + (principal_alto - alto_formulario) // 2
+    posicion_x = min(max(posicion_x, 0), max(pantalla_ancho - ancho_formulario, 0))
+    posicion_y = min(max(posicion_y, 0), max(pantalla_alto - alto_formulario, 0))
+    ventana_formulario.geometry(
+        f"{ancho_formulario}x{alto_formulario}+{posicion_x}+{posicion_y}"
+    )
+    ventana_formulario.grab_set()
+
+    formulario = ctk.CTkScrollableFrame(ventana_formulario, fg_color=fondo)
+    formulario.pack(fill="both", expand=True, padx=12, pady=12)
+
+    def campo(etiqueta, valor="", estado="normal"):
+        ctk.CTkLabel(
+            formulario, text=etiqueta, text_color=texto, anchor="w",
+            font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")
+        ).pack(fill="x", pady=(5, 2))
+        entrada = ctk.CTkEntry(
+            formulario, height=38, fg_color=blanco, border_color=borde,
+            text_color=texto, state=estado
+        )
+        entrada.pack(fill="x", pady=(0, 3))
+        if valor is not None:
+            entrada.configure(state="normal")
+            entrada.insert(0, str(valor))
+            if estado == "disabled":
+                entrada.configure(state="disabled")
+        return entrada
+
+    codigo = campo("Código único", producto["Codigo"] if editar else "", "disabled" if editar else "normal")
+
+    def normalizar_codigo(evento=None):
+        if editar or codigo.cget("state") == "disabled":
+            return
+        valor = codigo.get()
+        normalizado = valor.upper()
+        if valor != normalizado:
+            posicion = codigo.index("insert")
+            codigo.delete(0, "end")
+            codigo.insert(0, normalizado)
+            codigo.icursor(min(posicion, len(normalizado)))
+
+    codigo.bind("<KeyRelease>", normalizar_codigo)
+    nombre = campo("Nombre", producto["Nombre"] if editar else "")
+    precio = campo("Precio", producto["Precio"] if editar else "")
+    descripcion = campo("Descripción", producto["Descripcion"] if editar else "")
+    ctk.CTkLabel(
+        formulario, text="Sección", text_color=texto, anchor="w",
+        font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")
+    ).pack(fill="x", pady=(5, 2))
+    seccion = ctk.CTkOptionMenu(
+        formulario, values=["Mujer", "Hombre", "Unisex"], fg_color=blanco,
+        button_color=morado, button_hover_color=morado_oscuro, text_color=texto
+    )
+    seccion.pack(fill="x", pady=(5, 3))
+    seccion.set(producto["Seccion"] if editar else "Mujer")
+    tipo = campo("Tipo", producto["Tipo"] if editar else "")
+    ctk.CTkLabel(
+        formulario, text="Estado", text_color=texto, anchor="w",
+        font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")
+    ).pack(fill="x", pady=(5, 2))
+    estado = ctk.CTkOptionMenu(
+        formulario, values=["Activo", "Inactivo"], fg_color=blanco,
+        button_color=morado, button_hover_color=morado_oscuro, text_color=texto
+    )
+    estado.pack(fill="x", pady=(5, 3))
+    estado.set(producto["Estado"] if editar else "Activo")
+
+    foto_seleccionada = {"ruta": None}
+    vista_foto = ctk.CTkLabel(formulario, text="Sin fotografía nueva", text_color=gris)
+    vista_foto.pack(fill="x", pady=(8, 2))
+
+    def seleccionar_foto():
+        ruta = filedialog.askopenfilename(
+            title="Seleccionar fotografía",
+            filetypes=[("Imágenes", "*.jpg *.jpeg *.png"), ("Todos los archivos", "*.*")]
+        )
+        if not ruta:
+            return
+        if Path(ruta).suffix.casefold() not in {".jpg", ".jpeg", ".png"}:
+            messagebox.showerror("Formato no válido", "La fotografía debe ser JPG, JPEG o PNG.")
+            return
+        try:
+            imagen = Image.open(ruta)
+            imagen.verify()
+            imagen = Image.open(ruta)
+            imagen = ImageOps.pad(imagen, (150, 100), color=blanco)
+            foto = ctk.CTkImage(light_image=imagen, size=(150, 100))
+        except (OSError, ValueError) as problema:
+            messagebox.showerror("Imagen no válida", f"No se pudo abrir la imagen: {problema}")
+            return
+        foto_seleccionada["ruta"] = Path(ruta)
+        vista_foto.configure(image=foto, text="")
+        vista_foto.image = foto
+
+    ctk.CTkButton(
+        formulario, text="Seleccionar fotografía", height=34, fg_color=morado,
+        hover_color=morado_oscuro, text_color=blanco, command=seleccionar_foto
+    ).pack(fill="x", pady=(2, 8))
+
+    ctk.CTkLabel(
+        formulario, text="Tallas y existencias", text_color=texto, anchor="w",
+        font=ctk.CTkFont(family=letra_titulo, size=18, weight="bold")
+    ).pack(fill="x", pady=(4, 4))
+    filas_tallas = ctk.CTkFrame(formulario, fg_color=fondo)
+    filas_tallas.pack(fill="x")
+    entradas_tallas = []
+
+    def agregar_fila_talla(talla="", cantidad=""):
+        fila = ctk.CTkFrame(filas_tallas, fg_color=fondo)
+        fila.pack(fill="x", pady=2)
+        talla_entrada = ctk.CTkEntry(
+            fila, placeholder_text="Talla", height=34, fg_color=blanco,
+            border_color=borde, text_color=texto, placeholder_text_color=gris
+        )
+        def normalizar_talla(evento=None):
+            valor = talla_entrada.get()
+            normalizado = valor.upper()
+            if valor != normalizado:
+                posicion = talla_entrada.index("insert")
+                talla_entrada.delete(0, "end")
+                talla_entrada.insert(0, normalizado)
+                talla_entrada.icursor(min(posicion, len(normalizado)))
+
+        talla_entrada.bind("<KeyRelease>", normalizar_talla)
+        talla_entrada.pack(side="left", fill="x", expand=True, padx=(0, 4))
+        cantidad_entrada = ctk.CTkEntry(
+            fila, placeholder_text="Cantidad", height=34, fg_color=blanco,
+            border_color=borde, text_color=texto, placeholder_text_color=gris
+        )
+        cantidad_entrada.pack(side="left", fill="x", expand=True)
+        if talla:
+            talla_entrada.insert(0, str(talla).upper())
+        if cantidad != "":
+            cantidad_entrada.insert(0, str(cantidad))
+        entradas_tallas.append((talla_entrada, cantidad_entrada))
+
+    variantes_iniciales = list(variantes.itertuples(index=False)) if variantes is not None else []
+    for variante in variantes_iniciales:
+        agregar_fila_talla(variante.Talla, variante.Cantidad)
+    if not entradas_tallas:
+        agregar_fila_talla()
+    ctk.CTkButton(
+        formulario, text="+ Agregar talla", height=30, fg_color="transparent",
+        hover_color=borde, text_color=morado, command=agregar_fila_talla
+    ).pack(anchor="w", pady=(3, 8))
+
+    def guardar():
+        datos_tallas = []
+        vistas = set()
+        for talla_entrada, cantidad_entrada in entradas_tallas:
+            talla = talla_entrada.get().strip().upper()
+            cantidad = cantidad_entrada.get().strip()
+            if not talla and not cantidad:
+                continue
+            if not talla or not cantidad:
+                messagebox.showerror("Datos incompletos", "Cada talla debe tener una cantidad.")
+                return
+            if talla.casefold() in vistas:
+                messagebox.showerror("Talla repetida", "No puedes registrar la misma talla dos veces.")
+                return
+            vistas.add(talla.casefold())
+            datos_tallas.append((talla, cantidad))
+        if not datos_tallas:
+            messagebox.showerror("Tallas requeridas", "Agrega al menos una talla con su cantidad.")
+            return
+        codigo_valor = codigo.get().strip() if not editar else str(producto["Codigo"])
+        if foto_seleccionada["ruta"] is not None:
+            destino_foto = carpeta_imagenes / (
+                f"{codigo_valor}{foto_seleccionada['ruta'].suffix.casefold()}"
+            )
+            if destino_foto.exists() and not messagebox.askyesno(
+                "Reemplazar fotografía",
+                f"Ya existe una fotografía para {codigo_valor}. ¿Deseas reemplazarla?",
+                parent=ventana_formulario
+            ):
+                return
+        try:
+            if editar:
+                actualizar_producto(
+                    codigo_valor, nombre.get().strip(), seccion.get(), tipo.get().strip(),
+                    precio.get().strip(), descripcion.get().strip(), estado.get()
+                )
+                existentes = {
+                    str(fila.Talla).casefold() for fila in variantes_iniciales
+                }
+                for talla, cantidad in datos_tallas:
+                    if talla.casefold() in existentes:
+                        actualizar_existencias(codigo_valor, talla, cantidad)
+                    else:
+                        agregar_variante_existencias(codigo_valor, talla, cantidad)
+            else:
+                registrar_producto(
+                    codigo_valor, nombre.get().strip(), seccion.get(), tipo.get().strip(),
+                    precio.get().strip(), descripcion.get().strip(), estado.get()
+                )
+                for talla, cantidad in datos_tallas:
+                    agregar_variante_existencias(codigo_valor, talla, cantidad)
+            _copiar_fotografia_producto(codigo_valor, foto_seleccionada["ruta"])
+        except (OSError, ValueError, PermissionError) as problema:
+            messagebox.showerror("No se pudo guardar", str(problema))
+            return
+        ventana_formulario.destroy()
+        if actualizar_lista:
+            actualizar_lista()
+        else:
+            _mostrar_inventario()
+
+    ctk.CTkButton(
+        formulario, text="Guardar prenda", height=40, fg_color=morado,
+        hover_color=morado_oscuro, text_color=blanco, command=guardar
+    ).pack(fill="x", pady=(8, 3))
+    ctk.CTkButton(
+        formulario, text="Cancelar", height=34, fg_color="transparent",
+        hover_color=borde, text_color=morado, command=ventana_formulario.destroy
+    ).pack(fill="x", pady=(0, 8))
+
+
+def _copiar_fotografia_producto(codigo, origen):
+    if origen is None:
+        return
+    carpeta_imagenes.mkdir(parents=True, exist_ok=True)
+    extension = origen.suffix.casefold()
+    destino = carpeta_imagenes / f"{codigo}{extension}"
+    shutil.copy2(origen, destino)
+    for otra_extension in (".jpg", ".jpeg", ".png"):
+        otra = carpeta_imagenes / f"{codigo}{otra_extension}"
+        if otra != destino and otra.exists():
+            otra.unlink()
+
+
+def _mostrar_compras_admin():
+    _limpiar_admin()
+    _titulo_admin("Compras")
+    try:
+        compras = listar_compras_administracion()
+    except (OSError, ValueError, PermissionError) as problema:
+        mensaje_admin.configure(text=str(problema))
+        return
+    if not compras:
+        _tarjeta_admin("No hay compras registradas.")
+    for compra in reversed(compras):
+        articulos = ", ".join(
+            f"{articulo['Nombre']} x{articulo['Cantidad']}" for articulo in compra["Articulos"]
+        )
+        _tarjeta_admin(
+            f"{compra['Pedido']} · {formatear_pesos(compra['Total'])}",
+            f"Cliente: {compra['Correo']}\nFecha: {compra['Fecha']} · Estado: {compra['Estado']}\n{articulos}"
+        )
+
+
+def _mostrar_alquileres_admin(solo_devoluciones=False):
+    _limpiar_admin()
+    _titulo_admin("Devoluciones" if solo_devoluciones else "Alquileres")
+    try:
+        alquileres = listar_alquileres_administracion()
+    except (OSError, ValueError, PermissionError) as problema:
+        mensaje_admin.configure(text=str(problema))
+        return
+    if solo_devoluciones:
+        alquileres = [alquiler for alquiler in alquileres if alquiler["Estado"].casefold() == "devuelto"]
+    if not alquileres:
+        _tarjeta_admin("No hay registros para mostrar.")
+    for alquiler in reversed(alquileres):
+        detalle = (
+            f"Cliente: {alquiler['Correo']}\n"
+            f"Fechas: {alquiler['FechaAlquiler']} - {alquiler['FechaProgramada']} | "
+            f"Talla: {alquiler['Talla']} | Estado: {alquiler['Estado']}"
+        )
+        if alquiler["FechaReal"]:
+            detalle += f"\nDevolución real: {alquiler['FechaReal']}"
+        _tarjeta_admin(
+            f"{alquiler['Nombre']} · {alquiler['Codigo']} · {formatear_pesos(float(alquiler['Precio']))}",
+            detalle
+        )
+
+
+def _mostrar_clientes_admin():
+    _limpiar_admin()
+    _titulo_admin("Clientes")
+    try:
+        clientes = listar_clientes_administracion()
+    except (OSError, ValueError, PermissionError) as problema:
+        mensaje_admin.configure(text=str(problema))
+        return
+    if not clientes:
+        _tarjeta_admin("No hay clientes registrados.")
+    for cliente in clientes:
+        nombre = cliente["Nombre"] if cliente["Nombre"] != "Sin datos" else "Perfil sin datos personales"
+        _tarjeta_admin(nombre, cliente["Correo"])
+
+
+def _mostrar_estadisticas_admin():
+    _limpiar_admin()
+    _titulo_admin("Estadísticas")
+    try:
+        estadisticas = obtener_estadisticas_administracion()
+    except (OSError, ValueError, PermissionError) as problema:
+        mensaje_admin.configure(text=str(problema))
+        return
+    nombres = (
+        "Compras confirmadas", "Unidades vendidas", "Ventas simuladas",
+        "Alquileres registrados", "Alquileres activos", "Devoluciones",
+        "Productos activos", "Trajes activos",
+    )
+    tarjetas_estadisticas = ctk.CTkFrame(contenido_admin, fg_color=color_admin_marfil)
+    tarjetas_estadisticas.pack(fill="x", padx=4, pady=(0, 8))
+    for columna in range(2):
+        tarjetas_estadisticas.grid_columnconfigure(columna, weight=1)
+    for indice, nombre in enumerate(nombres):
+        valor = estadisticas[nombre]
+        _tarjeta_estadistica(
+            tarjetas_estadisticas, nombre,
+            formatear_pesos(valor) if nombre == "Ventas simuladas" else valor
+        ).grid(row=indice // 2, column=indice % 2, sticky="nsew", padx=4, pady=4)
+
+
+def mostrar_panel_admin(seccion="Dashboard"):
+    if not es_administrador(sesion_actual.correo):
+        aviso.configure(text="No tienes permisos para acceder al panel administrativo.", text_color=rojo)
+        return
+    acciones = {
+        "Dashboard": _mostrar_dashboard,
+        "Inventario": _mostrar_inventario,
+        "Compras": _mostrar_compras_admin,
+        "Alquileres": lambda: _mostrar_alquileres_admin(False),
+        "Devoluciones": lambda: _mostrar_alquileres_admin(True),
+        "Clientes": _mostrar_clientes_admin,
+        "Estadísticas": _mostrar_estadisticas_admin,
+    }
+    acciones.get(seccion, _mostrar_dashboard)()
+    mostrar(pantalla_admin)
+
+
+secciones_admin = ["Dashboard", "Inventario", "Compras", "Alquileres", "Devoluciones", "Clientes", "Estadísticas"]
+for indice_seccion, nombre_seccion in enumerate(secciones_admin):
+    ctk.CTkButton(
+        barra_admin, text=nombre_seccion,
+        command=lambda seccion=nombre_seccion: mostrar_panel_admin(seccion),
+        height=30, fg_color=color_admin_dorado, hover_color=color_admin_dorado_oscuro,
+        text_color=blanco, font=ctk.CTkFont(family=letra_texto, size=12, weight="bold")
+    ).grid(
+        row=indice_seccion // 2,
+        column=indice_seccion % 2,
+        sticky="ew", padx=4, pady=3
+    )
+
+ctk.CTkButton(
+    pantalla_admin, text="← Volver al menú cliente", command=lambda: mostrar(pantalla_menu),
+    fg_color=morado, hover_color=morado_oscuro, text_color=blanco,
+    font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")
+).pack(fill="x", padx=18, pady=(0, 14))
+ctk.CTkButton(
+    pantalla_admin, text="Cerrar sesión", command=cerrar_sesion_interfaz,
+    fg_color="transparent", hover_color=borde, text_color=morado,
+    font=ctk.CTkFont(family=letra_texto, size=13, weight="bold")
+).pack(pady=(0, 12))
+
 #INICIO
 # PANTALLA: INICIO
 pantalla_inicio = ctk.CTkFrame(ventana, fg_color=fondo, corner_radius=0)
@@ -807,6 +1723,3 @@ def ejecutar_interfaz():
 
 if __name__ == "__main__":
     ejecutar_interfaz()
-
-
-

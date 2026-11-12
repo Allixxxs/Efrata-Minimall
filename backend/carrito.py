@@ -1,4 +1,4 @@
-"""Servicios del carrito; no gestionan prompts ni presentación."""
+
 
 import os
 import tempfile

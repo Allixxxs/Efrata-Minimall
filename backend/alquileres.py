@@ -1,4 +1,4 @@
-"""Servicios de registro, consulta, disponibilidad y devolución de trajes."""
+
 
 import datetime
 import os

@@ -1,4 +1,3 @@
-"""Persistencia y consulta de Favoritos por usuario."""
 
 import os
 import tempfile
