@@ -2,7 +2,7 @@
 
 **Aplicación de escritorio para consultar ropa, realizar compras y gestionar alquileres de trajes.**
 
-Proyecto académico de la **Universidad Autónoma de Occidente (UAO)**, desarrollado en 2026 para la asignatura **Algoritmia y Programación**. Está construido en Python, con una interfaz gráfica para clientes y administradores y almacenamiento local en archivos TXT y Excel.
+Proyecto académico de la **Universidad Autónoma de Occidente**, desarrollado para la asignatura **Algoritmia y Programación**. Está construido en Python, con una interfaz gráfica para clientes y administradores y almacenamiento local en archivos TXT y Excel.
 
 
 ## Contenido
