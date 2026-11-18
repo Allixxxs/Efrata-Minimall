@@ -7,6 +7,9 @@ from .rutas import ARCHIVO_USUARIOS, ARCHIVO_REGISTRO_SESIONES
 from .sesion import sesion_actual
 
 
+CORREO_ADMIN_DEMO = "admin@efrata.invalid"
+
+
 def normalizar_correo(correo):
     valor = str(correo or "").strip().casefold()
     if (
@@ -15,7 +18,7 @@ def normalizar_correo(correo):
     ):
         raise ValueError("El correo electrónico no tiene un formato válido.")
     parte_local, dominio = valor.rsplit("@", 1)
-    if not parte_local or dominio not in {"gmail.com", "hotmail.com"}:
+    if not parte_local or (dominio not in {"gmail.com", "hotmail.com"} and valor != CORREO_ADMIN_DEMO):
         raise ValueError("El correo debe ser de Gmail o Hotmail.")
     return valor
 

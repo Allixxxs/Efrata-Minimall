@@ -9,6 +9,7 @@ Proyecto académico de la **Universidad Autónoma de Occidente (UAO)**, desarrol
 
 - [Catálogo y fotografías](#catálogo-de-demostración-y-fotografías).
 - [Instalación y ejecución](#instalación-y-ejecución-en-windows).
+- [Acceso de administrador](#acceso-de-administrador).
 - [Pruebas técnicas y correcciones](#pruebas-técnicas-y-correcciones).
 - [Ampliación del catálogo](#ampliacion-catalogo).
 - [Sustitución de fotografías y logotipo](#sustitucion-fotografias).
@@ -67,7 +68,7 @@ Cada requisito se relaciona con una condición observable y con los módulos don
 
 ### Clientes
 
-- **Cuentas:** registro, inicio y cierre de sesión. El registro admite correos de Gmail o Hotmail y contraseñas de al menos ocho caracteres, con mayúscula, minúscula y número.
+- **Cuentas:** registro, inicio y cierre de sesión. El registro admite correos de Gmail o Hotmail (con la excepción reservada de la cuenta de demostración) y contraseñas de al menos ocho caracteres, con mayúscula, minúscula y número.
 - **Datos personales:** consulta y actualización del perfil. Para comprar o alquilar se requieren nombre, apellidos, teléfono, tipo y número de documento, dirección y código postal.
 - **Catálogo:** fotografías, descripciones, precios, tallas, búsquedas y filtros. La colección de demostración contiene **14 prendas registradas (13 activas)** y **10 trajes de alquiler**.
 - **Favoritos y carrito:** artículos asociados a cada cuenta, con posibilidad de cambiar cantidades o eliminarlos. El carrito se conserva entre sesiones.
@@ -181,7 +182,6 @@ Efrata-Minimall/
 │   ├── alquileres.py
 │   └── administracion.py
 ├── data/
-│   ├── plantillas/ (8 TXT iniciales vacíos)
 │   ├── ropa.xlsx
 │   ├── inventario.xlsx
 │   ├── consultardisponibilidad.txt
@@ -206,9 +206,9 @@ El árbol muestra los archivos públicos; el nombre de la carpeta raíz puede va
 
 ### Datos iniciales y privacidad de la descarga pública
 
-Los inventarios Excel y las fotografías se incluyen completos. Los archivos operativos de cuentas, perfiles, accesos, carrito, favoritos, compras y alquileres se crean vacíos al ejecutar `python main.py`, a partir de `data/plantillas/`. La inicialización integrada en `main.py` solo crea archivos ausentes: nunca sobrescribe datos existentes. Los nombres y formatos TXT utilizados por el backend se conservan.
+Los inventarios Excel y las fotografías se incluyen completos. Los ocho TXT operativos se crean directamente al ejecutar `python main.py` si faltan, sin archivos de plantilla. En una instalación totalmente nueva se configura la cuenta administrativa pública de demostración en los TXT de usuarios y administradores; los otros seis TXT quedan vacíos. La inicialización integrada en `main.py` solo crea archivos ausentes: nunca sobrescribe datos existentes. Los nombres y formatos TXT utilizados por el backend se conservan.
 
-Los TXT operativos y los comprobantes generados están excluidos por `.gitignore`. No contienen cuentas preconfiguradas en una descarga nueva. Para usar la aplicación se registra una cuenta propia; para administrar, el responsable añade localmente el correo de una cuenta registrada a `data/administradores.txt`. Ese archivo no debe publicarse. Los comprobantes se guardan en `comprobantes/` únicamente de forma local.
+Los TXT operativos y los comprobantes generados están excluidos por `.gitignore`. La descarga no contiene registros privados: la cuenta pública de demostración se genera localmente en el primer arranque. Los clientes pueden registrar su propia cuenta; ese registro no concede permisos administrativos. Los TXT de usuarios y administradores no deben publicarse. Los comprobantes se guardan en `comprobantes/` únicamente de forma local.
 
 ## Instalación y ejecución en Windows
 
@@ -251,14 +251,45 @@ Estos comandos no requieren activar el entorno virtual ni modificar la política
 
 En ventanas pequeñas, puede ser necesario desplazar el menú hasta abajo para acceder a **Cerrar sesión**.
 
+## Acceso de administrador
+
+En una descarga nueva, ejecutar `python main.py` y utilizar estos datos en el formulario de inicio de sesión:
+
+| Dato | Credencial pública de demostración |
+| --- | --- |
+| Correo / identificador | `admin@efrata.invalid` |
+| Contraseña | `EfrataDemo2026!` |
+
+El dominio `.invalid` está reservado para identificadores no reales: no es un buzón de correo ni corresponde a una cuenta personal. La validación admite únicamente este identificador como excepción a Gmail y Hotmail; no se habilitan otros correos de ese dominio.
+
+`main.py` crea esta cuenta **solo cuando no existe ninguno de los ocho TXT operativos**. Guarda la contraseña con el mismo PBKDF2-SHA256 y sal aleatoria que las demás cuentas y añade únicamente su identificador a `administradores.txt`. No depende de los registros privados del equipo original. Si ya existe cualquier TXT operativo, solo crea los que faltan vacíos, sin añadir la cuenta de demostración ni cambiar las cuentas o permisos existentes. Una instalación anterior conserva su acceso administrativo local.
+
+No se duplica ni restablece la cuenta al reiniciar. Registrar una cuenta normal no le concede permisos de administrador. Estas credenciales son públicas **exclusivamente para probar la aplicación académica**: deben cambiarse o deshabilitarse antes de cualquier uso fuera de ese entorno. Para deshabilitar su acceso administrativo, retirar localmente su línea de `data/administradores.txt`; mientras se conserve algún TXT operativo, la inicialización no volverá a concederle permisos. Nunca reutilizar contraseñas personales.
+
+### Comprobación del acceso de demostración
+
+La revisión del 18 de noviembre de 2026 utilizó exclusivamente una copia temporal de los archivos públicos actuales, sin TXT operativos privados ni plantillas. No se presenta como una nueva ejecución de las 32 pruebas históricas retiradas.
+
+| Caso | Resultado esperado | Resultado obtenido |
+| --- | --- | --- |
+| Primera inicialización | Ocho TXT operativos; solo usuarios y administradores contienen la cuenta pública. | Comprobado: seis TXT vacíos; contraseña PBKDF2-SHA256 con sal, sin texto plano en usuarios. |
+| Inicio desde el formulario | Credenciales públicas válidas y panel administrativo accesible. | Comprobado con widgets reales y consulta del inventario de 14 prendas en la copia temporal. |
+| Cuenta de cliente | Inicio normal sin acceso administrativo. | Comprobado en formulario y backend; consulta administrativa rechazada. |
+| Reinicio | Conservar registros sin duplicar ni restablecer cuentas. | Comprobado con inicializaciones repetidas y otro intérprete Python; únicamente se añadió el registro del nuevo acceso. |
+| Instalación parcial | Conservar cualquier TXT existente; crear los ausentes vacíos sin añadir la demo. | Comprobado con cada uno de los ocho archivos existentes por separado y con usuarios vacío. |
+| Deshabilitación | No restaurar permisos retirados. | Comprobado: administradores vacío se conservó al reinicializar. |
+| Identificadores no admitidos | La excepción no habilita todo el dominio reservado. | Otro identificador en `.invalid` fue rechazado. |
+
+Se invocaron los formularios con widgets Tk reales de forma programática; no se afirma una automatización visual completa mediante ratón y teclado. La advertencia conocida de fuente de CustomTkinter no impidió estas comprobaciones.
+
 ### Como administrador
 
-1. Iniciar sesión con una cuenta autorizada previamente en `data/administradores.txt`. El registro público no concede permisos administrativos.
+1. Iniciar sesión con la cuenta pública descrita en **Acceso de administrador** en una descarga nueva, o con una cuenta local previamente autorizada. El registro público no concede permisos administrativos.
 2. Abrir el **Panel administrativo** y revisar el resumen de información.
 3. Consultar y, si corresponde, actualizar el inventario de prendas y trajes.
 4. Revisar las secciones de compras, alquileres, devoluciones, clientes y estadísticas.
 
-Para presentar el proyecto, utilizar cuentas de demostración autorizadas. No se deben publicar contraseñas ni credenciales en el repositorio o en las capturas. **Antes de hacer públicos los cambios, debe revisarse también el historial de Git**, porque eliminar datos personales de los archivos actuales no los elimina de los commits anteriores.
+Para presentar el proyecto, utilizar cuentas de demostración autorizadas. No se deben publicar contraseñas personales ni credenciales privadas en el repositorio o en las capturas; la única excepción documentada es la cuenta pública de demostración. **Antes de hacer públicos los cambios, debe revisarse también el historial de Git**, porque eliminar datos personales de los archivos actuales no los elimina de los commits anteriores.
 
 ## Pruebas técnicas y correcciones
 
