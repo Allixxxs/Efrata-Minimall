@@ -1,0 +1,39 @@
+# Entorno virtual
+venv/
+.venv/
+
+# Bytecode y caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+# Cachés de herramientas de desarrollo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+# Archivos temporales y del sistema
+*.tmp
+*.temp
+*.swp
+*.swo
+~$*
+.DS_Store
+Thumbs.db
+
+# Datos privados generados localmente; las plantillas vacías sí se publican.
+/data/usuarios.txt
+/data/administradores.txt
+/data/iniciossesion.txt
+/data/datos_personales.txt
+/data/carrito.txt
+/data/favoritos.txt
+/data/compras.txt
+/data/registraralquiler.txt
+/comprobantes/*
+!/comprobantes/.gitkeep
+
+# Credenciales locales y claves privadas
+.env
+.env.*
+*.pem
+*.key

@@ -1,0 +1,5 @@
+T001|Traje Sol Demo|S, M, L|120000|Activo
+T002|Traje Luna Demo|M, L, XL|135000|Activo
+T003|Traje Brisa Demo|S, M|95000|Activo
+T004|Traje Roble Demo|M, L|110000|Activo
+T005|Traje Prisma Demo|S, L|150000|Activo

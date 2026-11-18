@@ -1,0 +1,425 @@
+# Fuentes del catálogo académico. Importes en COP; datos de demostración.
+# Cada sección describe una fotografía y su producto asociado.
+
+[general]
+aviso = Productos, precios, tallas y existencias ficticios para demostración académica. Las fotografías son referencias externas, no productos fotografiados en Efrata Minimall ni recomendaciones de sus modelos.
+licencia = Pexels License
+licencia_url = https://www.pexels.com/license/
+fecha_verificacion = 2026-11-17
+tratamiento = JPEG optimizado, lado mayor máximo 1600 px, sin recorte y sin metadatos EXIF. No se altera la prenda.
+
+# Reemplazos de fotografías históricas; fichas multilínea de la sección general.
+# Se conservan las secciones de las trece incorporaciones anteriores sin cambios.
+fecha_verificacion_reemplazos = 2026-11-17
+licencia_reemplazos = Pexels License; https://www.pexels.com/license/
+condiciones_reemplazos = Uso académico como referencia, sin sugerir respaldo de modelos o marcas. No vender copias sin alterar, no redistribuir como banco de imágenes ni usar las fotos como marca.
+respaldo_reemplazos = Copia privada fuera del repositorio: Efrata_respaldo_fotos_20261117 (Descargas).
+
+reemplazo_cl_mu_001 =
+    codigo: CL-MU-001
+    archivo: frontend/imagenes/CL-MU-001.jpg
+    foto_id: 40867948
+    autor: picko pictura
+    fuente: https://www.pexels.com/photo/young-woman-in-yellow-blouse-on-urban-street-40867948/
+    descarga: https://images.pexels.com/photos/40867948/pexels-photo-40867948.jpeg
+    licencia: Pexels License
+    licencia_url: https://www.pexels.com/license/
+    comprobacion_licencia: ficha oficial marcada Free / Free to use y licencia general de Pexels.
+    fecha_verificacion: 2026-11-17
+    tratamiento: JPEG calidad 88; lado mayor 1600 px; proporciones originales; sin recorte ni EXIF.
+    resolucion: 1067 x 1600
+    bytes: 230714
+    sha256: 014aa88154ede4f3488f0033008455bc9314c2f0a4311c04bcc30efc60d499c7
+    correspondencia: Blusa ligera de tono amarillo para un conjunto casual.
+    alcance: imagen de referencia; no certifica tejido, fabricación ni disponibilidad real.
+
+reemplazo_cl_mu_002 =
+    codigo: CL-MU-002
+    archivo: frontend/imagenes/CL-MU-002.jpg
+    foto_id: 13727333
+    autor: Valerie Voila
+    fuente: https://www.pexels.com/photo/woman-wearing-a-long-loose-dress-13727333/
+    descarga: https://images.pexels.com/photos/13727333/pexels-photo-13727333.jpeg
+    licencia: Pexels License
+    licencia_url: https://www.pexels.com/license/
+    comprobacion_licencia: ficha oficial marcada Free / Free to use y licencia general de Pexels.
+    fecha_verificacion: 2026-11-17
+    tratamiento: JPEG calidad 88; lado mayor 1600 px; proporciones originales; sin recorte ni EXIF.
+    resolucion: 1600 x 1600
+    bytes: 645596
+    sha256: 3f3a29efbd8883ddfeaffce09e0a4e8040fae65eefd6fd34b33717bff96e7cd4
+    correspondencia: Detalle de vestido suelto beige de caída ligera.
+    alcance: imagen de referencia; no certifica tejido, fabricación ni disponibilidad real.
+
+reemplazo_cl_mu_003 =
+    codigo: CL-MU-003
+    archivo: frontend/imagenes/CL-MU-003.jpg
+    foto_id: 7391123
+    autor: Polina Tankilevitch
+    fuente: https://www.pexels.com/photo/woman-in-a-black-midi-skirt-black-boots-and-red-socks-7391123/
+    descarga: https://images.pexels.com/photos/7391123/pexels-photo-7391123.jpeg
+    licencia: Pexels License
+    licencia_url: https://www.pexels.com/license/
+    comprobacion_licencia: ficha oficial marcada Free / Free to use y licencia general de Pexels.
+    fecha_verificacion: 2026-11-17
+    tratamiento: JPEG calidad 88; lado mayor 1600 px; proporciones originales; sin recorte ni EXIF.
+    resolucion: 1600 x 1067
+    bytes: 149529
+    sha256: 59c8d4d65feb65b1b225342b23757817b7ede24b58bab01673019e20f790f54f
+    correspondencia: Detalle de falda negra de largo midi; el producto continúa inactivo.
+    alcance: imagen de referencia; no certifica tejido, fabricación ni disponibilidad real.
+
+reemplazo_cl_ho_001 =
+    codigo: CL-HO-001
+    archivo: frontend/imagenes/CL-HO-001.jpg
+    foto_id: 7764063
+    autor: cottonbro studio
+    fuente: https://www.pexels.com/photo/a-person-wearing-a-long-sleeve-shirt-7764063/
+    descarga: https://images.pexels.com/photos/7764063/pexels-photo-7764063.jpeg
+    licencia: Pexels License
+    licencia_url: https://www.pexels.com/license/
+    comprobacion_licencia: ficha oficial marcada Free / Free to use y licencia general de Pexels.
+    fecha_verificacion: 2026-11-17
+    tratamiento: JPEG calidad 88; lado mayor 1600 px; proporciones originales; sin recorte ni EXIF.
+    resolucion: 1600 x 1067
+    bytes: 188825
+    sha256: 8bbcc80b341c1350f9b14ad689b3a891863ae9e07bece818018c5e6ed435cb9b
+    correspondencia: Detalle de camisa formal de manga larga y puños.
+    alcance: imagen de referencia; no certifica tejido, fabricación ni disponibilidad real.
+
+reemplazo_cl_ho_002 =
+    codigo: CL-HO-002
+    archivo: frontend/imagenes/CL-HO-002.jpg
+    foto_id: 16238583
+    autor: Elina Volkova
+    fuente: https://www.pexels.com/photo/a-man-in-a-white-sweater-and-tan-pants-16238583/
+    descarga: https://images.pexels.com/photos/16238583/pexels-photo-16238583.jpeg
+    licencia: Pexels License
+    licencia_url: https://www.pexels.com/license/
+    comprobacion_licencia: ficha oficial marcada Free / Free to use y licencia general de Pexels.
+    fecha_verificacion: 2026-11-17
+    tratamiento: JPEG calidad 88; lado mayor 1600 px; proporciones originales; sin recorte ni EXIF.
+    resolucion: 1067 x 1600
+    bytes: 129994
+    sha256: d258abadc15d02f038ada37604210a5a3f1f5a44932a2dcbd3d857c3bcbbc773
+    correspondencia: Pantalón beige de corte recto en un conjunto casual.
+    alcance: imagen de referencia; no certifica tejido, fabricación ni disponibilidad real.
+
+reemplazo_cl_uni_001 =
+    codigo: CL-UNI-001
+    archivo: frontend/imagenes/CL-UNI-001.jpg
+    foto_id: 10024417
+    autor: Santiago Sauceda González
+    fuente: https://www.pexels.com/photo/selective-focus-of-a-man-wearing-his-bomber-jacket-10024417/
+    descarga: https://images.pexels.com/photos/10024417/pexels-photo-10024417.jpeg
+    licencia: Pexels License
+    licencia_url: https://www.pexels.com/license/
+    comprobacion_licencia: ficha oficial marcada Free / Free to use y licencia general de Pexels.
+    fecha_verificacion: 2026-11-17
+    tratamiento: JPEG calidad 88; lado mayor 1600 px; proporciones originales; sin recorte ni EXIF.
+    resolucion: 1083 x 1600
+    bytes: 167275
+    sha256: 03501ca74daf60fd2219a8148106325000a776ee9218346149461375eccac5e8
+    correspondencia: Chaqueta casual tipo bomber para un conjunto de entretiempo.
+    alcance: imagen de referencia; no certifica tejido, fabricación ni disponibilidad real.
+
+reemplazo_t001 =
+    codigo: T001
+    archivo: frontend/imagenes/T001.jpg
+    foto_id: 6284888
+    autor: Gustavo Fring
+    fuente: https://www.pexels.com/photo/a-man-wearing-a-black-suit-6284888/
+    descarga: https://images.pexels.com/photos/6284888/pexels-photo-6284888.jpeg
+    licencia: Pexels License
+    licencia_url: https://www.pexels.com/license/
+    comprobacion_licencia: ficha oficial marcada Free / Free to use y licencia general de Pexels.
+    fecha_verificacion: 2026-11-17
+    tratamiento: JPEG calidad 88; lado mayor 1600 px; proporciones originales; sin recorte ni EXIF.
+    resolucion: 1067 x 1600
+    bytes: 250617
+    sha256: dc0623e0a888611ea098e56fc9c5c4ca94e54b03e242f90d9e6647f59b7e6a1d
+    correspondencia: Traje negro clásico de dos piezas para ocasiones formales.
+    alcance: imagen de referencia; no certifica tejido, fabricación ni disponibilidad real.
+
+reemplazo_t002 =
+    codigo: T002
+    archivo: frontend/imagenes/T002.jpg
+    foto_id: 13849227
+    autor: Puskar Rai
+    fuente: https://www.pexels.com/photo/a-bearded-man-wearing-black-suit-13849227/
+    descarga: https://images.pexels.com/photos/13849227/pexels-photo-13849227.jpeg
+    licencia: Pexels License
+    licencia_url: https://www.pexels.com/license/
+    comprobacion_licencia: ficha oficial marcada Free / Free to use y licencia general de Pexels.
+    fecha_verificacion: 2026-11-17
+    tratamiento: JPEG calidad 88; lado mayor 1600 px; proporciones originales; sin recorte ni EXIF.
+    resolucion: 1067 x 1600
+    bytes: 151890
+    sha256: aabf25ecb5282cded444cf99d850d18512032260aceb81f77b5be6096b0e88a5
+    correspondencia: Traje oscuro con solapas de gala para ceremonias y bodas.
+    alcance: imagen de referencia; no certifica tejido, fabricación ni disponibilidad real.
+
+reemplazo_t003 =
+    codigo: T003
+    archivo: frontend/imagenes/T003.jpg
+    foto_id: 29242239
+    autor: Bruno Casttro
+    fuente: https://www.pexels.com/photo/elegant-man-in-stylish-cream-suit-fashion-portrait-29242239/
+    descarga: https://images.pexels.com/photos/29242239/pexels-photo-29242239.jpeg
+    licencia: Pexels License
+    licencia_url: https://www.pexels.com/license/
+    comprobacion_licencia: ficha oficial marcada Free / Free to use y licencia general de Pexels.
+    fecha_verificacion: 2026-11-17
+    tratamiento: JPEG calidad 88; lado mayor 1600 px; proporciones originales; sin recorte ni EXIF.
+    resolucion: 1067 x 1600
+    bytes: 102291
+    sha256: 4f4f589fae2ff2c3a07da4c26a6e7a0eca842ae030af9bf953c54eb06d24c0a9
+    correspondencia: Traje claro para una referencia de evento de día; la ligereza del tejido no puede certificarse visualmente.
+    alcance: imagen de referencia; no certifica tejido, fabricación ni disponibilidad real.
+
+reemplazo_t004 =
+    codigo: T004
+    archivo: frontend/imagenes/T004.jpg
+    foto_id: 11982600
+    autor: zaid mohammed
+    fuente: https://www.pexels.com/photo/man-in-gray-suit-jacket-11982600/
+    descarga: https://images.pexels.com/photos/11982600/pexels-photo-11982600.jpeg
+    licencia: Pexels License
+    licencia_url: https://www.pexels.com/license/
+    comprobacion_licencia: ficha oficial marcada Free / Free to use y licencia general de Pexels.
+    fecha_verificacion: 2026-11-17
+    tratamiento: JPEG calidad 88; lado mayor 1600 px; proporciones originales; sin recorte ni EXIF.
+    resolucion: 900 x 1600
+    bytes: 152972
+    sha256: b8de9d2ee2438612587e13694088586bfaa06f1f927b366ed382fccb677b0b5f
+    correspondencia: Traje gris formal de estilo moderno para reuniones.
+    alcance: imagen de referencia; no certifica tejido, fabricación ni disponibilidad real.
+
+reemplazo_t005 =
+    codigo: T005
+    archivo: frontend/imagenes/T005.jpg
+    foto_id: 37263479
+    autor: Taiye Salawu
+    fuente: https://www.pexels.com/photo/confident-man-in-tuxedo-posing-outdoors-37263479/
+    descarga: https://images.pexels.com/photos/37263479/pexels-photo-37263479.jpeg
+    licencia: Pexels License
+    licencia_url: https://www.pexels.com/license/
+    comprobacion_licencia: ficha oficial marcada Free / Free to use y licencia general de Pexels.
+    fecha_verificacion: 2026-11-17
+    tratamiento: JPEG calidad 88; lado mayor 1600 px; proporciones originales; sin recorte ni EXIF.
+    resolucion: 1067 x 1600
+    bytes: 154596
+    sha256: 8e64c7ee1038889cbf6e67a3b7e30b51350e541e5c5579b63da69573f3fc1551
+    correspondencia: Esmoquin de gala con solapas satinadas y tejido con detalles brillantes.
+    alcance: imagen de referencia; no certifica tejido, fabricación ni disponibilidad real.
+
+[producto:CL-MU-004]
+codigo = CL-MU-004
+nombre = Blusa Alba Demo
+seccion = Mujer
+tipo = Blusa
+precio = 59000
+descripcion = Blusa blanca con lazo y caída suave. Referencia académica.
+existencias = S:3, M:4, L:2
+foto_id = 7716936
+autor = cottonbro studio
+fuente = https://www.pexels.com/photo/a-person-wearing-white-blouse-7716936/
+archivo = frontend/imagenes/CL-MU-004.jpg
+descarga = https://images.pexels.com/photos/7716936/pexels-photo-7716936.jpeg
+resolucion = 1600 x 1067
+sha256 = ea6c1129a8b93cca4f9b813fcb522a5aa694e3e9ac2907a52e6eed995f0b7559
+bytes = 117300
+
+[producto:CL-MU-005]
+codigo = CL-MU-005
+nombre = Vestido Jardín Demo
+seccion = Mujer
+tipo = Vestido
+precio = 115000
+descripcion = Vestido de estampado floral para ocasiones de día. Referencia académica.
+existencias = S:2, M:3, L:2
+foto_id = 8305929
+autor = Vika Glitter
+fuente = https://www.pexels.com/photo/a-woman-wearing-floral-dress-8305929/
+archivo = frontend/imagenes/CL-MU-005.jpg
+descarga = https://images.pexels.com/photos/8305929/pexels-photo-8305929.jpeg
+resolucion = 1066 x 1600
+sha256 = d99923839f01091f04104e8be8db908a7def0767093ef737965d1264c35d635f
+bytes = 317358
+
+[producto:CL-MU-006]
+codigo = CL-MU-006
+nombre = Falda Aurora Demo
+seccion = Mujer
+tipo = Falda
+precio = 79000
+descripcion = Falda plisada con tonos degradados y movimiento ligero. Referencia académica.
+existencias = S:3, M:3, L:2
+foto_id = 4663319
+autor = Maksim Goncharenok
+fuente = https://www.pexels.com/photo/a-person-wearing-a-pleated-skirt-4663319/
+archivo = frontend/imagenes/CL-MU-006.jpg
+descarga = https://images.pexels.com/photos/4663319/pexels-photo-4663319.jpeg
+resolucion = 1067 x 1600
+sha256 = 06f0873eae9d82e5f25099d21e2a3fc1158e925891038318e2bc48710415a385
+bytes = 148635
+
+[producto:CL-UNI-002]
+codigo = CL-UNI-002
+nombre = Chaqueta Índigo Demo
+seccion = Unisex
+tipo = Chaqueta
+precio = 139000
+descripcion = Chaqueta de mezclilla azul con botones y bolsillos frontales. Referencia académica.
+existencias = S:2, M:4, L:3, XL:2
+foto_id = 6843224
+autor = Antoni Shkraba
+fuente = https://www.pexels.com/photo/blue-denim-button-up-jacket-6843224/
+archivo = frontend/imagenes/CL-UNI-002.jpg
+descarga = https://images.pexels.com/photos/6843224/pexels-photo-6843224.jpeg
+resolucion = 1067 x 1600
+sha256 = ebb65a1dd53bbd2267f252d1503a82d4c0a71fa598424fa0823d08cd7177fdd3
+bytes = 992256
+
+[producto:CL-HO-003]
+codigo = CL-HO-003
+nombre = Camisa Nácar Demo
+seccion = Hombre
+tipo = Camisa
+precio = 68000
+descripcion = Camisa blanca de botones para combinar con prendas formales. Referencia académica.
+existencias = S:2, M:4, L:3, XL:2
+foto_id = 28576622
+autor = Jonathan Borba
+fuente = https://www.pexels.com/photo/minimalist-white-shirt-hanging-on-hanger-28576622/
+archivo = frontend/imagenes/CL-HO-003.jpg
+descarga = https://images.pexels.com/photos/28576622/pexels-photo-28576622.jpeg
+resolucion = 1067 x 1600
+sha256 = e0ae5acf6297adedf764ef6aedf002d2cdfd6c170c3d1caeb5866007439c3f38
+bytes = 203424
+
+[producto:CL-MU-007]
+codigo = CL-MU-007
+nombre = Pantalón Arena Demo
+seccion = Mujer
+tipo = Pantalón
+precio = 95000
+descripcion = Pantalón beige de estilo urbano para conjuntos de día. Referencia académica.
+existencias = 6:2, 8:3, 10:4, 12:2
+foto_id = 27081006
+autor = José Martin Segura Benites
+fuente = https://www.pexels.com/photo/woman-wearing-beige-trousers-on-a-pavement-27081006/
+archivo = frontend/imagenes/CL-MU-007.jpg
+descarga = https://images.pexels.com/photos/27081006/pexels-photo-27081006.jpeg
+resolucion = 1600 x 1600
+sha256 = 6f0832fb0bdbb49c543bc65c6f848a3944dae39cca9685f9dc66aeb2febd1e68
+bytes = 458751
+
+[producto:CL-HO-004]
+codigo = CL-HO-004
+nombre = Camisa Cobalto Demo
+seccion = Hombre
+tipo = Camisa
+precio = 74000
+descripcion = Camisa azul de manga larga para un conjunto casual. Referencia académica.
+existencias = S:2, M:3, L:3, XL:1
+foto_id = 12529233
+autor = Dennis Ojenomoh
+fuente = https://www.pexels.com/photo/portrait-of-a-man-in-a-blue-shirt-posing-with-his-arms-crossed-12529233/
+archivo = frontend/imagenes/CL-HO-004.jpg
+descarga = https://images.pexels.com/photos/12529233/pexels-photo-12529233.jpeg
+resolucion = 1333 x 1600
+sha256 = b83e68487b35035ba352ea4ea851df587486686003f687b260da23415ef64747
+bytes = 307433
+
+[producto:CL-MU-008]
+codigo = CL-MU-008
+nombre = Chaqueta Marfil Demo
+seccion = Mujer
+tipo = Chaqueta
+precio = 149000
+descripcion = Chaqueta blanca de estilo moderno para combinar con tonos neutros. Referencia académica.
+existencias = S:2, M:3, L:2
+foto_id = 20016578
+autor = Daniel Neves Cotta
+fuente = https://www.pexels.com/photo/studio-shot-of-a-young-woman-wearing-a-jacket-20016578/
+archivo = frontend/imagenes/CL-MU-008.jpg
+descarga = https://images.pexels.com/photos/20016578/pexels-photo-20016578.jpeg
+resolucion = 1067 x 1600
+sha256 = c1663db3e6935d5ab7a2bb20acb306bcbb99548362bccbe2c0fa25beef03706b
+bytes = 258247
+
+[traje:T006]
+codigo = T006
+nombre = Traje Azul Ceremonia Demo
+tallas = S, M, L, XL
+precio = 160000
+descripcion = Traje azul para ceremonias y eventos de día. Imagen de referencia académica.
+foto_id = 12031208
+autor = Jonathan Borba
+fuente = https://www.pexels.com/photo/a-man-wearing-a-blue-suit-12031208/
+archivo = frontend/imagenes/T006.jpg
+descarga = https://images.pexels.com/photos/12031208/pexels-photo-12031208.jpeg
+resolucion = 1067 x 1600
+sha256 = b58307e9a7a5c1eee818fbfe5596eb7db050ff2c97fcc0cfd15588c75112f8e7
+bytes = 398355
+
+[traje:T007]
+codigo = T007
+nombre = Traje Beige Balcón Demo
+tallas = S, M, L
+precio = 145000
+descripcion = Traje beige de estilo claro para celebraciones de día. Imagen de referencia académica.
+foto_id = 5856080
+autor = Sandeep Singh
+fuente = https://www.pexels.com/photo/bearded-man-wearing-his-beige-suit-5856080/
+archivo = frontend/imagenes/T007.jpg
+descarga = https://images.pexels.com/photos/5856080/pexels-photo-5856080.jpeg
+resolucion = 1600 x 1067
+sha256 = a96d05fbb199237b73b11f070be2a26250d24ccad933a56965b7785d02942a55
+bytes = 147971
+
+[traje:T008]
+codigo = T008
+nombre = Traje Negro Ejecutivo Demo
+tallas = M, L, XL
+precio = 155000
+descripcion = Traje negro clásico para reuniones y eventos formales. Imagen de referencia académica.
+foto_id = 6766361
+autor = Tima Miroshnichenko
+fuente = https://www.pexels.com/photo/man-wearing-black-suit-6766361/
+archivo = frontend/imagenes/T008.jpg
+descarga = https://images.pexels.com/photos/6766361/pexels-photo-6766361.jpeg
+resolucion = 1600 x 1067
+sha256 = d6986c39a12f7c6a9a9c82c97fe44fb84cd3c3fb815fd859b94bec9c86b8e348
+bytes = 255469
+
+[traje:T009]
+codigo = T009
+nombre = Esmoquin Gala Demo
+tallas = S, M, L
+precio = 185000
+descripcion = Esmoquin negro para celebraciones y ocasiones especiales. Imagen de referencia académica.
+foto_id = 17420227
+autor = Varun Ish Nanda
+fuente = https://www.pexels.com/photo/man-in-black-suit-17420227/
+archivo = frontend/imagenes/T009.jpg
+descarga = https://images.pexels.com/photos/17420227/pexels-photo-17420227.jpeg
+resolucion = 1067 x 1600
+sha256 = 2c8d44d6eac42430a3b78c6de22c0c1b1309c01d50a06f09db332299d02b69ce
+bytes = 148331
+
+[traje:T010]
+codigo = T010
+nombre = Traje Gris Urbano Demo
+tallas = S, M, L, XL
+precio = 150000
+descripcion = Traje gris de estilo formal para grados y reuniones. Imagen de referencia académica.
+foto_id = 8276133
+autor = PNW Production
+fuente = https://www.pexels.com/photo/man-wearing-a-gray-suit-8276133/
+archivo = frontend/imagenes/T010.jpg
+descarga = https://images.pexels.com/photos/8276133/pexels-photo-8276133.jpeg
+resolucion = 1067 x 1600
+sha256 = f19140bb93f46e395d9befd13265588e93cbc555fa19120679fb06953f4dc361
+bytes = 224161
