@@ -159,6 +159,7 @@ Efrata-Minimall/
 │   ├── alquileres.py
 │   └── administracion.py
 ├── data/
+│   ├── plantillas/ (TXT iniciales vacíos)
 │   ├── usuarios.txt
 │   ├── administradores.txt
 │   ├── iniciossesion.txt
@@ -175,15 +176,13 @@ Efrata-Minimall/
 │   ├── AMPLIACION_CATALOGO.md
 │   ├── SUSTITUCION_FOTOGRAFIAS.md
 │   ├── PRUEBAS_TECNICAS_ENTREGA.md
-│   └── RESULTADOS_PRUEBAS_TECNICAS.txt
-├── tests/
-│   ├── test_catalogo.py
-│   └── test_criticos.py
+│   ├── RESULTADOS_PRUEBAS_TECNICAS.txt
+│   └── RESULTADOS_PRUEBAS_ANTES_SIMPLIFICACION.txt
 └── comprobantes/
     └── comprobantes TXT generados por las compras
 ```
 
-El árbol resume los elementos principales; el nombre de la carpeta raíz puede variar al descargar el proyecto. `ropa.xlsx` contiene las hojas **Productos** y **Existencias**; `inventario.xlsx` almacena los trajes. Los archivos TXT conservan usuarios, carritos, favoritos y operaciones. Los identificadores y correos permiten relacionar los registros correspondientes. `docs/` reúne fuentes de las fotografías y capturas de la interfaz; `tests/` contiene las pruebas del catálogo y de las funciones críticas.
+El árbol resume los elementos principales; el nombre de la carpeta raíz puede variar al descargar el proyecto. `ropa.xlsx` contiene las hojas **Productos** y **Existencias**; `inventario.xlsx` almacena los trajes. Los archivos TXT conservan usuarios, carritos, favoritos y operaciones. Los identificadores y correos permiten relacionar los registros correspondientes. `docs/` reúne fuentes de las fotografías y capturas de la interfaz y los informes históricos de las pruebas técnicas.
 
 ## Tecnologías
 
@@ -199,7 +198,7 @@ El árbol resume los elementos principales; el nombre de la carpeta raíz puede 
 
 ### Datos iniciales y privacidad de la descarga pública
 
-Los inventarios Excel y las fotografías se incluyen completos. Los archivos operativos de cuentas, perfiles, accesos, carrito, favoritos, compras y alquileres se crean vacíos al ejecutar `python main.py`, a partir de `data/plantillas/`. `inicializar_datos.py` solo crea archivos ausentes: nunca sobrescribe datos existentes. Los nombres y formatos TXT utilizados por el backend se conservan.
+Los inventarios Excel y las fotografías se incluyen completos. Los archivos operativos de cuentas, perfiles, accesos, carrito, favoritos, compras y alquileres se crean vacíos al ejecutar `python main.py`, a partir de `data/plantillas/`. La inicialización integrada en `main.py` solo crea archivos ausentes: nunca sobrescribe datos existentes. Los nombres y formatos TXT utilizados por el backend se conservan.
 
 Los TXT operativos y los comprobantes generados están excluidos por `.gitignore`. No contienen cuentas preconfiguradas en una descarga nueva. Para usar la aplicación se registra una cuenta propia; para administrar, el responsable añade localmente el correo de una cuenta registrada a `data/administradores.txt`. Ese archivo no debe publicarse. Los comprobantes se guardan en `comprobantes/` únicamente de forma local.
 
@@ -255,47 +254,22 @@ Para presentar el proyecto, utilizar cuentas de demostración autorizadas. No se
 
 ## Pruebas técnicas y correcciones
 
-La verificación más reciente, realizada en Windows con **Python 3.12.10**, confirmó **32 pruebas automatizadas ejecutables y aprobadas, 0 fallidas, 0 errores y 0 omitidas** (`Ran 32 tests in 35.836s`, `OK`). La suite conserva las **7 pruebas originales del catálogo** y contiene **25 pruebas de funciones críticas y presentación**. Los subcasos de un método no se cuentan como pruebas independientes.
+Antes de simplificar la estructura, el **18 de noviembre de 2026** se ejecutaron las **32 pruebas automatizadas: 32 aprobadas, 0 fallidas, 0 errores y 0 omitidas** (`Ran 32 tests in 29.888s`, `OK`). Incluían las **7 pruebas originales del catálogo y 25 de funciones críticas y presentación**. La suite fue retirada después de esta comprobación y **ya no está incluida ni puede ejecutarse desde esta entrega**. Los resultados se conservan como evidencia histórica, no como una suite actualmente disponible.
 
-El [informe técnico de entrega](docs/PRUEBAS_TECNICAS_ENTREGA.md) y la [salida completa de la ejecución anterior](docs/RESULTADOS_PRUEBAS_TECNICAS.txt) conservan la evidencia de **31 pruebas** (`Ran 31 tests in 31.841s`, `OK`); no se actualizaron esos archivos con el resultado de 32. La prueba añadida es `test_25_etiquetas_y_compatibilidad_historica`, que comprueba las etiquetas de pago y del indicador de pedidos, y la visualización de estados históricos sin reescribir registros. El código actual se conserva en [`tests/test_catalogo.py`](tests/test_catalogo.py) y [`tests/test_criticos.py`](tests/test_criticos.py).
+| Área evaluada | Casos comprobados | Resultado histórico |
+| --- | --- | --- |
+| Catálogo e interfaz | Catálogos, existencias, fotografías, filtros, tarjetas y ampliación. | Aprobado en los siete casos originales, que también incluyen compra, alquiler y consulta administrativa. |
+| Acceso y perfil | Registro válido e inválido, duplicados, contraseñas, permisos y datos personales obligatorios. | Aprobado. |
+| Carrito y compras | Persistencia, separación entre usuarios, cantidades límite, stock, cancelación y comprobantes. | Aprobado. |
+| Pagos | Tres métodos, estados, entradas inválidas y etiquetas compatibles con registros históricos. | Aprobado. |
+| Alquileres y devoluciones | Fechas, tallas, disponibilidad, margen de revisión y devoluciones. | Aprobado. |
+| Administración e integración | Consultas autorizadas, restricciones, panel y formularios con almacenamiento temporal. | Aprobado. |
 
-### Resumen por áreas
+La [salida completa previa a la simplificación](docs/RESULTADOS_PRUEBAS_ANTES_SIMPLIFICACION.txt) registra los 32 resultados. El [informe técnico](docs/PRUEBAS_TECNICAS_ENTREGA.md) y la [salida de la revisión anterior](docs/RESULTADOS_PRUEBAS_TECNICAS.txt) conservan su resultado original de **31 pruebas**. La prueba adicional fue `test_25_etiquetas_y_compatibilidad_historica`, sobre etiquetas de pagos y pedidos y lectura de estados históricos sin reescribirlos.
 
-| Área evaluada | Casos comprobados | Resultado obtenido | Evidencia |
-| --- | --- | --- | --- |
-| Catálogo e interfaz | Siete casos originales: catálogos, precios, existencias, fotografías, búsquedas, tarjetas, compra, alquiler y consulta administrativa. | Los siete casos aprobaron, incluida la ampliación dentro de los límites de pantalla. | `test_catalogo.py`, casos 00–06. |
-| Registro, acceso y seguridad | Cuenta válida, duplicado, formatos inválidos, contraseña incorrecta, hash PBKDF2, operaciones sin sesión y acceso a carrito ajeno. | Registro y acceso válidos aceptados; entradas y accesos no permitidos rechazados; contraseña ficticia ausente del archivo de cuentas. | `test_criticos.py`, casos 01–03. |
-| Perfiles y métodos de pago | Perfil ausente, ausencia individual de los siete campos obligatorios, perfil válido y tres métodos de pago. | Operaciones sin perfil completo bloqueadas; métodos y estados de efectivo, crédito y débito conservados; métodos inválidos rechazados. | Casos 04–07. |
-| Compras, carrito y persistencia | Dos usuarios, cantidades inválidas, stock exacto e insuficiente, cancelación y lectura desde otro intérprete Python. | Carritos separados; compra válida con pedido, comprobante, descuento y vaciado; rechazos sin cambios; carrito recuperado desde un proceso nuevo. | Casos 08–13. |
-| Alquileres y devoluciones | Fechas, tallas y trajes inválidos; conflictos; margen de revisión de dos días; devolución válida, anticipada y repetida. | Rechazos esperados; reserva aceptada en el día +3; devolución y fecha real registradas conservando método y estado de pago. | Casos 14–18. |
-| Administración | Consultas y modificación de existencias con cuentas autorizadas y normales. | Permisos denegados a clientes; administrador consultó compras y alquileres y actualizó exclusivamente el inventario temporal. | Casos 19–20. |
-| Formularios e integración completa | Tarjetas inválidas; compras y alquileres con tres métodos desde widgets reales; panel y edición administrativa. | Formularios inválidos bloqueados; pedidos, comprobantes, existencias y alquileres persistidos; edición del traje leída del Excel temporal; titular y dígitos ficticios no guardados. | Casos 21–24. |
-| Presentación y compatibilidad histórica | Etiquetas de pagos, indicador de pedidos y lectura de estados anteriores. | Se muestran «No procesado» y «Valor de pedidos registrados»; los archivos históricos de prueba permanecen intactos. | Caso 25 de `test_criticos.py`. |
+Se utilizaron datos ficticios, archivos temporales y comprobaciones de integridad para proteger los originales. Las revisiones documentadas también verificaron compilación de Python y `git diff --check`. Las seis regresiones más antiguas son antecedentes documentados cuya suite no está disponible; no se recuperaron ni se cuentan dentro de las 32.
 
-El informe enlazado detalla los 31 casos de la ejecución anterior. La nueva comprobación de presentación se identifica arriba y puede reproducirse con la suite actual.
-
-### Reproducción y protección de los originales
-
-Desde la carpeta principal, con las dependencias instaladas y una sesión de escritorio gráfico disponible:
-
-```powershell
-python -B -m unittest discover -s tests -v
-git diff --check
-```
-
-Se utilizaron **cuentas, perfiles y operaciones ficticios**, sin tarjetas reales. Los casos nuevos crean inventarios Excel sintéticos y registros TXT en un directorio temporal independiente por prueba. Antes de operar se redirigen y comprueban las rutas del backend. Las siete pruebas del catálogo reponen sus copias temporales y vacían sus registros de prueba antes de cada caso para evitar dependencias entre resultados.
-
-Las comprobaciones **SHA-256** confirmaron que los originales permanecieron intactos. También se verificó la **compilación en memoria de los 16 archivos Python**, sin generar bytecode, y `git diff --check` terminó con código cero y sin errores. La compilación corresponde a la ejecución anterior documentada; en esta revisión se volvieron a ejecutar las 32 pruebas y se comprobó `git diff --check`, sin modificar los archivos de resultados.
-
-### Correcciones verificadas y límites
-
-El [informe de ampliación](docs/AMPLIACION_CATALOGO.md#corrección-mínima-de-interfaz) documenta un error anterior que dejaba el diálogo de fotografía fuera de pantalla. La corrección de tamaño y posición según la escala de CustomTkinter se volvió a comprobar con la prueba `test_00`. En la preparación de los casos nuevos también se ajustó la limpieza de eventos Tk entre pruebas; esa mejora corresponde a la infraestructura de pruebas, no a una nueva función del programa. No se detectaron nuevos fallos de producción en los casos ejecutados.
-
-Los formularios se comprueban con **widgets reales y sus callbacks**, no mediante una automatización visual completa con ratón y teclado. La persistencia se verifica desde otro intérprete Python, pero no se simula cerrar y reabrir toda la interfaz con autenticación manual. No se probaron concurrencia, cortes de energía, fallos de disco, corrupción general de archivos, rendimiento ni todas las escalas de Windows. Tampoco se midió un porcentaje de cobertura de líneas o ramas. La advertencia de fuente de CustomTkinter persiste y no impidió las pruebas.
-
-Las **seis regresiones históricas** de `tests/test_revision.py` siguen siendo antecedentes: esa suite y su informe original no están disponibles y **no se presentan como recuperados ni se suman a las 32 pruebas actuales**. Los nuevos casos comprueban la versión presente y cuentan con su propia evidencia.
-
-La validación con usuarios continúa en pausa; no se atribuyen participantes, comentarios ni resultados a esa actividad.
+Estos resultados no cubren concurrencia, fallos de disco ni automatización visual completa mediante ratón y teclado. La validación con usuarios continúa en pausa.
 
 ## Limitaciones y mejoras futuras
 

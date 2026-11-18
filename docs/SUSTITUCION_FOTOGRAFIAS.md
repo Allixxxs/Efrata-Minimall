@@ -1,5 +1,7 @@
 # Sustitución de fotografías y revisión del logotipo
 
+> **Informe histórico:** la suite fue retirada durante la simplificación de la entrega. Los comandos y nombres de pruebas de este informe documentan ejecuciones anteriores; no son instrucciones reproducibles con la estructura actual. La [última ejecución antes de retirarla](RESULTADOS_PRUEBAS_ANTES_SIMPLIFICACION.txt) confirmó 32 pruebas aprobadas.
+
 Fecha: 17 de noviembre de 2026.
 
 ## Resultado

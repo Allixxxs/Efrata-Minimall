@@ -1,5 +1,7 @@
 # Evidencias técnicas de la entrega académica
 
+> **Informe histórico:** la suite fue retirada durante la simplificación de la entrega. Los comandos y nombres de pruebas de este informe documentan ejecuciones anteriores; no son instrucciones reproducibles con la estructura actual. La [última ejecución antes de retirarla](RESULTADOS_PRUEBAS_ANTES_SIMPLIFICACION.txt) confirmó 32 pruebas aprobadas.
+
 Efrata Minimall — Universidad Autónoma de Occidente, Algoritmia y Programación, 2026.
 
 ## Objetivo y resultado
@@ -18,7 +20,7 @@ Ampliar la evidencia reproducible de funciones críticas, entradas válidas, inv
 - Pillow: 12.2.0
 - tkcalendar: 1.6.1
 
-Desde la carpeta principal y con las dependencias instaladas y un escritorio gráfico disponible:
+En aquella revisión se ejecutaron los siguientes comandos, con las dependencias instaladas y un escritorio gráfico disponible:
 
 ```powershell
 python -B -m unittest discover -s tests -v
@@ -39,17 +41,17 @@ La salida completa de la ejecución final está en [RESULTADOS_PRUEBAS_TECNICAS.
 
 ## Siete pruebas conservadas
 
-Estos casos pertenecen a la suite actual del catálogo. No deben confundirse con las seis regresiones históricas eliminadas.
+Estos casos pertenecían a la suite del catálogo, ahora retirada. No deben confundirse con las seis regresiones históricas eliminadas.
 
 | Función y caso | Resultado esperado | Resultado obtenido | Evidencia | Estado |
 | --- | --- | --- | --- | --- |
-| Ampliación cerca del borde | Diálogo y Cerrar dentro de límites | Límites verificados | [`test_00_ampliacion_dentro_de_pantalla`](../tests/test_catalogo.py#L132) | Aprobado |
-| Catálogos y existencias | 13 prendas activas, 10 trajes y fichas coincidentes | Totales, precios, tallas y filtros coincidentes | [`test_01_catalogos_y_existencias`](../tests/test_catalogo.py#L122) | Aprobado |
-| Fotos y apertura | Hashes/resolución/EXIF de 13 fotos y ampliación del catálogo activo | 13 verificaciones de integridad y 23 diálogos abiertos | [`test_02_fotos_fuentes_y_apertura`](../tests/test_catalogo.py#L149) | Aprobado |
-| Búsquedas y distribución | Una tarjeta por búsqueda y límites horizontales correctos | Búsquedas por nombre/código y mediciones a 360 × 560 y 1100 × 800 correctas | [`test_03_busqueda_filtros_y_tarjetas`](../tests/test_catalogo.py#L172) | Aprobado |
-| Carrito y compra | Conservar artículo, comprar y actualizar archivos | Stock 4 a 3, pedido leído y carrito vacío | [`test_04_carrito_compra_y_stock`](../tests/test_catalogo.py#L208) | Aprobado |
-| Alquiler y registro previo | Aceptar cinco alquileres y rechazar cruces | Cinco registros válidos; histórico ficticio conservado; cruces rechazados | [`test_05_alquiler_conflicto_y_registro_historico`](../tests/test_catalogo.py#L222) | Aprobado |
-| Consulta administrativa | 14 prendas, 44 variantes y 10 trajes | Totales y existencias comprobados | [`test_06_inventario_administrativo`](../tests/test_catalogo.py#L238) | Aprobado |
+| Ampliación cerca del borde | Diálogo y Cerrar dentro de límites | Límites verificados | `test_00_ampliacion_dentro_de_pantalla` (suite retirada) | Aprobado |
+| Catálogos y existencias | 13 prendas activas, 10 trajes y fichas coincidentes | Totales, precios, tallas y filtros coincidentes | `test_01_catalogos_y_existencias` (suite retirada) | Aprobado |
+| Fotos y apertura | Hashes/resolución/EXIF de 13 fotos y ampliación del catálogo activo | 13 verificaciones de integridad y 23 diálogos abiertos | `test_02_fotos_fuentes_y_apertura` (suite retirada) | Aprobado |
+| Búsquedas y distribución | Una tarjeta por búsqueda y límites horizontales correctos | Búsquedas por nombre/código y mediciones a 360 × 560 y 1100 × 800 correctas | `test_03_busqueda_filtros_y_tarjetas` (suite retirada) | Aprobado |
+| Carrito y compra | Conservar artículo, comprar y actualizar archivos | Stock 4 a 3, pedido leído y carrito vacío | `test_04_carrito_compra_y_stock` (suite retirada) | Aprobado |
+| Alquiler y registro previo | Aceptar cinco alquileres y rechazar cruces | Cinco registros válidos; histórico ficticio conservado; cruces rechazados | `test_05_alquiler_conflicto_y_registro_historico` (suite retirada) | Aprobado |
+| Consulta administrativa | 14 prendas, 44 variantes y 10 trajes | Totales y existencias comprobados | `test_06_inventario_administrativo` (suite retirada) | Aprobado |
 
 ## Veinticuatro pruebas nuevas
 
@@ -57,30 +59,30 @@ Los métodos 01–20 son de backend y almacenamiento; los métodos 21–24 utili
 
 | Función | Caso | Resultado esperado | Resultado obtenido | Evidencia | Estado |
 | --- | --- | --- | --- | --- | --- |
-| Acceso | Registro, hash y duplicado | Cuenta única, hash PBKDF2 y acceso válido. | Cuenta creada; duplicado rechazado; contraseña incorrecta sin sesión; acceso correcto y dos registros de inicio. El archivo contiene PBKDF2, no la contraseña ficticia. | [`test_01_registro_acceso_hash_duplicado`](../tests/test_criticos.py#L118) | Aprobado |
-| Acceso | Correo y contraseña inválidos | Rechazo sin escribir cuentas. | Se rechazaron seis correos y seis contraseñas inválidos; las huellas temporales no cambiaron. | [`test_02_formatos_registro_invalidos`](../tests/test_criticos.py#L133) | Aprobado |
-| Seguridad | Sin sesión y cuenta ajena | PermissionError sin escrituras. | Las cuatro operaciones sin sesión y la consulta del carrito ajeno lanzaron PermissionError; no hubo escrituras. | [`test_03_operaciones_sin_sesion_y_otro_usuario`](../tests/test_criticos.py#L144) | Aprobado |
-| Perfil | Cada campo vacío individualmente | Compra y alquiler bloqueados sin escrituras. | Cada uno de los siete campos vacío bloqueó compra y alquiler; el faltante fue identificado y las huellas se conservaron. | [`test_04_siete_campos_obligatorios`](../tests/test_criticos.py#L158) | Aprobado |
-| Perfil | Perfil inexistente | Ambas operaciones bloqueadas sin archivos nuevos. | Compra y alquiler bloqueados sin perfil; no se generaron operaciones. | [`test_05_perfil_ausente`](../tests/test_criticos.py#L172) | Aprobado |
-| Pagos | Tres métodos y perfil válido | Método y estado conservados en ambas operaciones. | Efectivo quedó Pendiente; crédito y débito quedaron No procesado; demostración académica, en compras y alquileres leídos del TXT. | [`test_06_tres_metodos_y_estados`](../tests/test_criticos.py#L182) | Aprobado |
-| Pagos | Método no permitido | ValueError y datos temporales intactos. | Los dos métodos no permitidos se rechazaron en ambas operaciones sin alterar archivos. | [`test_07_metodos_invalidos`](../tests/test_criticos.py#L196) | Aprobado |
-| Carrito | Dos usuarios ficticios | Compra de uno conserva el carrito del otro. | El primer usuario compró una unidad; el segundo conservó dos unidades en su carrito. | [`test_08_carritos_separados`](../tests/test_criticos.py#L206) | Aprobado |
-| Carrito | Cero, negativos, fracciones y exceso | Rechazo sin modificar carrito ni stock. | Se rechazaron cero, negativo, fracción, texto, NaN, infinito y cantidad superior a cinco; archivos intactos. | [`test_09_cantidades_invalidas`](../tests/test_criticos.py#L218) | Aprobado |
-| Compra | Comprar todas las existencias | Stock cero, pedido y comprobante correctos; carrito vacío. | Compra de cinco unidades: total 250000, stock cero, carrito vacío, pedido con cinco unidades y comprobante con identificador, producto, cantidad, importe y método. | [`test_10_compra_stock_exacto_comprobante_historial`](../tests/test_criticos.py#L226) | Aprobado |
-| Compra | Cancelar confirmación | Inventario, carrito y registros sin cambios. | Cancelación con resultado no confirmado y hashes temporales idénticos. | [`test_11_cancelacion`](../tests/test_criticos.py#L243) | Aprobado |
-| Compra | Inventario menor que carrito guardado | Compra rechazada y carrito conservado. | Tras reducir el stock de cinco a cuatro, la compra de cinco fue rechazada y el carrito permaneció intacto. | [`test_12_stock_reducido_antes_de_comprar`](../tests/test_criticos.py#L250) | Aprobado |
-| Persistencia | Leer carrito desde otro intérprete | Recuperar exactamente artículo, talla y cantidad. | Un intérprete Python nuevo recuperó exactamente P1, talla M, cantidad 2 desde el TXT temporal; terminó con código cero. | [`test_13_carrito_en_proceso_nuevo`](../tests/test_criticos.py#L260) | Aprobado |
-| Alquiler | Formatos, fecha pasada y devolución no posterior | Rechazo sin escrituras. | Se rechazaron fecha inexistente, formato incorrecto, inicio pasado, devolución igual y devolución anterior; sin escrituras. | [`test_14_fechas_invalidas`](../tests/test_criticos.py#L280) | Aprobado |
-| Alquiler | Talla inexistente y traje inactivo o ausente | Rechazo sin registros. | Se rechazaron talla inexistente, traje inactivo y código ausente; sin registros nuevos. | [`test_15_tallas_y_trajes_invalidos`](../tests/test_criticos.py#L290) | Aprobado |
-| Disponibilidad | Último día de revisión y día siguiente | Rechazo hasta devolución +2; aceptación en +3. | Se rechazaron reservas en la devolución y en los días +1 y +2; se aceptó el día +3. | [`test_16_limites_revision_dos_dias`](../tests/test_criticos.py#L298) | Aprobado |
-| Devolución | Devolver desde el día de inicio y repetir | Fecha real y pago conservados; repetición rechazada. | Devolución desde el día inicial: estado Devuelto y fecha real de hoy; método y estado de pago conservados. Repetición rechazada. Revisión bloqueada hasta +2 y libre en +3. | [`test_17_devolucion_y_pago_conservado`](../tests/test_criticos.py#L310) | Aprobado |
-| Devolución | Antes del inicio | Rechazo conservando el alquiler activo. | La devolución antes del inicio fue rechazada; las huellas del alquiler permanecieron intactas. | [`test_18_devolucion_anticipada`](../tests/test_criticos.py#L326) | Aprobado |
-| Administración | Cuenta normal | Consultas y modificación denegadas sin cambios. | La cuenta normal no pudo consultar inventario, compras o alquileres ni cambiar existencias; sin cambios. | [`test_19_administracion_denegada`](../tests/test_criticos.py#L334) | Aprobado |
-| Administración | Consultar y modificar copias | Operaciones visibles y existencias actualizadas sin perder registros. | El administrador leyó una compra y un alquiler, cambió stock a siete y volvió a leerlo. Cantidad negativa rechazada sin escrituras. | [`test_20_administracion_autorizada`](../tests/test_criticos.py#L343) | Aprobado |
-| Interfaz | Tarjetas incompletas e inválidas | Ambos formularios rechazan sin escrituras. | Veinte combinaciones de formulario (dos tarjetas, cinco entradas y dos operaciones) bloquearon el envío, mostraron el mensaje esperado y no escribieron datos. | [`test_21_tarjetas_invalidas_formularios`](../tests/test_criticos.py#L408) | Aprobado |
-| Integración gráfica | Enviar widgets reales con tres métodos | Pedido, comprobante, stock y alquiler persistidos; tarjeta no guardada. | Tres compras y tres alquileres enviados desde widgets: métodos/estados leídos, stock final dos, carritos vacíos y comprobantes presentes. Ningún TXT guardó el titular ni los cuatro dígitos ficticios. | [`test_22_compra_y_alquiler_desde_formularios`](../tests/test_criticos.py#L424) | Aprobado |
-| Interfaz administrativa | Panel autorizado | Panel visible y consulta del inventario temporal. | Panel administrativo visible con sesión autorizada, mensaje sin error y dos productos consultados. | [`test_23_panel_administrativo_real`](../tests/test_criticos.py#L450) | Aprobado |
-| Integración administrativa | Guardar edición de traje desde widgets | Precio y descripción persisten en Excel temporal. | Botón Guardar traje invocado: código T1 conservado, precio 125000 y descripción actualizada leídos del Excel temporal; sin diálogo de error. | [`test_24_edicion_administrativa_formulario`](../tests/test_criticos.py#L459) | Aprobado |
+| Acceso | Registro, hash y duplicado | Cuenta única, hash PBKDF2 y acceso válido. | Cuenta creada; duplicado rechazado; contraseña incorrecta sin sesión; acceso correcto y dos registros de inicio. El archivo contiene PBKDF2, no la contraseña ficticia. | `test_01_registro_acceso_hash_duplicado` (suite retirada) | Aprobado |
+| Acceso | Correo y contraseña inválidos | Rechazo sin escribir cuentas. | Se rechazaron seis correos y seis contraseñas inválidos; las huellas temporales no cambiaron. | `test_02_formatos_registro_invalidos` (suite retirada) | Aprobado |
+| Seguridad | Sin sesión y cuenta ajena | PermissionError sin escrituras. | Las cuatro operaciones sin sesión y la consulta del carrito ajeno lanzaron PermissionError; no hubo escrituras. | `test_03_operaciones_sin_sesion_y_otro_usuario` (suite retirada) | Aprobado |
+| Perfil | Cada campo vacío individualmente | Compra y alquiler bloqueados sin escrituras. | Cada uno de los siete campos vacío bloqueó compra y alquiler; el faltante fue identificado y las huellas se conservaron. | `test_04_siete_campos_obligatorios` (suite retirada) | Aprobado |
+| Perfil | Perfil inexistente | Ambas operaciones bloqueadas sin archivos nuevos. | Compra y alquiler bloqueados sin perfil; no se generaron operaciones. | `test_05_perfil_ausente` (suite retirada) | Aprobado |
+| Pagos | Tres métodos y perfil válido | Método y estado conservados en ambas operaciones. | Efectivo quedó Pendiente; crédito y débito quedaron No procesado; demostración académica, en compras y alquileres leídos del TXT. | `test_06_tres_metodos_y_estados` (suite retirada) | Aprobado |
+| Pagos | Método no permitido | ValueError y datos temporales intactos. | Los dos métodos no permitidos se rechazaron en ambas operaciones sin alterar archivos. | `test_07_metodos_invalidos` (suite retirada) | Aprobado |
+| Carrito | Dos usuarios ficticios | Compra de uno conserva el carrito del otro. | El primer usuario compró una unidad; el segundo conservó dos unidades en su carrito. | `test_08_carritos_separados` (suite retirada) | Aprobado |
+| Carrito | Cero, negativos, fracciones y exceso | Rechazo sin modificar carrito ni stock. | Se rechazaron cero, negativo, fracción, texto, NaN, infinito y cantidad superior a cinco; archivos intactos. | `test_09_cantidades_invalidas` (suite retirada) | Aprobado |
+| Compra | Comprar todas las existencias | Stock cero, pedido y comprobante correctos; carrito vacío. | Compra de cinco unidades: total 250000, stock cero, carrito vacío, pedido con cinco unidades y comprobante con identificador, producto, cantidad, importe y método. | `test_10_compra_stock_exacto_comprobante_historial` (suite retirada) | Aprobado |
+| Compra | Cancelar confirmación | Inventario, carrito y registros sin cambios. | Cancelación con resultado no confirmado y hashes temporales idénticos. | `test_11_cancelacion` (suite retirada) | Aprobado |
+| Compra | Inventario menor que carrito guardado | Compra rechazada y carrito conservado. | Tras reducir el stock de cinco a cuatro, la compra de cinco fue rechazada y el carrito permaneció intacto. | `test_12_stock_reducido_antes_de_comprar` (suite retirada) | Aprobado |
+| Persistencia | Leer carrito desde otro intérprete | Recuperar exactamente artículo, talla y cantidad. | Un intérprete Python nuevo recuperó exactamente P1, talla M, cantidad 2 desde el TXT temporal; terminó con código cero. | `test_13_carrito_en_proceso_nuevo` (suite retirada) | Aprobado |
+| Alquiler | Formatos, fecha pasada y devolución no posterior | Rechazo sin escrituras. | Se rechazaron fecha inexistente, formato incorrecto, inicio pasado, devolución igual y devolución anterior; sin escrituras. | `test_14_fechas_invalidas` (suite retirada) | Aprobado |
+| Alquiler | Talla inexistente y traje inactivo o ausente | Rechazo sin registros. | Se rechazaron talla inexistente, traje inactivo y código ausente; sin registros nuevos. | `test_15_tallas_y_trajes_invalidos` (suite retirada) | Aprobado |
+| Disponibilidad | Último día de revisión y día siguiente | Rechazo hasta devolución +2; aceptación en +3. | Se rechazaron reservas en la devolución y en los días +1 y +2; se aceptó el día +3. | `test_16_limites_revision_dos_dias` (suite retirada) | Aprobado |
+| Devolución | Devolver desde el día de inicio y repetir | Fecha real y pago conservados; repetición rechazada. | Devolución desde el día inicial: estado Devuelto y fecha real de hoy; método y estado de pago conservados. Repetición rechazada. Revisión bloqueada hasta +2 y libre en +3. | `test_17_devolucion_y_pago_conservado` (suite retirada) | Aprobado |
+| Devolución | Antes del inicio | Rechazo conservando el alquiler activo. | La devolución antes del inicio fue rechazada; las huellas del alquiler permanecieron intactas. | `test_18_devolucion_anticipada` (suite retirada) | Aprobado |
+| Administración | Cuenta normal | Consultas y modificación denegadas sin cambios. | La cuenta normal no pudo consultar inventario, compras o alquileres ni cambiar existencias; sin cambios. | `test_19_administracion_denegada` (suite retirada) | Aprobado |
+| Administración | Consultar y modificar copias | Operaciones visibles y existencias actualizadas sin perder registros. | El administrador leyó una compra y un alquiler, cambió stock a siete y volvió a leerlo. Cantidad negativa rechazada sin escrituras. | `test_20_administracion_autorizada` (suite retirada) | Aprobado |
+| Interfaz | Tarjetas incompletas e inválidas | Ambos formularios rechazan sin escrituras. | Veinte combinaciones de formulario (dos tarjetas, cinco entradas y dos operaciones) bloquearon el envío, mostraron el mensaje esperado y no escribieron datos. | `test_21_tarjetas_invalidas_formularios` (suite retirada) | Aprobado |
+| Integración gráfica | Enviar widgets reales con tres métodos | Pedido, comprobante, stock y alquiler persistidos; tarjeta no guardada. | Tres compras y tres alquileres enviados desde widgets: métodos/estados leídos, stock final dos, carritos vacíos y comprobantes presentes. Ningún TXT guardó el titular ni los cuatro dígitos ficticios. | `test_22_compra_y_alquiler_desde_formularios` (suite retirada) | Aprobado |
+| Interfaz administrativa | Panel autorizado | Panel visible y consulta del inventario temporal. | Panel administrativo visible con sesión autorizada, mensaje sin error y dos productos consultados. | `test_23_panel_administrativo_real` (suite retirada) | Aprobado |
+| Integración administrativa | Guardar edición de traje desde widgets | Precio y descripción persisten en Excel temporal. | Botón Guardar traje invocado: código T1 conservado, precio 125000 y descripción actualizada leídos del Excel temporal; sin diálogo de error. | `test_24_edicion_administrativa_formulario` (suite retirada) | Aprobado |
 
 ## Integración gráfica ejecutada
 

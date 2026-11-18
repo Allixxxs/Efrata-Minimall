@@ -1,5 +1,7 @@
 # Ampliación del catálogo de demostración
 
+> **Informe histórico:** la suite fue retirada durante la simplificación de la entrega. Los comandos y nombres de pruebas de este informe documentan ejecuciones anteriores; no son instrucciones reproducibles con la estructura actual. La [última ejecución antes de retirarla](RESULTADOS_PRUEBAS_ANTES_SIMPLIFICACION.txt) confirmó 32 pruebas aprobadas.
+
 Fecha: 17 de noviembre de 2026.
 
 ## Resultado
@@ -73,7 +75,7 @@ python -B -m unittest discover -s tests -v
 git diff --check
 ```
 
-La suite `tests/test_catalogo.py` contiene siete pruebas con múltiples casos. Redirige todas las rutas del backend hacia un directorio temporal antes de importar la interfaz. Usa los Excel ampliados como copias, un perfil ficticio y operaciones sintéticas. Compara hashes de los archivos originales de `data/` y `comprobantes/` antes y después.
+La suite retirada `tests/test_catalogo.py` contenía siete pruebas con múltiples casos. Redirige todas las rutas del backend hacia un directorio temporal antes de importar la interfaz. Usa los Excel ampliados como copias, un perfil ficticio y operaciones sintéticas. Compara hashes de los archivos originales de `data/` y `comprobantes/` antes y después.
 
 | Comprobación | Resultado |
 | --- | --- |
