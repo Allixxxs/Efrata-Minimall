@@ -257,8 +257,6 @@ Estos comandos no requieren activar el entorno virtual ni modificar la política
 5. Entrar en **Alquilar trajes**, consultar tallas y fechas disponibles y registrar el alquiler.
 6. En **Consultar alquileres**, revisar el historial y registrar la devolución cuando corresponda.
 
-En ventanas pequeñas, puede ser necesario desplazar el menú hasta abajo para acceder a **Cerrar sesión**.
-
 ## Acceso de administrador
 
 Para probar las funciones administrativas en una **instalación nueva**, ejecutar `python main.py` e iniciar sesión con esta cuenta de demostración:
@@ -276,8 +274,6 @@ La cuenta se crea automáticamente solo cuando todavía no existen archivos de u
 2. Abrir el **Panel administrativo** para consultar el resumen del negocio.
 3. Revisar o actualizar el inventario de prendas y trajes.
 4. Consultar compras, alquileres, devoluciones, clientes y estadísticas.
-
-Para la sustentación, utilizar datos ficticios y evitar mostrar información personal o contraseñas privadas.
 
 ## Validación con usuarios y mejoras
 
