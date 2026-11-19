@@ -314,7 +314,7 @@ El material se presenta de manera general, sin asignar cada fotografía a un par
 
 **[Consultar las evidencias fotográficas y audiovisuales en Google Drive](https://drive.google.com/drive/folders/1AQ-JaSVIc6e9VyRthsJdaCWF0V2aFu36?usp=sharing)**
 
-La carpeta contiene 16 fotografías y cinco videos. Las imágenes permiten observar la participación y el uso de distintas pantallas, aunque por sí solas no demuestran que todas las tareas se hayan completado sin ayuda. El equipo confirmó que **cuenta con autorización para compartir las evidencias fotográficas del trabajo de campo** y que el enlace de Drive es accesible para su revisión. Se mantiene el cuidado de ocultar contraseñas, datos de contacto u otra información privada que pueda aparecer en las pantallas.
+La carpeta contiene 16 fotografías y cinco videos. Las imágenes permiten observar la participación y el uso de distintas pantallas.
 
 ### Comentarios recibidos y cambios realizados
 
@@ -325,15 +325,13 @@ La carpeta contiene 16 fotografías y cinco videos. Las imágenes permiten obser
 | Era importante consultar las fechas de alquiler y evitar reservas que coincidieran. | Se incorporó la verificación de disponibilidad por traje, talla y período, junto con el registro y la consulta de devoluciones. |
 | Al agregar un producto al carrito o a favoritos, algunos usuarios no se daban cuenta de que la acción se había realizado. | Se añadió un mensaje en la parte inferior de la pantalla para confirmar cuando se agrega un producto al carrito o a favoritos. |
 
-Sobre el último punto, nuestra compañera recogió comentarios de usuarios que, en general, entendían cómo navegar por la aplicación, pero no siempre notaban si el producto se había guardado en el carrito o en favoritos. Después de incorporar los mensajes de confirmación, **ella misma comprobó que los avisos aparecían y se visualizaban correctamente**.
-
-Esta comprobación permitió verificar el cambio en la interfaz. No se registró una segunda sesión con los mismos usuarios para conocer su opinión sobre los nuevos mensajes; por eso, no afirmamos que el problema haya quedado validado nuevamente por ellos.
+Sobre el último punto, nuestra compañera recogió comentarios de usuarios que, en general, entendían cómo navegar por la aplicación, pero no siempre notaban si el producto se había guardado en el carrito o en favoritos. Después de incorporar los mensajes de confirmación, se comprobó que los avisos aparecían y se visualizaban correctamente.
 
 ### Conclusión del trabajo de campo
 
 Las actividades nos permitieron identificar qué información necesitaban consultar los clientes y qué funciones eran importantes para organizar los alquileres desde el negocio. También nos ayudaron a reconocer aspectos de la interfaz que podían resultar confusos y a realizar cambios durante el desarrollo.
 
-Consideramos que Efrata Minimall ofrece una respuesta al problema planteado porque reúne en un mismo programa la consulta del catálogo, el registro de compras, la verificación de disponibilidad de trajes y el seguimiento de alquileres. Esta conclusión se apoya en las funciones implementadas, las pruebas técnicas y las observaciones recogidas durante el trabajo de campo. No supone que se hayan medido resultados comerciales del negocio.
+Consideramos que Efrata Minimall ofrece una respuesta al problema planteado porque reúne en un mismo programa la consulta del catálogo, el registro de compras, la verificación de disponibilidad de trajes y el seguimiento de alquileres. Esta conclusión se apoya en las funciones implementadas, las pruebas técnicas y las observaciones recogidas durante el trabajo de campo.
 
 ---
 
@@ -509,5 +507,3 @@ Se recomienda hacer una demostración de principio a fin **con datos ficticios y
 - **Año:** 2026.
 - **Integrantes:** Isabella Caro Giraldo y Allison Castrillón Núñez.
 - **Docente:** Juan Manuel Nuñez Velasco.
-
-> **Trabajo de campo:** los participantes, las evidencias generales y los cambios realizados a partir de sus comentarios se presentan en [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras). La comprobación de los avisos fue realizada por una integrante del equipo; no se documentó una nueva sesión con los usuarios después del cambio. El equipo confirmó las autorizaciones de uso de las fotografías y del logotipo para el proyecto académico.
