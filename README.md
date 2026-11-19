@@ -127,7 +127,7 @@ La versión preparada para la presentación incluye **14 prendas registradas, 13
 
 Los productos añadidos, así como sus precios, tallas y existencias, son **datos ficticios de uso académico**; no representan cantidades ni precios confirmados por el establecimiento. Las **24 fotografías del catálogo** son referencias de Pexels, cuya procedencia y condiciones de uso se documentaron en el [registro completo de fotografías](#registro-fotografias) y en los antecedentes de [ampliación](#ampliacion-catalogo) y [sustitución](#sustitucion-fotografias) de este README. No deben interpretarse como fotografías de productos reales de la tienda.
 
-El logotipo fue facilitado por la propietaria para el proyecto académico, según la información aportada. Sin embargo, no se dispone de documentación que confirme la autoría del diseño y las licencias de todos sus componentes ni una autorización documentada para su publicación. Sus derechos de uso siguen pendientes de confirmación; no se le atribuye la licencia de Pexels. La [revisión del logotipo](#sustitucion-fotografias) conserva los detalles de esta limitación.
+El logotipo fue facilitado por la propietaria. Según la confirmación posterior del equipo, **el negocio autorizó su utilización y publicación dentro del proyecto académico**. Esta autorización se comunicó al equipo; no se adjunta un permiso escrito ni se establece con ello quién diseñó el logotipo o qué licencias tienen sus elementos. No se le atribuye la licencia de Pexels. La [revisión anterior del logotipo](#sustitucion-fotografias) conserva el estado de información disponible cuando se redactó ese informe.
 
 ## Arquitectura y almacenamiento
 
@@ -318,7 +318,7 @@ El material se presenta de manera general, sin asignar cada fotografía a un par
 
 **[Consultar las evidencias fotográficas y audiovisuales en Google Drive](https://drive.google.com/drive/folders/1AQ-JaSVIc6e9VyRthsJdaCWF0V2aFu36?usp=sharing)**
 
-La carpeta contiene 16 fotografías y cinco videos. Las imágenes permiten observar la participación y el uso de distintas pantallas, aunque por sí solas no demuestran que todas las tareas se hayan completado sin ayuda. El acceso al material depende de los permisos de la carpeta. Antes de difundir fotografías identificables o pantallas con información personal, se deben verificar las autorizaciones y proteger los datos visibles.
+La carpeta contiene 16 fotografías y cinco videos. Las imágenes permiten observar la participación y el uso de distintas pantallas, aunque por sí solas no demuestran que todas las tareas se hayan completado sin ayuda. El equipo confirmó que **cuenta con autorización para compartir las evidencias fotográficas del trabajo de campo** y que el enlace de Drive es accesible para su revisión. Se mantiene el cuidado de ocultar contraseñas, datos de contacto u otra información privada que pueda aparecer en las pantallas.
 
 ### Comentarios recibidos y cambios realizados
 
@@ -476,7 +476,7 @@ Además se abrió la aplicación aislada y se revisaron visualmente tarjetas de 
 
 ### Pendientes y límites
 
-- Sustitución de las once imágenes históricas completada posteriormente; la autorización del logotipo sigue pendiente (véase el informe de sustitución).
+- Sustitución de las once imágenes históricas completada posteriormente. En el momento de esta revisión aún no se había confirmado la autorización del logotipo; el equipo comunicó después que el negocio autorizó su uso y publicación académicos.
 - La advertencia de fuente de CustomTkinter persiste en este entorno; utiliza su método alternativo de dibujo y no impidió las pruebas.
 - Las licencias se comprobaron en las fuentes oficiales; la correspondencia visual es de referencia, no una certificación de productos del negocio.
 - Los riesgos de privacidad del historial Git señalados en la auditoría anterior no se han corregido: esta tarea no autorizaba sanearlo.
@@ -560,7 +560,9 @@ Se inspeccionó visualmente el PNG y sus metadatos, se revisaron las referencias
 
 Un README histórico enlazaba una imagen alojada como adjunto de GitHub. Ese alojamiento no constituye por sí mismo una licencia ni permite establecer con certeza el origen del PNG actual. La búsqueda pública por el nombre del negocio tampoco aportó una fuente concluyente. No se encontró documentación que identifique autor, licencia de los adornos o tipografía, archivo editable original o permiso del titular.
 
-**Estado: derechos de uso del logotipo no confirmados.** No se afirma que infrinja derechos, pero tampoco que sea de libre uso. Queda pendiente obtener del negocio o de quien lo diseñó una confirmación de autoría y autorización para la publicación académica, junto con las licencias de los recursos utilizados cuando corresponda. No se sustituyó ni se atribuyó una licencia de Pexels al logotipo.
+**Estado de la revisión original:** en el momento de este informe no se había podido confirmar la autorización de uso del logotipo ni la autoría del diseño. No se sustituyó el recurso ni se le atribuyó una licencia de Pexels.
+
+**Actualización posterior:** el equipo informó que el negocio autorizó el uso y la publicación del logotipo en el proyecto académico. Esta confirmación resuelve el pendiente de permiso comunicado por el equipo, aunque no aporta por sí sola información sobre la autoría o las licencias de los elementos gráficos.
 
 </details>
 
@@ -1390,4 +1392,4 @@ Se recomienda hacer una demostración de principio a fin **con datos ficticios y
 - **Integrantes:** Isabella Caro Giraldo y Allison Castrillón Núñez.
 - **Docente:** Juan Manuel Nuñez Velasco.
 
-> **Trabajo de campo:** los participantes, las evidencias generales y los cambios realizados a partir de sus comentarios se presentan en [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras). La comprobación de los avisos fue realizada por una integrante del equipo; no se documentó una nueva sesión con los usuarios después del cambio. La publicación de imágenes identificables requiere verificar las autorizaciones correspondientes.
+> **Trabajo de campo:** los participantes, las evidencias generales y los cambios realizados a partir de sus comentarios se presentan en [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras). La comprobación de los avisos fue realizada por una integrante del equipo; no se documentó una nueva sesión con los usuarios después del cambio. El equipo confirmó las autorizaciones de uso de las fotografías y del logotipo para el proyecto académico.
