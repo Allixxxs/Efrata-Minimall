@@ -294,47 +294,49 @@ Para presentar el proyecto, utilizar cuentas de demostración autorizadas. No se
 
 ## Validación con usuarios y mejoras
 
-Esta sección reúne el trabajo de campo documentado por el equipo. Se distinguen **las pruebas iniciales de interfaz** (dos propuestas de diseño y una versión en terminal) de **las evidencias posteriores de uso de la aplicación gráfica**. No se atribuyen a la aplicación final resultados que únicamente correspondan a los prototipos.
+Para evaluar la utilidad y la facilidad de uso de Efrata Minimall, realizamos actividades de campo con personas que podían utilizar el sistema como clientes o desde el negocio. En una primera etapa presentamos dos propuestas de interfaz y una versión inicial que funcionaba en la terminal. Posteriormente, recopilamos fotografías y videos de personas utilizando la aplicación gráfica.
 
-### Participantes y método de la validación inicial
+### Participantes y desarrollo de las pruebas
 
-En el registro académico del 27 de octubre de 2026 participaron cuatro personas, sin publicar sus nombres:
+En la validación inicial participaron cuatro personas con diferentes perfiles. Se les pidió explorar las opciones, buscar un traje, consultar su información y reconocer cómo realizarían un alquiler. Durante las actividades registramos sus respuestas, dificultades y sugerencias.
 
-| Participante | Perfil general | Observaciones documentadas |
+| Participante | Perfil | Principales observaciones |
 | --- | --- | --- |
-| 1 | Persona de 19 años, maquilladora profesional | Comprendió el propósito de la aplicación, consideró claras las opciones y manifestó interés en disponer de más trajes. En la validación inicial indicó que completó las tareas sin ayuda. |
-| 2 | Persona de 46 años, abogada | Encontró claras las opciones y la información; destacó la importancia de contar con más alternativas de alquiler y dijo que utilizaría la solución. |
-| 3 | Mujer de 38 años, empleada del negocio que atiende clientes | Valoró la búsqueda de trajes, pero señaló confusión con algunas opciones, dificultades de usar la terminal y la necesidad de más información visual y descripciones de las prendas. |
-| 4 | Persona de 45 años, propietaria del negocio | Destacó el control de alquileres y devoluciones y la necesidad de verificar disponibilidad por traje, talla y fechas para evitar reservas superpuestas. |
+| 1 | Persona de 19 años, maquilladora profesional | Comprendió el propósito de la aplicación y consideró claras las opciones. Indicó que podía completar la tarea sin ayuda y sugirió contar con más alternativas de trajes. |
+| 2 | Persona de 46 años, abogada | Encontró comprensible la información y destacó la importancia de ofrecer más opciones para alquilar. Manifestó que utilizaría una aplicación de este tipo. |
+| 3 | Mujer de 38 años, empleada del negocio | Consideró útil la búsqueda de trajes, aunque algunas opciones de la versión en terminal le resultaron confusas. Recomendó una presentación más visual y descripciones más completas de las prendas. |
+| 4 | Persona de 45 años, propietaria del negocio | Resaltó la importancia de organizar los alquileres y las devoluciones, y de consultar la disponibilidad de cada traje según la talla y las fechas solicitadas. |
 
-A las personas participantes se les solicitó explorar las interfaces, buscar un traje, consultar su información y disponibilidad e intentar continuar con un alquiler. Se registraron observaciones y respuestas sobre claridad, navegación, mensajes y mejoras. **Estas entrevistas evaluaron propuestas de interfaz y el programa inicial; no constituyen una prueba integral de la aplicación gráfica final.** La participante 4 prefirió no ser fotografiada ni grabada en esa validación.
+Estas observaciones corresponden a la evaluación de los diseños y del programa inicial. Sirvieron como orientación para el desarrollo, pero no deben interpretarse como resultados de una prueba completa de la versión final.
 
-### Evidencias posteriores de interacción
+### Evidencias del trabajo de campo
 
-El equipo también recopiló fotografías y videos de uso de la interfaz gráfica: registro e inicio de sesión, exploración del catálogo, consulta de productos, formularios y selección de fechas. Las fotografías respaldan que hubo interacción, pero no demuestran por sí solas que todos los recorridos terminaron correctamente o sin ayuda.
+Las pruebas posteriores se documentaron con fotografías y videos en los que se observa la interacción con la aplicación gráfica. Los registros muestran recorridos por el inicio de sesión, el catálogo de productos, los formularios y la selección de fechas para alquileres.
 
-- [Carpeta «Evidencias AYP» en Google Drive](https://drive.google.com/drive/folders/1AQ-JaSVIc6e9VyRthsJdaCWF0V2aFu36?usp=sharing): 16 fotografías y 5 videos identificados al revisar el directorio el 19 de noviembre de 2026. La carpeta «Trabajo de campo» contiene archivos con los mismos nombres y tamaños, por lo que **no se cuentan como evidencias adicionales**.
-- Las fotos incluyen recorridos de una persona en un salón universitario y capturas de la aplicación en otro computador. **No se asignan estos archivos a personas concretas sin una correspondencia confirmada por el equipo.**
-- Los tres videos MP4 se revisaron mediante muestras de fotogramas; los dos MOV siguen pendientes de revisión de contenido. No se afirma que los cinco videos hayan sido comprobados íntegramente.
+El material se presenta de manera general, sin asignar cada fotografía a un participante. Los comentarios y las respuestas se conservan organizados por persona en el registro de validación inicial.
 
-Por privacidad, las fotografías y los videos **no se incorporan como archivos públicos a este repositorio**. Antes de republicar imágenes identificables se debe confirmar el consentimiento de las personas; también deben ocultarse correos, contraseñas y demás datos visibles en pantalla. La disponibilidad del enlace de Drive dependerá de los permisos otorgados por el equipo.
+**[Consultar las evidencias fotográficas y audiovisuales en Google Drive](https://drive.google.com/drive/folders/1AQ-JaSVIc6e9VyRthsJdaCWF0V2aFu36?usp=sharing)**
 
-### Hallazgos y acciones realizadas
+La carpeta contiene 16 fotografías y cinco videos. Las imágenes permiten observar la participación y el uso de distintas pantallas, aunque por sí solas no demuestran que todas las tareas se hayan completado sin ayuda. El acceso al material depende de los permisos de la carpeta. Antes de difundir fotografías identificables o pantallas con información personal, se deben verificar las autorizaciones y proteger los datos visibles.
 
-| Comentario o necesidad | Respuesta en el desarrollo | Alcance de la evidencia |
-| --- | --- | --- |
-| Algunas opciones del prototipo y el programa en terminal podían ser confusos. | Se implementó una interfaz gráfica con pantallas y navegación visual. | Cambio visible en la aplicación; no se atribuye una nueva calificación de facilidad de uso a quienes probaron la terminal. |
-| Se solicitaron más opciones y mejor presentación de las prendas. | Se amplió el catálogo de demostración y se incorporaron fotografías de referencia, tallas, precios y descripciones. | Implementación documentada en el catálogo; las fotografías son referencias académicas, no inventario fotografiado del negocio. |
-| Se consideró fundamental controlar disponibilidad y devoluciones. | Se incorporaron reglas y consultas de disponibilidad por traje, talla y período, además del flujo de devoluciones. | Funcionamiento abordado en pruebas técnicas; las entrevistas iniciales no verificaron exhaustivamente los cruces de fechas. |
-| En pruebas posteriores, algunos usuarios no notaban que habían agregado artículos al carrito o a favoritos. | Se añadió un aviso inferior que muestra «¡Agregado al carrito!» o «¡Agregado a favoritos!». | La mejora está implementada. **Todavía no se ha documentado una nueva prueba de usuario que confirme que resolvió la dificultad.** |
+### Comentarios recibidos y cambios realizados
 
-Sobre el último hallazgo, la compañera del equipo comunicó que los usuarios comprendían en general la navegación, pero que faltaba una confirmación más visible al añadir productos. El aviso se incorporó a partir de esa observación. No se presentan esas opiniones como citas textuales individuales ni se inventan tiempos, tasas de éxito o tareas completadas.
+| Observación de los participantes | Cambio realizado |
+| --- | --- |
+| Algunas opciones del programa en terminal no eran fáciles de interpretar. | Se desarrolló una interfaz gráfica con botones, formularios y navegación entre pantallas. |
+| Hacían falta más alternativas y una presentación más completa de los productos. | Se amplió el catálogo de demostración y se incorporaron imágenes de referencia, descripciones, tallas y precios. |
+| Era importante consultar las fechas de alquiler y evitar reservas que coincidieran. | Se incorporó la verificación de disponibilidad por traje, talla y período, junto con el registro y la consulta de devoluciones. |
+| Al agregar un producto al carrito o a favoritos, algunos usuarios no se daban cuenta de que la acción se había realizado. | Se añadió un mensaje en la parte inferior de la pantalla para confirmar cuando se agrega un producto al carrito o a favoritos. |
 
-### Síntesis y pendientes verificables
+Sobre el último punto, nuestra compañera recogió comentarios de usuarios que, en general, entendían cómo navegar por la aplicación, pero no siempre notaban si el producto se había guardado en el carrito o en favoritos. Después de incorporar los mensajes de confirmación, **ella misma comprobó que los avisos aparecían y se visualizaban correctamente**.
 
-Los registros iniciales muestran que las personas participantes comprendieron el propósito general de Efrata Minimall. Sus comentarios sirvieron para priorizar la claridad visual, la información del catálogo y el control de los alquileres. Las evidencias posteriores documentan interacción con la aplicación gráfica y una observación específica que originó los avisos de carrito y favoritos.
+Esta comprobación permitió verificar el cambio en la interfaz. No se registró una segunda sesión con los mismos usuarios para conocer su opinión sobre los nuevos mensajes; por eso, no afirmamos que el problema haya quedado validado nuevamente por ellos.
 
-Para completar la trazabilidad del trabajo de campo resta **confirmar qué fotografías pertenecen a cada sesión**, aclarar si hubo una **segunda prueba después del cambio de los avisos**, y verificar las autorizaciones de publicación de imágenes. Una eventual prueba adicional con otra persona es opcional y **no se cuenta como realizada**.
+### Conclusión del trabajo de campo
+
+Las actividades nos permitieron identificar qué información necesitaban consultar los clientes y qué funciones eran importantes para organizar los alquileres desde el negocio. También nos ayudaron a reconocer aspectos de la interfaz que podían resultar confusos y a realizar cambios durante el desarrollo.
+
+Consideramos que Efrata Minimall ofrece una respuesta al problema planteado porque reúne en un mismo programa la consulta del catálogo, el registro de compras, la verificación de disponibilidad de trajes y el seguimiento de alquileres. Esta conclusión se apoya en las funciones implementadas, las pruebas técnicas y las observaciones recogidas durante el trabajo de campo. No supone que se hayan medido resultados comerciales del negocio.
 
 ---
 
@@ -1361,4 +1363,4 @@ Se recomienda hacer una demostración de principio a fin **con datos ficticios y
 - **Integrantes:** Isabella Caro Giraldo y Allison Castrillón Núñez.
 - **Docente:** Juan Manuel Nuñez Velasco.
 
-> **Trabajo de campo:** las entrevistas iniciales, las evidencias posteriores y las mejoras implementadas están documentadas en [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras). La correspondencia de las fotografías con cada participante, la verificación posterior de los avisos y las autorizaciones de imagen se mantienen como pendientes explícitos.
+> **Trabajo de campo:** los participantes, las evidencias generales y los cambios realizados a partir de sus comentarios se presentan en [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras). La comprobación de los avisos fue realizada por una integrante del equipo; no se documentó una nueva sesión con los usuarios después del cambio. La publicación de imágenes identificables requiere verificar las autorizaciones correspondientes.
