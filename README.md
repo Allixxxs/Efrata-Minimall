@@ -11,6 +11,7 @@ Proyecto académico de la **Universidad Autónoma de Occidente**, desarrollado p
 - [Instalación y ejecución](#instalación-y-ejecución-en-windows).
 - [Acceso de administrador](#acceso-de-administrador).
 - [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras).
+- [Lista de verificación de la entrega](#lista-de-verificación-de-la-entrega).
 - [Pruebas técnicas y correcciones](#pruebas-técnicas-y-correcciones).
 - [Ampliación del catálogo](#ampliacion-catalogo).
 - [Sustitución de fotografías y logotipo](#sustitucion-fotografias).
@@ -1343,6 +1344,32 @@ La aplicación se abrió y cerró mediante un temporizador en una copia temporal
 - **Seguridad y escalabilidad:** los permisos administrativos dependen de archivos locales. Esta versión está pensada para demostración académica y no para operación comercial en red.
 
 Como mejoras futuras podrían considerarse una base de datos, fotografías propias del inventario con autorización del negocio, una gestión específica de arreglos y servicios de pagos o entregas integrados, siempre que se adapte primero el proyecto a los requisitos de seguridad correspondientes.
+
+## Lista de verificación de la entrega
+
+La siguiente revisión relaciona los apartados del checklist del curso con las evidencias del proyecto. Se distingue entre las funciones implementadas, las comprobaciones documentadas y las actividades que todavía se deben realizar. **No sustituye la calificación del docente.**
+
+| Apartado del checklist | Estado | Evidencia o aclaración |
+| --- | --- | --- |
+| **1. Problema y requisitos**: problema, usuarios, consultas, alcance, funciones priorizadas y criterios de aceptación. | Cumplido | [Contexto y problema](#contexto-y-problema), [Objetivos y alcance](#objetivos-y-alcance), [Requisitos y criterios de aceptación](#requisitos-y-criterios-de-aceptación) y [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras). |
+| **2. Backend en Python**: lógica, módulos, operaciones, validaciones y protección de información. | Cumplido en el alcance académico | Módulos de `backend/`, validaciones documentadas y contraseñas almacenadas mediante PBKDF2-SHA256. El programa utiliza archivos locales y no se considera adecuado para un entorno comercial sin medidas adicionales de seguridad. |
+| **3. Frontend en Python**: interfaz, funciones principales, formularios, mensajes y navegación. | Cumplido según las comprobaciones disponibles | Interfaz en `frontend/app.py`, [capturas](#capturas-de-la-aplicación), recorridos y [pruebas técnicas](#pruebas-técnicas-y-correcciones). La experiencia de uso se documenta por separado en el trabajo de campo. |
+| **4. Integración y persistencia**: comunicación entre interfaz, lógica y almacenamiento; registro y recuperación de datos. | Cumplido según las pruebas documentadas | Flujos de compra, alquiler, inventario y sesiones, con TXT y Excel. Se registraron pruebas aisladas de persistencia, validaciones y consultas administrativas. |
+| **5. Pruebas técnicas**: casos, entradas válidas e inválidas, resultados, correcciones y repetición. | Documentado | [Pruebas técnicas y correcciones](#pruebas-técnicas-y-correcciones). El último registro histórico contiene 32 pruebas aprobadas. La suite fue retirada del repositorio y no puede ejecutarse nuevamente desde la entrega actual. |
+| **6. Pruebas con usuarios**: participantes, tareas, observaciones, comentarios y mejoras. | Cumplido con una limitación | [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras) y [evidencias de campo](https://drive.google.com/drive/folders/1AQ-JaSVIc6e9VyRthsJdaCWF0V2aFu36?usp=sharing). Una integrante comprobó los avisos incorporados al carrito y favoritos; no se documentó una nueva sesión con los usuarios después de la corrección. |
+| **7. Documentación y presentación**: código, README, arquitectura, cambios y demostración. | Documentación lista; sustentación pendiente | El repositorio incluye el código, los recursos y las instrucciones de instalación. El [recorrido sugerido](#recorrido-sugerido-para-la-sustentación) todavía debe presentarse durante la sustentación. |
+
+### Comprobación de la versión publicada
+
+Se verificó que la rama principal de GitHub incluye `main.py`, los módulos de `backend/` y `frontend/`, los archivos Excel del catálogo, las imágenes de demostración, las capturas y el README con las instrucciones de instalación. También se revisó el código de inicialización, que prepara los ocho archivos TXT operativos y la cuenta pública de demostración en una instalación nueva.
+
+Las revisiones anteriores documentan el arranque de la aplicación y el acceso administrativo en una copia temporal. **En esta revisión del checklist no se pudo descargar y ejecutar de nuevo el repositorio completo en un entorno Windows limpio**, por lo que no se registra una nueva prueba de instalación ni se afirma que se hayan repetido los 32 casos anteriores. Esa comprobación debe realizarse en un equipo con Python y las dependencias indicadas en [Instalación y ejecución en Windows](#instalación-y-ejecución-en-windows), antes de la entrega definitiva.
+
+### Conclusión del equipo
+
+Consideramos que Efrata Minimall responde al problema identificado porque permite consultar en un mismo sistema la información de prendas y trajes, registrar compras y alquileres, verificar la disponibilidad según las fechas solicitadas y llevar un seguimiento de las operaciones. Las pruebas técnicas documentan el funcionamiento de los procesos principales y el trabajo de campo permitió conocer las dificultades de los usuarios y orientar mejoras, especialmente en la presentación de la información y en los mensajes de confirmación. Aunque todavía es una aplicación académica de uso local, reúne las funciones propuestas y ofrece una base para organizar mejor estos procesos.
+
+---
 
 ## Recorrido sugerido para la sustentación
 
