@@ -474,17 +474,6 @@ En una versión futura podrían incorporarse una base de datos compartida, fotog
 
 Efrata Minimall reúne en una sola aplicación la consulta de prendas y trajes, el registro de compras y alquileres, la verificación de disponibilidad según las fechas solicitadas y el seguimiento de las operaciones. Las pruebas técnicas realizadas y los comentarios de las personas participantes permitieron comprobar las funciones principales y realizar mejoras en la interfaz. Aunque se trata de un proyecto académico de uso local, la solución responde a las necesidades de organización que identificamos durante su desarrollo.
 
-## Recorrido sugerido para la sustentación
-
-Se recomienda hacer una demostración de principio a fin **con datos ficticios y una copia del proyecto**, de manera que los registros originales no se vean afectados:
-
-1. **Acceso:** registrar o iniciar sesión y explicar las diferencias entre las cuentas de cliente y administrador.
-2. **Catálogo y carrito:** buscar una prenda, filtrar, elegir talla y añadirla al carrito.
-3. **Compra y validaciones:** intentar confirmar sin los datos personales completos; completarlos, finalizar la compra y mostrar comprobante, estado de pago e inventario actualizado.
-4. **Alquiler:** seleccionar traje y talla, comprobar fechas disponibles y registrar la operación.
-5. **Administración:** consultar compras, alquileres, clientes y existencias; mostrar una modificación de prueba.
-6. **Cierre:** relacionar las operaciones mostradas con los requisitos de aceptación, las pruebas realizadas y las limitaciones del sistema.
-
 ## Créditos académicos
 
 - **Universidad:** Universidad Autónoma de Occidente (UAO).
