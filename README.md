@@ -133,6 +133,18 @@ El proyecto está dividido en tres partes:
 2. **`backend/`:** organiza las reglas de negocio, las validaciones y el acceso a los datos.
 3. **`data/`:** conserva la información local para que las operaciones puedan consultarse después de cerrar la aplicación.
 
+### Desarrollo del backend
+
+Desarrollamos la lógica del programa en módulos de Python para separar las funciones de usuarios, catálogo, carrito, favoritos, compras, alquileres y administración. Cada módulo se encarga de comprobar la información y realizar las operaciones correspondientes. Por ejemplo, antes de confirmar una compra se revisan los datos del cliente y las existencias; para un alquiler se comprueban la talla y las fechas, evitando reservas que coincidan. Los productos y trajes se consultan en archivos Excel, mientras que las cuentas y los movimientos se guardan en archivos TXT.
+
+### Desarrollo del frontend
+
+Construimos la interfaz gráfica en `frontend/app.py` utilizando CustomTkinter y Tkinter. Organizamos pantallas para el acceso, los catálogos, el carrito, las compras, los alquileres y la administración. Incorporamos formularios, botones, fotografías, filtros y selección de fechas para que los usuarios puedan realizar las operaciones sin utilizar la terminal. La interfaz llama a las funciones del backend y muestra los resultados, confirmaciones o mensajes de error.
+
+### Resultado del desarrollo
+
+El resultado es una aplicación de escritorio que conecta las pantallas con los registros de compras, alquileres e inventario. Las [capturas](#capturas-de-la-aplicación) muestran cómo quedó la interfaz; las [pruebas técnicas](#pruebas-técnicas-y-correcciones) documentan las comprobaciones de funcionamiento, y la [validación con usuarios](#validación-con-usuarios-y-mejoras) explica los comentarios recibidos y los ajustes que realizamos.
+
 El recorrido general de una operación es:
 
 ```text
