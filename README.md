@@ -472,7 +472,7 @@ Efrata Minimall reúne en una sola aplicación la consulta de prendas y trajes, 
 
 ## Créditos académicos
 
-- **Universidad:** Universidad Autónoma de Occidente (UAO).
+- **Universidad:** Universidad Autónoma de Occidente.
 - **Asignatura:** Algoritmia y Programación.
 - **Año:** 2026.
 - **Integrantes:** Isabella Caro Giraldo y Allison Castrillón Núñez.
