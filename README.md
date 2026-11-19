@@ -89,7 +89,7 @@ La devolución se registra desde la cuenta del cliente; la sección administrati
 
 ## Capturas de la aplicación
 
-Las capturas reales incorporadas fueron tomadas el **17 de noviembre de 2026** y muestran la interfaz con datos de demostración. Se revisaron antes de incluirlas y no se observaron datos personales sensibles. Las fotografías de productos son referencias, no imágenes tomadas del inventario físico de Efrata Minimall.
+Las capturas corresponden a la aplicación desarrollada y muestran su funcionamiento con datos de demostración. Antes de incorporarlas, se revisó que no incluyeran información personal sensible. Las fotografías de productos son imágenes de referencia y no corresponden al inventario físico de Efrata Minimall.
 
 ### Catálogo de ropa
 
@@ -123,7 +123,7 @@ Los formularios de tarjeta sirven para comprobar la interacción y las validacio
 
 ## Catálogo de demostración y fotografías
 
-La versión preparada para la presentación incluye **14 prendas registradas, 13 activas, y 10 trajes de alquiler**. En ropa hay **44 variantes de talla: 39 disponibles y 5 agotadas**. Estas cifras se comprobaron en el inventario el **17 de noviembre de 2026** y pueden cambiar al registrar operaciones.
+La versión preparada para la presentación incluye **14 prendas registradas, 13 activas, y 10 trajes de alquiler**. En ropa hay **44 variantes de talla: 39 disponibles y 5 agotadas**. Estas cantidades corresponden al inventario de demostración y pueden cambiar al registrar operaciones.
 
 Los productos añadidos, así como sus precios, tallas y existencias, son **datos ficticios de uso académico**; no representan cantidades ni precios confirmados por el establecimiento. Las **24 fotografías del catálogo** son referencias de Pexels, cuya procedencia y condiciones de uso se documentaron en el [registro completo de fotografías](#registro-fotografias) y en los antecedentes de [ampliación](#ampliacion-catalogo) y [sustitución](#sustitucion-fotografias) de este README. No deben interpretarse como fotografías de productos reales de la tienda.
 
