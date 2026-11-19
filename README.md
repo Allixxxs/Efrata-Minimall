@@ -47,7 +47,7 @@ Esta versión funciona de forma **local en Windows**; no requiere servidor ni co
 
 ## Requisitos y criterios de aceptación
 
-Cada requisito se relaciona con una condición observable y con los módulos donde se implementa. Estos criterios también sirven como guía para las pruebas y la sustentación.
+La siguiente tabla muestra qué debe hacer la aplicación y cómo podemos comprobar cada función.
 
 | Requisito | ¿Cómo se comprueba? | Módulos principales |
 | --- | --- | --- |
@@ -123,7 +123,7 @@ La versión preparada para la presentación incluye **14 prendas registradas, 13
 
 Los productos, precios, tallas y existencias son **datos ficticios de uso académico** y no representan el inventario confirmado del negocio. Las **24 fotografías del catálogo** son referencias de Pexels, no imágenes de productos reales de la tienda. Sus autores y enlaces originales se encuentran en [Fuentes de las fotografías](#fuentes-de-las-fotografías).
 
-El logotipo fue facilitado por la propietaria, quien autorizó su utilización y publicación académica según lo confirmado por el equipo. Esta autorización no implica atribuir al equipo la autoría del diseño.
+El logotipo fue facilitado por la propietaria y contamos con su autorización para utilizarlo en el proyecto académico.
 
 ## Arquitectura y almacenamiento
 
@@ -188,7 +188,7 @@ Efrata-Minimall/
     └── .gitkeep
 ```
 
-El árbol muestra los archivos públicos; el nombre de la carpeta raíz puede variar al descargar el proyecto. `ropa.xlsx` contiene las hojas **Productos** y **Existencias**; `inventario.xlsx` almacena los trajes. Al arrancar se crean, si faltan, `usuarios.txt`, `administradores.txt`, `iniciossesion.txt`, `datos_personales.txt`, `favoritos.txt`, `carrito.txt`, `compras.txt` y `registraralquiler.txt` en `data/`. Estos archivos operativos y los comprobantes son locales y están excluidos de Git. Los identificadores y correos relacionan los registros correspondientes. Toda la documentación, las atribuciones y las evidencias históricas se reúnen en este README.
+El árbol muestra los archivos incluidos en GitHub. `ropa.xlsx` guarda las prendas y sus existencias, mientras que `inventario.xlsx` contiene los trajes. Al iniciar el programa se crean, si faltan, los archivos TXT necesarios para las cuentas, el carrito, las compras y los alquileres. Los registros de cada usuario y los comprobantes se guardan localmente y no se publican en el repositorio.
 
 ## Tecnologías
 
@@ -202,11 +202,9 @@ El árbol muestra los archivos públicos; el nombre de la carpeta raíz puede va
 | **tkcalendar** | Selección de fechas en los alquileres. |
 | **TXT y Excel** | Persistencia local de usuarios, productos y operaciones. |
 
-### Datos iniciales y privacidad de la descarga pública
+### Datos y privacidad
 
-Los inventarios Excel y las fotografías se incluyen completos. Los ocho TXT operativos se crean directamente al ejecutar `python main.py` si faltan, sin archivos de plantilla. En una instalación totalmente nueva se configura la cuenta administrativa pública de demostración en los TXT de usuarios y administradores; los otros seis TXT quedan vacíos. La inicialización integrada en `main.py` solo crea archivos ausentes: nunca sobrescribe datos existentes. Los nombres y formatos TXT utilizados por el backend se conservan.
-
-Los TXT operativos y los comprobantes generados están excluidos por `.gitignore`. La descarga no contiene registros privados: la cuenta pública de demostración se genera localmente en el primer arranque. Los clientes pueden registrar su propia cuenta; ese registro no concede permisos administrativos. Los TXT de usuarios y administradores no deben publicarse. Los comprobantes se guardan en `comprobantes/` únicamente de forma local.
+El repositorio incluye los inventarios de demostración y las imágenes, pero no las cuentas ni los movimientos privados. Al iniciar el programa se crean los archivos TXT que falten, sin borrar información existente. En una instalación completamente nueva también se prepara una cuenta de administrador para la demostración, cuyos datos aparecen más adelante. Los registros de usuarios, compras y alquileres, así como los comprobantes, permanecen en el equipo.
 
 ## Instalación y ejecución en Windows
 
@@ -251,43 +249,23 @@ En ventanas pequeñas, puede ser necesario desplazar el menú hasta abajo para a
 
 ## Acceso de administrador
 
-En una descarga nueva, ejecutar `python main.py` y utilizar estos datos en el formulario de inicio de sesión:
+Para probar las funciones administrativas en una **instalación nueva**, ejecutar `python main.py` e iniciar sesión con esta cuenta de demostración:
 
-| Dato | Credencial pública de demostración |
+| Dato | Credencial |
 | --- | --- |
-| Correo / identificador | `admin@efrata.invalid` |
+| Correo | `admin@efrata.invalid` |
 | Contraseña | `EfrataDemo2026!` |
 
-El dominio `.invalid` está reservado para identificadores no reales: no es un buzón de correo ni corresponde a una cuenta personal. La validación admite únicamente este identificador como excepción a Gmail y Hotmail; no se habilitan otros correos de ese dominio.
-
-`main.py` crea esta cuenta **solo cuando no existe ninguno de los ocho TXT operativos**. Guarda la contraseña con el mismo PBKDF2-SHA256 y sal aleatoria que las demás cuentas y añade únicamente su identificador a `administradores.txt`. No depende de los registros privados del equipo original. Si ya existe cualquier TXT operativo, solo crea los que faltan vacíos, sin añadir la cuenta de demostración ni cambiar las cuentas o permisos existentes. Una instalación anterior conserva su acceso administrativo local.
-
-No se duplica ni restablece la cuenta al reiniciar. Registrar una cuenta normal no le concede permisos de administrador. Estas credenciales son públicas **exclusivamente para probar la aplicación académica**: deben cambiarse o deshabilitarse antes de cualquier uso fuera de ese entorno. Para deshabilitar su acceso administrativo, retirar localmente su línea de `data/administradores.txt`; mientras se conserve algún TXT operativo, la inicialización no volverá a concederle permisos. Nunca reutilizar contraseñas personales.
-
-### Comprobación del acceso de demostración
-
-La revisión del 18 de noviembre de 2026 utilizó exclusivamente una copia temporal de los archivos públicos actuales, sin TXT operativos privados ni plantillas. No se presenta como una nueva ejecución de las 32 pruebas históricas retiradas.
-
-| Caso | Resultado esperado | Resultado obtenido |
-| --- | --- | --- |
-| Primera inicialización | Ocho TXT operativos; solo usuarios y administradores contienen la cuenta pública. | Comprobado: seis TXT vacíos; contraseña PBKDF2-SHA256 con sal, sin texto plano en usuarios. |
-| Inicio desde el formulario | Credenciales públicas válidas y panel administrativo accesible. | Comprobado con widgets reales y consulta del inventario de 14 prendas en la copia temporal. |
-| Cuenta de cliente | Inicio normal sin acceso administrativo. | Comprobado en formulario y backend; consulta administrativa rechazada. |
-| Reinicio | Conservar registros sin duplicar ni restablecer cuentas. | Comprobado con inicializaciones repetidas y otro intérprete Python; únicamente se añadió el registro del nuevo acceso. |
-| Instalación parcial | Conservar cualquier TXT existente; crear los ausentes vacíos sin añadir la demo. | Comprobado con cada uno de los ocho archivos existentes por separado y con usuarios vacío. |
-| Deshabilitación | No restaurar permisos retirados. | Comprobado: administradores vacío se conservó al reinicializar. |
-| Identificadores no admitidos | La excepción no habilita todo el dominio reservado. | Otro identificador en `.invalid` fue rechazado. |
-
-Se invocaron los formularios con widgets Tk reales de forma programática; no se afirma una automatización visual completa mediante ratón y teclado. La advertencia conocida de fuente de CustomTkinter no impidió estas comprobaciones.
+La cuenta se crea automáticamente solo cuando todavía no existen archivos de usuarios u operaciones. **Si ya se ha utilizado la aplicación, se conservan las cuentas existentes y no se añade esta cuenta de prueba.** El correo de demostración no es una dirección real y estas credenciales deben utilizarse únicamente para el proyecto académico.
 
 ### Como administrador
 
-1. Iniciar sesión con la cuenta pública descrita en **Acceso de administrador** en una descarga nueva, o con una cuenta local previamente autorizada. El registro público no concede permisos administrativos.
-2. Abrir el **Panel administrativo** y revisar el resumen de información.
-3. Consultar y, si corresponde, actualizar el inventario de prendas y trajes.
-4. Revisar las secciones de compras, alquileres, devoluciones, clientes y estadísticas.
+1. Iniciar sesión con la cuenta de demostración o con una cuenta que ya tenga permisos administrativos.
+2. Abrir el **Panel administrativo** para consultar el resumen del negocio.
+3. Revisar o actualizar el inventario de prendas y trajes.
+4. Consultar compras, alquileres, devoluciones, clientes y estadísticas.
 
-Para presentar el proyecto, utilizar cuentas de demostración autorizadas. No se deben publicar contraseñas personales ni credenciales privadas en el repositorio o en las capturas; la única excepción documentada es la cuenta pública de demostración. **Antes de hacer públicos los cambios, debe revisarse también el historial de Git**, porque eliminar datos personales de los archivos actuales no los elimina de los commits anteriores.
+Para la sustentación, utilizar datos ficticios y evitar mostrar información personal o contraseñas privadas.
 
 ## Validación con usuarios y mejoras
 
@@ -327,17 +305,13 @@ La carpeta contiene 16 fotografías y cinco videos. Las imágenes permiten obser
 
 Sobre el último punto, nuestra compañera recogió comentarios de usuarios que, en general, entendían cómo navegar por la aplicación, pero no siempre notaban si el producto se había guardado en el carrito o en favoritos. Después de incorporar los mensajes de confirmación, se comprobó que los avisos aparecían y se visualizaban correctamente.
 
-### Conclusión del trabajo de campo
-
-Las actividades nos permitieron identificar qué información necesitaban consultar los clientes y qué funciones eran importantes para organizar los alquileres desde el negocio. También nos ayudaron a reconocer aspectos de la interfaz que podían resultar confusos y a realizar cambios durante el desarrollo.
-
-Consideramos que Efrata Minimall ofrece una respuesta al problema planteado porque reúne en un mismo programa la consulta del catálogo, el registro de compras, la verificación de disponibilidad de trajes y el seguimiento de alquileres. Esta conclusión se apoya en las funciones implementadas, las pruebas técnicas y las observaciones recogidas durante el trabajo de campo.
+Las actividades nos ayudaron a reconocer qué información necesitaban consultar los clientes, qué funciones eran importantes para el negocio y qué aspectos de la interfaz debíamos mejorar.
 
 ---
 
 ## Pruebas técnicas y correcciones
 
-Se realizaron **32 pruebas automatizadas y todas finalizaron correctamente**, sin fallos ni errores. Se comprobaron las funciones principales de la aplicación con datos válidos, inválidos y casos límite. Las pruebas se ejecutaron con información ficticia y archivos temporales para no modificar los registros originales.
+Durante el desarrollo ejecutamos **32 pruebas automatizadas, todas aprobadas**. Comprobamos las funciones principales con datos correctos, incorrectos y casos límite. Para evitar cambios en los registros del proyecto, utilizamos información ficticia y archivos temporales.
 
 | Área evaluada | Aspectos comprobados | Resultado |
 | --- | --- | --- |
@@ -350,7 +324,7 @@ Se realizaron **32 pruebas automatizadas y todas finalizaron correctamente**, si
 
 Durante el desarrollo se ajustaron validaciones de usuarios y formularios, el control de existencias, la disponibilidad de trajes y la presentación de mensajes y estados de pago. Después de los cambios se volvieron a comprobar las funciones correspondientes. Las observaciones de uso y las mejoras realizadas a partir de ellas se explican en [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras).
 
-El registro que aparece a continuación corresponde a la última ejecución de las 32 pruebas. **Los archivos empleados para ejecutarlas se retiraron del repositorio**, por lo que el resultado se presenta como evidencia de esa ejecución y no como una prueba que pueda repetirse desde los archivos entregados.
+Conservamos a continuación el registro de resultados de las 32 pruebas. Los archivos con los que se ejecutaron ya no forman parte de esta entrega, por lo que el registro permite consultar los resultados, pero no volver a ejecutar esas pruebas desde GitHub.
 
 <a id="registro-32-pruebas"></a>
 <details>
@@ -472,18 +446,17 @@ Las 24 fotografías del catálogo proceden de Pexels y se utilizan únicamente c
 
 </details>
 
-El logotipo fue facilitado por la propietaria, quien, según confirmó el equipo, autorizó su uso y publicación dentro del proyecto académico. Esa autorización no se presenta como una licencia de Pexels ni como una declaración sobre la autoría del diseño.
+El logotipo fue proporcionado por el negocio y cuenta con su autorización de uso académico. Las fotografías del catálogo, en cambio, se atribuyen a sus respectivos autores de Pexels.
 
 ## Limitaciones y mejoras futuras
 
 - **Uso local:** los datos se almacenan en TXT y Excel; no hay base de datos centralizada ni sincronización entre equipos.
 - **Pagos:** los formularios de tarjeta son académicos y no procesan transacciones bancarias.
 - **Entregas:** no hay integración con servicios de transporte ni seguimiento real de envíos.
-- **Fotografías de referencia:** las imágenes del catálogo no corresponden necesariamente a las prendas y trajes físicos del negocio; se utilizan para demostrar las funciones.
 - **Arreglos de ropa:** es un servicio del negocio, pero no cuenta con un módulo de gestión dentro del programa.
 - **Seguridad y escalabilidad:** los permisos administrativos dependen de archivos locales. Esta versión está pensada para demostración académica y no para operación comercial en red.
 
-Como mejoras futuras podrían considerarse una base de datos, fotografías propias del inventario con autorización del negocio, una gestión específica de arreglos y servicios de pagos o entregas integrados, siempre que se adapte primero el proyecto a los requisitos de seguridad correspondientes.
+En una versión futura podrían incorporarse una base de datos compartida, fotografías del inventario real, la gestión de arreglos y servicios de pago y entrega, con las medidas de seguridad necesarias.
 
 ## Conclusión
 
