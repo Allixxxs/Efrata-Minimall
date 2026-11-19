@@ -10,6 +10,7 @@ Proyecto académico de la **Universidad Autónoma de Occidente**, desarrollado p
 - [Catálogo y fotografías](#catálogo-de-demostración-y-fotografías).
 - [Instalación y ejecución](#instalación-y-ejecución-en-windows).
 - [Acceso de administrador](#acceso-de-administrador).
+- [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras).
 - [Pruebas técnicas y correcciones](#pruebas-técnicas-y-correcciones).
 - [Ampliación del catálogo](#ampliacion-catalogo).
 - [Sustitución de fotografías y logotipo](#sustitucion-fotografias).
@@ -291,6 +292,52 @@ Se invocaron los formularios con widgets Tk reales de forma programática; no se
 
 Para presentar el proyecto, utilizar cuentas de demostración autorizadas. No se deben publicar contraseñas personales ni credenciales privadas en el repositorio o en las capturas; la única excepción documentada es la cuenta pública de demostración. **Antes de hacer públicos los cambios, debe revisarse también el historial de Git**, porque eliminar datos personales de los archivos actuales no los elimina de los commits anteriores.
 
+## Validación con usuarios y mejoras
+
+Esta sección reúne el trabajo de campo documentado por el equipo. Se distinguen **las pruebas iniciales de interfaz** (dos propuestas de diseño y una versión en terminal) de **las evidencias posteriores de uso de la aplicación gráfica**. No se atribuyen a la aplicación final resultados que únicamente correspondan a los prototipos.
+
+### Participantes y método de la validación inicial
+
+En el registro académico del 27 de octubre de 2026 participaron cuatro personas, sin publicar sus nombres:
+
+| Participante | Perfil general | Observaciones documentadas |
+| --- | --- | --- |
+| 1 | Persona de 19 años, maquilladora profesional | Comprendió el propósito de la aplicación, consideró claras las opciones y manifestó interés en disponer de más trajes. En la validación inicial indicó que completó las tareas sin ayuda. |
+| 2 | Persona de 46 años, abogada | Encontró claras las opciones y la información; destacó la importancia de contar con más alternativas de alquiler y dijo que utilizaría la solución. |
+| 3 | Mujer de 38 años, empleada del negocio que atiende clientes | Valoró la búsqueda de trajes, pero señaló confusión con algunas opciones, dificultades de usar la terminal y la necesidad de más información visual y descripciones de las prendas. |
+| 4 | Persona de 45 años, propietaria del negocio | Destacó el control de alquileres y devoluciones y la necesidad de verificar disponibilidad por traje, talla y fechas para evitar reservas superpuestas. |
+
+A las personas participantes se les solicitó explorar las interfaces, buscar un traje, consultar su información y disponibilidad e intentar continuar con un alquiler. Se registraron observaciones y respuestas sobre claridad, navegación, mensajes y mejoras. **Estas entrevistas evaluaron propuestas de interfaz y el programa inicial; no constituyen una prueba integral de la aplicación gráfica final.** La participante 4 prefirió no ser fotografiada ni grabada en esa validación.
+
+### Evidencias posteriores de interacción
+
+El equipo también recopiló fotografías y videos de uso de la interfaz gráfica: registro e inicio de sesión, exploración del catálogo, consulta de productos, formularios y selección de fechas. Las fotografías respaldan que hubo interacción, pero no demuestran por sí solas que todos los recorridos terminaron correctamente o sin ayuda.
+
+- [Carpeta «Evidencias AYP» en Google Drive](https://drive.google.com/drive/folders/1AQ-JaSVIc6e9VyRthsJdaCWF0V2aFu36?usp=sharing): 16 fotografías y 5 videos identificados al revisar el directorio el 19 de noviembre de 2026. La carpeta «Trabajo de campo» contiene archivos con los mismos nombres y tamaños, por lo que **no se cuentan como evidencias adicionales**.
+- Las fotos incluyen recorridos de una persona en un salón universitario y capturas de la aplicación en otro computador. **No se asignan estos archivos a personas concretas sin una correspondencia confirmada por el equipo.**
+- Los tres videos MP4 se revisaron mediante muestras de fotogramas; los dos MOV siguen pendientes de revisión de contenido. No se afirma que los cinco videos hayan sido comprobados íntegramente.
+
+Por privacidad, las fotografías y los videos **no se incorporan como archivos públicos a este repositorio**. Antes de republicar imágenes identificables se debe confirmar el consentimiento de las personas; también deben ocultarse correos, contraseñas y demás datos visibles en pantalla. La disponibilidad del enlace de Drive dependerá de los permisos otorgados por el equipo.
+
+### Hallazgos y acciones realizadas
+
+| Comentario o necesidad | Respuesta en el desarrollo | Alcance de la evidencia |
+| --- | --- | --- |
+| Algunas opciones del prototipo y el programa en terminal podían ser confusos. | Se implementó una interfaz gráfica con pantallas y navegación visual. | Cambio visible en la aplicación; no se atribuye una nueva calificación de facilidad de uso a quienes probaron la terminal. |
+| Se solicitaron más opciones y mejor presentación de las prendas. | Se amplió el catálogo de demostración y se incorporaron fotografías de referencia, tallas, precios y descripciones. | Implementación documentada en el catálogo; las fotografías son referencias académicas, no inventario fotografiado del negocio. |
+| Se consideró fundamental controlar disponibilidad y devoluciones. | Se incorporaron reglas y consultas de disponibilidad por traje, talla y período, además del flujo de devoluciones. | Funcionamiento abordado en pruebas técnicas; las entrevistas iniciales no verificaron exhaustivamente los cruces de fechas. |
+| En pruebas posteriores, algunos usuarios no notaban que habían agregado artículos al carrito o a favoritos. | Se añadió un aviso inferior que muestra «¡Agregado al carrito!» o «¡Agregado a favoritos!». | La mejora está implementada. **Todavía no se ha documentado una nueva prueba de usuario que confirme que resolvió la dificultad.** |
+
+Sobre el último hallazgo, la compañera del equipo comunicó que los usuarios comprendían en general la navegación, pero que faltaba una confirmación más visible al añadir productos. El aviso se incorporó a partir de esa observación. No se presentan esas opiniones como citas textuales individuales ni se inventan tiempos, tasas de éxito o tareas completadas.
+
+### Síntesis y pendientes verificables
+
+Los registros iniciales muestran que las personas participantes comprendieron el propósito general de Efrata Minimall. Sus comentarios sirvieron para priorizar la claridad visual, la información del catálogo y el control de los alquileres. Las evidencias posteriores documentan interacción con la aplicación gráfica y una observación específica que originó los avisos de carrito y favoritos.
+
+Para completar la trazabilidad del trabajo de campo resta **confirmar qué fotografías pertenecen a cada sesión**, aclarar si hubo una **segunda prueba después del cambio de los avisos**, y verificar las autorizaciones de publicación de imágenes. Una eventual prueba adicional con otra persona es opcional y **no se cuenta como realizada**.
+
+---
+
 ## Pruebas técnicas y correcciones
 
 Antes de simplificar la estructura, el **18 de noviembre de 2026** se ejecutaron las **32 pruebas automatizadas: 32 aprobadas, 0 fallidas, 0 errores y 0 omitidas** (`Ran 32 tests in 29.888s`, `OK`). Incluían las **7 pruebas originales del catálogo y 25 de funciones críticas y presentación**. La suite fue retirada después de esta comprobación y **ya no está incluida ni puede ejecutarse desde esta entrega**. Los resultados se conservan como evidencia histórica, no como una suite actualmente disponible.
@@ -308,7 +355,7 @@ La [salida completa previa a la simplificación](#registro-32-pruebas) registra 
 
 Se utilizaron datos ficticios, archivos temporales y comprobaciones de integridad para proteger los originales. Las revisiones documentadas también verificaron compilación de Python y `git diff --check`. Las seis regresiones más antiguas son antecedentes documentados cuya suite no está disponible; no se recuperaron ni se cuentan dentro de las 32.
 
-Estos resultados no cubren concurrencia, fallos de disco ni automatización visual completa mediante ratón y teclado. La validación con usuarios continúa en pausa.
+Estos resultados no cubren concurrencia, fallos de disco ni automatización visual completa mediante ratón y teclado. El trabajo de campo inicial y las evidencias posteriores se describen en [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras), con sus límites y comprobaciones pendientes.
 
 
 ## Archivo académico integrado
@@ -1314,4 +1361,4 @@ Se recomienda hacer una demostración de principio a fin **con datos ficticios y
 - **Integrantes:** Isabella Caro Giraldo y Allison Castrillón Núñez.
 - **Docente:** Juan Manuel Nuñez Velasco.
 
-> **Evidencias pendientes:** la documentación de las pruebas con usuarios se incorporará cuando esté completa y verificada. Este README no presenta resultados de validación que todavía no se hayan aportado.
+> **Trabajo de campo:** las entrevistas iniciales, las evidencias posteriores y las mejoras implementadas están documentadas en [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras). La correspondencia de las fotografías con cada participante, la verificación posterior de los avisos y las autorizaciones de imagen se mantienen como pendientes explícitos.
