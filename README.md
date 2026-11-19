@@ -367,7 +367,7 @@ Las siguientes secciones incorporan los tres informes y los tres registros TXT d
 
 **Cronología:** la ampliación y la sustitución se revisaron el 17 de noviembre de 2026 con siete pruebas. La ampliación de la suite dio lugar al informe de 31 casos y su salida del mismo día. La revisión posterior añadió el caso 25 de presentación: la última ejecución de 32 casos, del 18 de noviembre, se verificó antes de retirar la suite. No se suman ejecuciones entre sí.
 
-**Estado actual frente a los antecedentes:** las once fotografías antiguas ya fueron sustituidas; las trece incorporadas se conservaron. El historial público se sustituyó posteriormente por el commit limpio `24ed82b`; las notas de los informes que señalan riesgos del historial describen el estado de aquella tarea. No acreditan que se hayan eliminado copias o referencias históricas externas a la rama publicada. El permiso documentado del logotipo continúa pendiente. Las expresiones «sin commits ni push» y «README intacto» se refieren solo al alcance de cada intervención antigua.
+**Estado actual frente a los antecedentes:** las once fotografías antiguas ya fueron sustituidas; las trece incorporadas se conservaron. El historial público se sustituyó posteriormente por el commit limpio `24ed82b`; las notas de los informes que señalan riesgos del historial describen el estado de aquella tarea. No acreditan que se hayan eliminado copias o referencias históricas externas a la rama publicada. Posteriormente, el equipo confirmó que el negocio autorizó el uso y la publicación del logotipo en el proyecto académico. No se adjunta un documento de cesión ni se afirma que el equipo sea autor del diseño. Las expresiones «sin commits ni push» y «README intacto» se refieren solo al alcance de cada intervención antigua.
 
 <a id="ampliacion-catalogo"></a>
 
@@ -1334,7 +1334,7 @@ Verificaciones posteriores a la simplificación (18 de noviembre de 2026):
 
 El 18 de noviembre de 2026 se comprobaron las cuatro capturas mediante Pillow, los enlaces relativos y las anclas internas de este documento. Los seis textos anteriores se integraron antes de retirar su carpeta: los tres registros TXT se conservan íntegros en los desplegables y los tres informes mantienen sus casos, resultados, correcciones y limitaciones, con enlaces internos y contexto histórico actualizado.
 
-La aplicación se abrió y cerró mediante un temporizador en una copia temporal de los archivos públicos sin la antigua carpeta de documentación, cuentas ni comprobantes privados. La inicialización creó los ocho TXT operativos vacíos. No se realizaron compras, alquileres ni cambios administrativos en los datos originales, ni se volvió a ejecutar la suite eliminada. Persistió la advertencia conocida de CustomTkinter sobre `font_shapes`, con uso alternativo de `circle_shapes`; no impidió el arranque.
+La aplicación se abrió y cerró mediante un temporizador en una copia temporal de los archivos públicos sin la antigua carpeta de documentación, cuentas ni comprobantes privados. La inicialización de esa revisión creó ocho TXT operativos vacíos. **Esta observación corresponde a la versión anterior a la incorporación de la cuenta pública de demostración:** en una instalación nueva de la versión actual, seis TXT se crean vacíos y los de usuarios y administradores contienen el registro de demostración. No se realizaron compras, alquileres ni cambios administrativos en los datos originales, ni se volvió a ejecutar la suite eliminada. Persistió la advertencia conocida de CustomTkinter sobre `font_shapes`, con uso alternativo de `circle_shapes`; no impidió el arranque.
 
 ## Limitaciones y mejoras futuras
 
@@ -1360,6 +1360,86 @@ La siguiente revisión relaciona los apartados del checklist del curso con las e
 | **5. Pruebas técnicas**: casos, entradas válidas e inválidas, resultados, correcciones y repetición. | Documentado | [Pruebas técnicas y correcciones](#pruebas-técnicas-y-correcciones). El último registro histórico contiene 32 pruebas aprobadas. La suite fue retirada del repositorio y no puede ejecutarse nuevamente desde la entrega actual. |
 | **6. Pruebas con usuarios**: participantes, tareas, observaciones, comentarios y mejoras. | Cumplido con una limitación | [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras) y [evidencias de campo](https://drive.google.com/drive/folders/1AQ-JaSVIc6e9VyRthsJdaCWF0V2aFu36?usp=sharing). Una integrante comprobó los avisos incorporados al carrito y favoritos; no se documentó una nueva sesión con los usuarios después de la corrección. |
 | **7. Documentación y presentación**: código, README, arquitectura, cambios y demostración. | Documentación lista; sustentación pendiente | El repositorio incluye el código, los recursos y las instrucciones de instalación. El [recorrido sugerido](#recorrido-sugerido-para-la-sustentación) todavía debe presentarse durante la sustentación. |
+
+### Revisión de cada requisito del checklist
+
+Para facilitar la revisión, se relacionan los puntos del formulario del profesor con las secciones y los registros existentes. **Cumplido** significa que hay implementación o evidencia documentada; no equivale a una nueva prueba realizada durante esta revisión. **Parcial** señala una comprobación con alcance limitado y **por realizar** se reserva para una actividad que todavía no se ha ejecutado.
+
+<details>
+<summary>Consultar los requisitos y sus evidencias</summary>
+
+#### 1. Problema y requisitos
+
+| Requisito del docente | Estado y evidencia |
+| --- | --- |
+| Identificar un problema real y los usuarios afectados. | **Cumplido.** Se describe la necesidad de organizar información de prendas, compras y alquileres en [Contexto y problema](#contexto-y-problema). |
+| Consultar a usuarios para conocer sus necesidades. | **Cumplido.** Entrevistas y observaciones en [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras). |
+| Definir objetivo, alcance y funciones. | **Cumplido.** [Objetivos y alcance](#objetivos-y-alcance) y [Funcionalidades](#funcionalidades). |
+| Priorizar las funciones esenciales del MVP. | **Cumplido.** Acceso, catálogo, compras y alquileres, en [Objetivos y alcance](#objetivos-y-alcance). |
+| Establecer criterios verificables de aceptación. | **Cumplido.** Tabla en [Requisitos y criterios de aceptación](#requisitos-y-criterios-de-aceptación). |
+
+#### 2. Backend en Python
+
+| Requisito del docente | Estado y evidencia |
+| --- | --- |
+| Implementar la lógica de negocio. | **Cumplido.** Módulos de usuarios, catálogo, carrito, compras, alquileres y administración en `backend/`. |
+| Organizar funciones o módulos reutilizables. | **Cumplido.** Distribución explicada en [Arquitectura y almacenamiento](#arquitectura-y-almacenamiento). |
+| Realizar operaciones de creación, consulta, actualización o eliminación. | **Cumplido.** Gestión de cuentas, inventario, carrito y registros de operaciones. |
+| Validar entradas, controlar errores y devolver respuestas claras. | **Documentado.** Casos válidos, inválidos y límites en [Pruebas técnicas y correcciones](#pruebas-técnicas-y-correcciones). |
+| Proteger claves y datos sensibles según corresponda. | **Cumplido dentro del alcance académico.** Contraseñas con PBKDF2-SHA256, registros privados excluidos del repositorio; no se presenta como un sistema de seguridad comercial. |
+
+#### 3. Frontend en Python
+
+| Requisito del docente | Estado y evidencia |
+| --- | --- |
+| Construir una interfaz funcional. | **Cumplido.** `frontend/app.py` y [capturas](#capturas-de-la-aplicación). |
+| Permitir las funciones esenciales desde la interfaz. | **Documentado.** Recorridos de cuenta, catálogo, compra, alquiler y panel administrativo. |
+| Incluir controles adecuados. | **Cumplido.** Botones, formularios, filtros, imágenes y calendarios. |
+| Validar campos y mostrar confirmaciones o errores. | **Documentado.** Verificaciones de perfiles, fechas y pagos, y avisos de carrito y favoritos. |
+| Mantener una navegación comprensible. | **Documentado con alcance limitado.** La observación de usuarios y los cambios se presentan en [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras); no se midió una tasa general de éxito de la interfaz final. |
+
+#### 4. Integración y persistencia
+
+| Requisito del docente | Estado y evidencia |
+| --- | --- |
+| Integrar interfaz y backend. | **Documentado.** Operaciones implementadas en la interfaz mediante los servicios de `backend/`. |
+| Procesar información y mostrar un resultado. | **Documentado.** Compras, disponibilidad, alquileres y consultas administrativas. |
+| Guardar y recuperar información. | **Cumplido según las pruebas registradas.** Inventarios Excel y archivos TXT operativos; [Arquitectura y almacenamiento](#arquitectura-y-almacenamiento). |
+| Verificar un recorrido completo entre interfaz, lógica y datos. | **Documentado.** Casos de integración y accesos con widgets Tk en [Pruebas técnicas y correcciones](#pruebas-técnicas-y-correcciones). |
+
+#### 5. Pruebas técnicas
+
+| Requisito del docente | Estado y evidencia |
+| --- | --- |
+| Preparar pruebas de las funciones críticas. | **Documentado.** Registros históricos de 31 y 32 casos y sus informes. |
+| Probar datos válidos, inválidos y casos límite. | **Documentado.** Cuentas, perfiles, inventario, compras, alquileres y permisos. |
+| Probar la relación entre interfaz, backend y almacenamiento. | **Documentado.** Comprobaciones con datos temporales y formularios Tk. |
+| Registrar resultados esperados, obtenidos y evidencias. | **Documentado.** Informes y registros conservados en el [archivo académico](#archivo-académico-integrado). |
+| Corregir errores y repetir pruebas. | **Documentado.** Historial de ajustes y última ejecución registrada de 32 casos aprobados. La suite ya no está incluida en el repositorio. |
+
+#### 6. Pruebas con usuarios
+
+| Requisito del docente | Estado y evidencia |
+| --- | --- |
+| Seleccionar personas del público objetivo. | **Cumplido.** Participantes externos y personas vinculadas al negocio. |
+| Preparar tareas concretas. | **Cumplido.** Exploración del catálogo, consulta de trajes y proceso de alquiler. |
+| Permitir la interacción directa con la aplicación. | **Documentado.** Registros de las interfaces iniciales y fotografías y videos de uso de la aplicación gráfica. |
+| Registrar dificultades, comentarios y sugerencias. | **Cumplido.** Síntesis por participante y observaciones posteriores. |
+| Preguntar por la utilidad frente al problema. | **Cumplido.** Entrevistas sobre organización, búsqueda y disponibilidad. |
+| Priorizar comentarios y aplicar una mejora. | **Cumplido.** Catálogo, navegación, disponibilidad y avisos de carrito y favoritos. |
+| Probar de nuevo la mejora. | **Parcial.** Una integrante comprobó visualmente el funcionamiento de los nuevos avisos. No hay una segunda sesión documentada con los mismos usuarios para evaluar su percepción. |
+
+#### 7. Documentación y presentación
+
+| Requisito del docente | Estado y evidencia |
+| --- | --- |
+| Entregar el código fuente organizado y ejecutable en GitHub. | **Código publicado.** Archivos, dependencias e instrucciones disponibles; se recomienda confirmar la ejecución desde una descarga nueva en Windows. |
+| Incluir README con problema, funciones, instalación y ejecución. | **Cumplido.** Todas estas secciones aparecen en este documento. |
+| Documentar arquitectura, pruebas y opiniones de usuarios. | **Cumplido.** Secciones de arquitectura, archivo de pruebas y validación. |
+| Registrar los cambios posteriores a las pruebas. | **Cumplido.** Tabla de hallazgos y modificaciones. |
+| Preparar una demostración completa con datos representativos. | **Guion preparado; demostración por realizar.** Consultar [Recorrido sugerido para la sustentación](#recorrido-sugerido-para-la-sustentación). |
+
+</details>
 
 ### Comprobación de la versión publicada
 
