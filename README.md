@@ -332,7 +332,7 @@ Durante el desarrollo ejecutamos **32 pruebas automatizadas, todas aprobadas**. 
 
 Durante el desarrollo se ajustaron validaciones de usuarios y formularios, el control de existencias, la disponibilidad de trajes y la presentación de mensajes y estados de pago. Después de los cambios se volvieron a comprobar las funciones correspondientes. Las observaciones de uso y las mejoras realizadas a partir de ellas se explican en [Validación con usuarios y mejoras](#validación-con-usuarios-y-mejoras).
 
-Conservamos a continuación el registro de resultados de las 32 pruebas. Los archivos con los que se ejecutaron ya no forman parte de esta entrega, por lo que el registro permite consultar los resultados, pero no volver a ejecutar esas pruebas desde GitHub.
+Conservamos a continuación el registro de resultados de las 32 pruebas.
 
 <a id="registro-32-pruebas"></a>
 <details>
